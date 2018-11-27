@@ -42,7 +42,7 @@ public class CloneDetection
 		logger = event.getModLog();
 	}
 
-	/*@EventHandler
+	@EventHandler
 	public void init(FMLInitializationEvent event)
 	{
 		try {
@@ -223,6 +223,6 @@ public class CloneDetection
 		}
 
 		return loc.getURI().getPath();
-	}*/
+	}
 
 }
