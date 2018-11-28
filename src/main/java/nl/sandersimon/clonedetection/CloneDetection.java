@@ -1,30 +1,15 @@
 package nl.sandersimon.clonedetection;
 
-import java.io.OutputStream;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.logging.log4j.Logger;
-import org.rascalmpl.library.experiments.Compiler.Commands.CommandOptions;
-import org.rascalmpl.library.experiments.Compiler.Commands.Rascal;
-import org.rascalmpl.library.experiments.Compiler.RVM.Interpreter.InternalCompilerError;
-import org.rascalmpl.library.experiments.Compiler.RVM.Interpreter.RVMExecutable;
-import org.rascalmpl.library.experiments.Compiler.RVM.Interpreter.java2rascal.ApiGen;
-import org.rascalmpl.library.experiments.Compiler.RVM.Interpreter.java2rascal.Java2Rascal;
-import org.rascalmpl.library.lang.rascal.boot.IKernel;
-import org.rascalmpl.library.util.PathConfig;
-import org.rascalmpl.uri.URIResolverRegistry;
-import org.rascalmpl.uri.URIUtil;
-import org.rascalmpl.values.ValueFactoryFactory;
+import org.rascalmpl.library.experiments.Compiler.Commands.Bootstrap;
+import org.rascalmpl.library.experiments.Compiler.Commands.RascalC;
 
-import io.usethesource.vallang.IConstructor;
-import io.usethesource.vallang.IList;
-import io.usethesource.vallang.ISet;
-import io.usethesource.vallang.ISourceLocation;
-import io.usethesource.vallang.IString;
-import io.usethesource.vallang.IValue;
-import io.usethesource.vallang.IValueFactory;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 @Mod(modid = CloneDetection.MODID, name = CloneDetection.NAME, version = CloneDetection.VERSION)
@@ -33,6 +18,8 @@ public class CloneDetection
 	public static final String MODID = "clonedetection";
 	public static final String NAME = "Clone Detection";
 	public static final String VERSION = "1.0";
+	
+	private static Process childProcess;
 
 	private static Logger logger;
 
@@ -40,11 +27,39 @@ public class CloneDetection
 	public void preInit(FMLPreInitializationEvent event)
 	{
 		logger = event.getModLog();
+		System.out.println("PREINIT");
+		Thread thread = new Thread() {
+			  public void run() {
+				  System.out.println("============Sysout from thread============");
+				  try {
+					Bootstrap.main(new String[] {"bin/","latest","latest","/home/simon/rascal/CloneDetection/rascal-master/","/home/simon/rascal/CloneDetection/rascal-comp/", "/tmp"});
+					System.out.println("============Bootstrapping DONE!============");
+				  } catch (Exception e) {
+					e.printStackTrace();
+				}
+				  System.out.println("============GOING TO MAIN============");
+				  RascalC.main(new String[] {});
+			  }
+			 };
+		thread.start();
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("DONE");
 	}
 
-	@EventHandler
+	/*@EventHandler
 	public void init(FMLInitializationEvent event)
 	{
+		System.out.println("DOING STUFF");
+		try {
+			Bootstrap.main(new String[] {"","","","",""});
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
 		try {
 			IValueFactory vf = ValueFactoryFactory.getValueFactory();
 			CommandOptions cmdOpts = new CommandOptions("rascalc");
@@ -60,6 +75,10 @@ public class CloneDetection
 
 			.strOption("apigen")
 			.strDefault("")
+			.strDefault("")
+			.help("Package name for generating api for Java -> Rascal")
+
+			.locOption("src-gen")
 			.help("Package name for generating api for Java -> Rascal")
 
 			.locOption("src-gen")
@@ -110,7 +129,7 @@ public class CloneDetection
 
 			ok = handleMessages(programs, pcfg);
 			if(!ok){
-				System.exit(1);
+				System.out.println("The system has deemed it NOT OK");
 			}
 			String pckg = cmdOpts.getCommandStringOption("apigen");
 			if(!pckg.isEmpty()){
@@ -136,18 +155,16 @@ public class CloneDetection
 
 						String path = srcGen.getPath() + "/" + modulePath + ".java";
 						ISourceLocation apiLoc = URIUtil.correctLocation(srcGen.getScheme(), srcGen.getAuthority(), path);
-						System.err.println(apiLoc);
-						System.err.println(api);
+						System.out.println(apiLoc);
+						System.out.println(api);
 						OutputStream apiOut = URIResolverRegistry.getInstance().getOutputStream(apiLoc, false);
 						apiOut.write(api.getBytes());
 						apiOut.close();
 					} catch (Exception e) {
 						e.printStackTrace();
-						System.exit(1);
 					}
 				}
 			}
-			System.exit(0);
 
 		} catch (Exception e) {}
 	}
@@ -224,5 +241,94 @@ public class CloneDetection
 
 		return loc.getURI().getPath();
 	}
+	
+	/**
+	 * COMPILER BLAH BLAH
+	 * @param command
+	 * @return
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	
+	/*private static int runChildProcess(String[] command) throws IOException, InterruptedException {
+        synchronized (Bootstrap.class) {
+            childProcess = new ProcessBuilder(command).inheritIO().start();
+            childProcess.waitFor();
+            int exitValue = childProcess.exitValue();
+            if (exitValue != 0) {
+                System.out.println("Command failed: " + Arrays.stream(command).reduce("", ((s,e) -> s + (e.toString() + " "))));
+            }
+            return exitValue;
+        }
+    }
+	
+	private static String maxMemory = "-Xmx2G";
+	private static int runRascalCompiler(String classPath, String... arguments) throws IOException, InterruptedException {
+        String[] javaCmd = new String[] {"java", "-cp", classPath, maxMemory, "-Dfile.encoding=UTF-8", /*"-Xdebug -Xrunjdwp:transport=dt_socket,address=8001,server=y,suspend=n","org.rascalmpl.library.experiments.Compiler.Commands.RascalC" };
+        return runChildProcess(concat(javaCmd, arguments));
+    }
+	
+	private static String[] concat(String[]... arrays) {
+        return Stream.of(arrays).flatMap(Stream::of).toArray(sz -> new String[sz]);
+    }
+	
+	private static Path phaseFolder(int phase, Path tmp) {
+        Path result = tmp.resolve("phase" + phase);
+        result.toFile().mkdir();
+        return result;
+    }
+    
+    private static Path phaseTestFolder(int phase, Path tmp) {
+        Path result = tmp.resolve("phase-test" + phase);
+        result.toFile().mkdir();
+        return result;
+    }
+    
+    private static void compileModule(int phase, String classPath, String boot, String sourcePath, Path phaseResult,
+            String module, String reloc) throws IOException, InterruptedException, BootstrapMessage {
+        
+        String[] paths;
+        paths = phase >= 2 ? new String [] { "--bin", phaseResult.toAbsolutePath().toString(), "--src", sourcePath, "--boot", boot , "--reloc", reloc }
+                           : new String [] { "--bin", phaseResult.toAbsolutePath().toString(), "--src", sourcePath, "--boot", boot};
+        String[] otherArgs = new String[] {module};
+
+        if (runRascalCompiler(classPath, concat(paths, otherArgs)) != 0) {
+            throw new BootstrapMessage(phase);
+        }
+    }
+
+	private static Path compilePhase(Path tmp, int phase, String sourcePath, String classPath, String bootPath, String testClassPath, String reloc, Path targetFolder) throws Exception {
+	      Path phaseResult = phaseFolder(phase, tmp);
+	      Path testResults = phaseTestFolder(phase, tmp);
+
+	      compileModule   (phase, classPath, bootPath, sourcePath, phaseResult, "lang::rascal::boot::Kernel", reloc);
+
+	      if (phase == 1) {
+	          // the new parser generator would refer to classes which may not exist yet. Until stage 2 we still run against this old version
+	          // we now copy an old version of the generator to be used in phase 2.
+	          copyParserGenerator(jarFileSystem(classPath).getRootDirectories().iterator().next(), phaseResult);
+	      }
+	      else {
+	          time("- compile ParserGenerator", () -> compileModule   (phase, classPath, bootPath, sourcePath, phaseResult, "lang::rascal::grammar::ParserGenerator", reloc));
+	      }
+	      
+	      if(phase == 2){
+	          time("- generate and compile RascalParser", () -> generateAndCompileRascalParser(phase, classPath, sourcePath, bootPath, phaseResult, targetFolder));
+	      }
+
+	      if (phase >= 2) {
+	          // phase 1 tests often fail for no other reason than an incompatibility.
+	          time("- compile simple tests",           () -> compileTests    (phase, classPath, phaseResult.toAbsolutePath().toString(), sourcePath, testResults, testModules));
+	          time("- run simple tests",               () -> runTests        (phase, testClassPath, phaseResult.toAbsolutePath().toString(), sourcePath, testResults, testModules));
+	      }
+	      
+	      if (phase > 2) {
+	          // phase 2 tests can not succeed in case the parser generator changed, so we can only test this after phase 3 has completed
+	          time("- compile syntax tests",           () -> compileTests    (phase, classPath, phaseResult.toAbsolutePath().toString(), sourcePath, testResults, syntaxTestModules));
+	          time("- run syntax tests",               () -> runTests        (phase, testClassPath, phaseResult.toAbsolutePath().toString(), sourcePath, testResults, syntaxTestModules));
+	      }
+	      
+	      return phaseResult;
+	    }*/
 
 }
