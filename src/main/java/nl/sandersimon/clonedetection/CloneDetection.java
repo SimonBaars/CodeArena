@@ -13,8 +13,10 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import nl.sandersimon.clonedetection.common.ResourceCommons;
 import nl.sandersimon.clonedetection.common.TestingCommons;
+import scala.actors.threadpool.Arrays;
 
 @Mod(modid = CloneDetection.MODID, name = CloneDetection.NAME, version = CloneDetection.VERSION)
 public class CloneDetection
@@ -26,21 +28,34 @@ public class CloneDetection
 	Process rascal;
 	BufferedWriter rascalOut;
 	BufferedReader rascalIn;
+	private static CloneDetection cloneDetection;
 	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){
+		cloneDetection = this;
 		ResourceCommons.extractResources();
+	}
+	
+	@EventHandler
+	public void serverLoad(FMLServerStartingEvent event){
+		event.registerServerCommand(new CloneCommand());
+	}
+	
+	public static CloneDetection get() {
+		return cloneDetection;
 	}
 	
 	@EventHandler
 	public void init(FMLInitializationEvent event){
 		try {
+			System.out.println("Starting Rascal..");
 			rascal = getProcess("java -jar "+ResourceCommons.getResource("Rascal.jar").getAbsolutePath(), ResourceCommons.getResource(""));
-			System.out.println("RASCAL IS STARTED");
+			executeRascal("import IO;");
+			executeRascal("import packagename::ClassName;");
+			System.out.println("Rascal Started!");
 		} catch (IOException e) {
 			throw new RuntimeException("Rascal could not be started!", e);
 		}
-		
 	}
 	
 	private Process getProcess(String command, File dir) throws IOException {
@@ -50,7 +65,7 @@ public class CloneDetection
 		else 
 			com = command.split(" ");
 		ProcessBuilder prb = new ProcessBuilder(com);
-		//prb.directory(dir);
+		prb.directory(dir);
 		Process pr = prb.start();
 		rascalOut = new BufferedWriter(new OutputStreamWriter(pr.getOutputStream()));
 		rascalIn = new BufferedReader(new InputStreamReader(pr.getInputStream()));
@@ -58,22 +73,42 @@ public class CloneDetection
 		return pr;
 	}
 	
-	//private String executeRascal(String statement) {
-	//	rascal.
-	//}
+	private List<String> executeRascal(String statement) {
+		try {
+			rascalOut.write(statement);
+			rascalOut.newLine();
+			rascalOut.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return waitUntilExecuted();
+	}
 	
-	private String waitUntilExecuted() {
+	private String executeSingleLineRascal(String statement) {
+		return executeRascal(statement).get(1);
+	}
+	
+	private List<String> waitUntilExecuted() {
 		List<String> lines = new ArrayList<>();
-		String readValue;
-		while(true) {
+		outerloop: while(true) {
+			StringBuilder buffer = new StringBuilder();
 			try {
-				if(rascalIn.ready())
-					System.out.println("[RASCAL] "+rascalIn.readLine());
-				else Thread.sleep(100);
+				while(rascalIn.ready()) {
+					int read = rascalIn.read();
+					buffer.append((char)read);
+					if(read == '\n') {
+						lines.add(buffer.toString());
+						buffer.setLength(0);
+					} else if(buffer.toString().endsWith("rascal>")) {
+						while(rascalIn.ready()) rascalIn.read();
+						break outerloop;
+					}
+				}
+				Thread.sleep(1000);
 			} catch (IOException | InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-		
+		return lines;
 	}
 }

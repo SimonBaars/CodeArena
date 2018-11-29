@@ -44,8 +44,7 @@ public class ResourceCommons {
 	
 	public static void extractResources(@SuppressWarnings("rawtypes") Class protectionDomainProvider, String path) throws IOException {
 		final File jarFile = new File(protectionDomainProvider.getProtectionDomain().getCodeSource().getLocation().getPath());
-		System.out.println("JAR FILE = "+jarFile);
-		if(jarFile.isFile())
+		if(jarFile.isFile() && jarFile.getName().endsWith(".jar"))
 			extractJar(jarFile, path);
 		else {
 			URL resourceUrl = null;
