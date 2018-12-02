@@ -46,6 +46,8 @@ public class CloneCommand implements ICommand {
 			return;
 		}
 		sender.sendMessage(format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "Searching for clones, please wait..."));
+		String res = CloneDetection.get().executeSingleLineRascal("calculateCodeDuplication(|file:///home/simon/.clone/projects/"+args[0]+"/|)");
+		System.out.println(res);
 	}
 
 	@Override

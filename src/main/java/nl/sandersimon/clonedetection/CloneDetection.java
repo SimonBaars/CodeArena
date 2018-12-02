@@ -24,40 +24,39 @@ public class CloneDetection
 	public static final String MODID = "clonedetection";
 	public static final String NAME = "Clone Detection";
 	public static final String VERSION = "1.0";
-	
+
 	Process rascal;
 	BufferedWriter rascalOut;
-	BufferedReader rascalIn;
+	InputStreamReader rascalIn;
 	private static CloneDetection cloneDetection;
-	
+
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){
 		cloneDetection = this;
 		ResourceCommons.extractResources();
 	}
-	
+
 	@EventHandler
 	public void serverLoad(FMLServerStartingEvent event){
 		event.registerServerCommand(new CloneCommand());
 	}
-	
+
 	public static CloneDetection get() {
 		return cloneDetection;
 	}
-	
+
 	@EventHandler
 	public void init(FMLInitializationEvent event){
 		try {
 			System.out.println("Starting Rascal..");
-			rascal = getProcess("java -jar "+ResourceCommons.getResource("Rascal.jar").getAbsolutePath(), ResourceCommons.getResource(""));
-			executeRascal("import IO;");
+			rascal = getProcess("java -jar "+ResourceCommons.getResource("Rascal.jar").getAbsolutePath(), ResourceCommons.getResource("rascal"));
 			executeRascal("import packagename::ClassName;");
 			System.out.println("Rascal Started!");
 		} catch (IOException e) {
 			throw new RuntimeException("Rascal could not be started!", e);
 		}
 	}
-	
+
 	private Process getProcess(String command, File dir) throws IOException {
 		String[] com;
 		if(TestingCommons.getOS().isUnix())
@@ -68,12 +67,13 @@ public class CloneDetection
 		prb.directory(dir);
 		Process pr = prb.start();
 		rascalOut = new BufferedWriter(new OutputStreamWriter(pr.getOutputStream()));
-		rascalIn = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+		rascalIn = new InputStreamReader(pr.getInputStream());
 		waitUntilExecuted();
 		return pr;
 	}
-	
-	private List<String> executeRascal(String statement) {
+
+	public List<String> executeRascal(String statement) {
+		System.out.println("Executing Rascal: "+statement);
 		try {
 			rascalOut.write(statement);
 			rascalOut.newLine();
@@ -83,12 +83,12 @@ public class CloneDetection
 		}
 		return waitUntilExecuted();
 	}
-	
-	private String executeSingleLineRascal(String statement) {
+
+	public String executeSingleLineRascal(String statement) {
 		return executeRascal(statement).get(1);
 	}
-	
-	private List<String> waitUntilExecuted() {
+
+	public List<String> waitUntilExecuted() {
 		List<String> lines = new ArrayList<>();
 		outerloop: while(true) {
 			StringBuilder buffer = new StringBuilder();
