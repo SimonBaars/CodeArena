@@ -72,7 +72,11 @@ public class CloneDetection
 		return pr;
 	}
 
-	public List<String> executeRascal(String statement) {
+	public List<String> executeRascal(String statement){
+		return executeRascal(statement, getRascalReadyState());
+	}
+	
+	public List<String> executeRascal(String statement, char till) {
 		System.out.println("Executing Rascal: "+statement);
 		try {
 			rascalOut.write(statement);
@@ -81,34 +85,57 @@ public class CloneDetection
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return waitUntilExecuted();
+		return waitUntilExecuted(till);
 	}
 
 	public String executeSingleLineRascal(String statement) {
 		return executeRascal(statement).get(1);
 	}
-
+	
+	public String executeTill(String statement, char till) {
+		return executeRascal(statement, till).get(0);
+	}
+	
 	public List<String> waitUntilExecuted() {
+		return waitUntilExecuted(getRascalReadyState());
+	}
+
+	private char getRascalReadyState() {
+		return '>';
+	}
+
+	public List<String> waitUntilExecuted(char till) {
 		List<String> lines = new ArrayList<>();
 		outerloop: while(true) {
 			StringBuilder buffer = new StringBuilder();
 			try {
 				while(rascalIn.ready()) {
 					int read = rascalIn.read();
-					buffer.append((char)read);
+					System.out.print((char)read+"");
+					if((char)read == till) {
+						lines.add(buffer.toString());
+						break outerloop;
+					}
 					if(read == '\n') {
 						lines.add(buffer.toString());
 						buffer.setLength(0);
-					} else if(buffer.toString().endsWith("rascal>")) {
-						while(rascalIn.ready()) rascalIn.read();
-						break outerloop;
-					}
+					} else buffer.append((char)read);
 				}
-				Thread.sleep(1000);
+				Thread.sleep(400);
 			} catch (IOException | InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
 		return lines;
+	}
+	
+	public String readBuffer(int bufferSize) {
+		char[] cbuf = new char[bufferSize];
+		try {
+			int read = rascalIn.read(cbuf);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return new String(cbuf);
 	}
 }

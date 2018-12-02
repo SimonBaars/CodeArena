@@ -46,8 +46,12 @@ public class CloneCommand implements ICommand {
 			return;
 		}
 		sender.sendMessage(format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "Searching for clones, please wait..."));
-		String res = CloneDetection.get().executeSingleLineRascal("calculateCodeDuplication(|file:///home/simon/.clone/projects/"+args[0]+"/|)");
-		System.out.println(res);
+		CloneDetection.get().executeTill("calculateCodeDuplication(|file:///home/simon/.clone/projects/"+args[0]+"/|)", '\n');
+		String bufferSizeString = CloneDetection.get().waitUntilExecuted('\n').get(0);
+		int bufferSize = Integer.parseInt(bufferSizeString);
+		String res = CloneDetection.get().readBuffer(bufferSize);
+		CloneDetection.get().waitUntilExecuted();
+		System.out.println("DONE!");
 	}
 
 	@Override
