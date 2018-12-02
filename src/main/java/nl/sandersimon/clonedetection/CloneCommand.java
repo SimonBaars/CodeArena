@@ -1,8 +1,6 @@
 package nl.sandersimon.clonedetection;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -14,6 +12,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
+import nl.sandersimon.clonedetection.model.Location;
 
 public class CloneCommand implements ICommand {
 
@@ -51,7 +50,26 @@ public class CloneCommand implements ICommand {
 		int bufferSize = Integer.parseInt(bufferSizeString);
 		String res = CloneDetection.get().readBuffer(bufferSize);
 		CloneDetection.get().waitUntilExecuted();
+		populateResult(res);
 		System.out.println("DONE!");
+	}
+	
+	public List<List<Location>> populateResult(String res){
+		List<List<Location>> locs = new ArrayList<List<Location>>();
+		int listLoc = 1;
+		while (res.charAt(listLoc) == '[') {
+			List<Location> loc = new ArrayList<>();
+			listLoc = parseList(loc, res, listLoc+1);
+			locs.add(loc);
+		}
+		return locs;
+	}
+
+	private int parseList(List<Location> loc, String res, int elementLoc) {
+		while(res.charAt(elementLoc) == '|') {
+			loc.add(Location.construct(res.substring(elementLoc+1, res.indexOf(',', elementLoc+1))));
+		}
+		return 0;
 	}
 
 	@Override
