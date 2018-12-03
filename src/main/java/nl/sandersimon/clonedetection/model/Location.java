@@ -1,6 +1,10 @@
 package nl.sandersimon.clonedetection.model;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.function.BiConsumer;
+
+import nl.sandersimon.clonedetection.common.TestingCommons;
 
 public class Location {
 	String type;
@@ -160,12 +164,13 @@ public class Location {
 		numLoc = parseNumber(stringRepr, Location::setEndLine, loc, numLoc);
 		numLoc = parseNumber(stringRepr, Location::setBeginCol, loc, numLoc+2);
 		parseNumber(stringRepr, Location::setEndCol, loc, numLoc);
-		return null;
+		System.out.println(loc);
+		System.out.println(loc.getSnippet());
+		return loc;
 	}
 
 	private static int parseNumber(String stringRepr, BiConsumer<Location, Integer> function, Location loc, int startIndex) {
 		String offsetStr = collectInt(stringRepr, startIndex);
-		System.out.println("Parsing at "+startIndex+" we parsed "+offsetStr);
 		function.accept(loc, Integer.parseInt(offsetStr));
 		startIndex+=offsetStr.length()+1;
 		return startIndex;
@@ -182,4 +187,20 @@ public class Location {
 		return number.toString();
 	}
 
+	@Override
+	public String toString() {
+		return "Location [type=" + type + ", file=" + file + ", offset=" + offset + ", length=" + length
+				+ ", beginLine=" + beginLine + ", beginCol=" + beginCol + ", endLine=" + endLine + ", endCol=" + endCol
+				+ "]";
+	}
+
+	public String getSnippet() {
+		try {
+			String content = TestingCommons.getFileAsString(new File(file));
+			return content.substring(offset, offset+length);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }
