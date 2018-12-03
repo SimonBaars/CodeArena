@@ -1,8 +1,13 @@
 package nl.sandersimon.clonedetection.model;
 
+import java.util.function.BiConsumer;
+
 public class Location {
 	String type;
 	String file;
+	
+	int offset;
+	int length;
 	
 	int beginLine;
 	int beginCol;
@@ -17,6 +22,19 @@ public class Location {
 		super();
 		this.type = type;
 		this.file = file;
+		this.beginLine = beginLine;
+		this.beginCol = beginCol;
+		this.endLine = endLine;
+		this.endCol = endCol;
+	}
+
+	public Location(String type, String file, int offset, int length, int beginLine, int beginCol, int endLine,
+			int endCol) {
+		super();
+		this.type = type;
+		this.file = file;
+		this.offset = offset;
+		this.length = length;
 		this.beginLine = beginLine;
 		this.beginCol = beginCol;
 		this.endLine = endLine;
@@ -71,6 +89,22 @@ public class Location {
 		this.endCol = endCol;
 	}
 
+	public int getOffset() {
+		return offset;
+	}
+
+	public void setOffset(int offset) {
+		this.offset = offset;
+	}
+
+	public int getLength() {
+		return length;
+	}
+
+	public void setLength(int length) {
+		this.length = length;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -115,8 +149,37 @@ public class Location {
 	}
 
 	public static Location construct(String stringRepr) {
-		this.type = stringRepr.substring(0, stringRepr.indexOf(':'));
+		Location loc = new Location();
+		int pathSeparator = stringRepr.indexOf(':');
+		loc.setType(stringRepr.substring(0, pathSeparator));
+		int numLoc = stringRepr.indexOf('|');
+		loc.setFile(stringRepr.substring(pathSeparator+3, numLoc));
+		numLoc = parseNumber(stringRepr, Location::setOffset, loc, numLoc+2);
+		numLoc = parseNumber(stringRepr, Location::setLength, loc, numLoc);
+		numLoc = parseNumber(stringRepr, Location::setBeginLine, loc, numLoc+1);
+		numLoc = parseNumber(stringRepr, Location::setEndLine, loc, numLoc);
+		numLoc = parseNumber(stringRepr, Location::setBeginCol, loc, numLoc+2);
+		parseNumber(stringRepr, Location::setEndCol, loc, numLoc);
 		return null;
+	}
+
+	private static int parseNumber(String stringRepr, BiConsumer<Location, Integer> function, Location loc, int startIndex) {
+		String offsetStr = collectInt(stringRepr, startIndex);
+		System.out.println("Parsing at "+startIndex+" we parsed "+offsetStr);
+		function.accept(loc, Integer.parseInt(offsetStr));
+		startIndex+=offsetStr.length()+1;
+		return startIndex;
+	}
+	
+	public static String collectInt(String str, int offset) {
+		StringBuilder number = new StringBuilder();
+		for(int i = offset; i<str.length(); i++) {
+			char charAt = str.charAt(i);
+			if(charAt>='0' && charAt<='9')
+				number.append(charAt);
+			else break;
+		}
+		return number.toString();
 	}
 
 }
