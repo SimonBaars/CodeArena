@@ -57,9 +57,9 @@ public class CloneCommand implements ICommand {
 	public List<List<Location>> populateResult(String res){
 		List<List<Location>> locs = new ArrayList<>();
 		int listLoc = 1;
-		while (res.charAt(listLoc) == '[') {
+		while (listLoc < res.length() && res.charAt(listLoc) == '[') {
 			List<Location> loc = new ArrayList<>();
-			listLoc = parseList(loc, res, listLoc+1);
+			listLoc = parseList(loc, res, listLoc+1)+1;
 			locs.add(loc);
 		}
 		return locs;
@@ -67,8 +67,7 @@ public class CloneCommand implements ICommand {
 
 	private int parseList(List<Location> loc, String res, int elementLoc) {
 		while(res.charAt(elementLoc) == '|') {
-			int elementEnd = Integer.min(res.indexOf(')', elementLoc+1), res.indexOf(']', elementLoc+1));
-			String stringRep = res.substring(elementLoc+1, elementEnd);
+			String stringRep = res.substring(elementLoc+1, res.indexOf(')', elementLoc+1));
 			loc.add(Location.construct(stringRep));
 			elementLoc += stringRep.length()+3;
 		}
