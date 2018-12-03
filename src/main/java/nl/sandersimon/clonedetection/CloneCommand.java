@@ -50,7 +50,7 @@ public class CloneCommand implements ICommand {
 		int bufferSize = Integer.parseInt(bufferSizeString);
 		String res = CloneDetection.get().readBuffer(bufferSize);
 		CloneDetection.get().waitUntilExecuted();
-		populateResult(res);
+		System.out.println("Amount of locs = "+ populateResult(res).get(0).size());
 		System.out.println("DONE!");
 	}
 	
@@ -67,7 +67,10 @@ public class CloneCommand implements ICommand {
 
 	private int parseList(List<Location> loc, String res, int elementLoc) {
 		while(res.charAt(elementLoc) == '|') {
-			String stringRep = res.substring(elementLoc+1, res.indexOf(')', elementLoc+1));
+			int indexOf = res.indexOf(')', elementLoc+1);
+			if(indexOf == -1)
+				break; // Not a valid location
+			String stringRep = res.substring(elementLoc+1, indexOf);
 			loc.add(Location.construct(stringRep));
 			elementLoc += stringRep.length()+3;
 		}
