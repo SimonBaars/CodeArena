@@ -6,6 +6,7 @@ import java.util.List;
 import net.minecraft.command.ICommandSender;
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.common.Commons;
+import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.model.Location;
 
 public class CloneDetectionThread extends Thread {
@@ -19,7 +20,7 @@ public class CloneDetectionThread extends Thread {
 	}
 
 	public void run() {
-		CloneDetection.get().executeTill("calculateCodeDuplication(|file://"+CloneDetection.PROJECT_FOLDER+project+"/|)", '\n');
+		CloneDetection.get().executeTill("calculateCodeDuplication(|file://"+SavePaths.getProjectFolder()+project+"/|)", '\n');
 		String bufferSizeString = CloneDetection.get().waitUntilExecuted('\n').get(0);
 		int bufferSize = Integer.parseInt(bufferSizeString);
 		String res = CloneDetection.get().readBuffer(bufferSize);
