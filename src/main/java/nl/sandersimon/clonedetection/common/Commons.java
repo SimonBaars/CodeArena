@@ -21,14 +21,17 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
+
 
 /**
  * The TestingCommons class provides all kinds of useful methods when testing with Selenium WebDriver.
  *
  */
-public class TestingCommons {
+public class Commons {
 
-	private TestingCommons() {
+	private Commons() {
 	}
 
 	public static String getFileAsString(File file) throws IOException {
@@ -108,7 +111,7 @@ public class TestingCommons {
 	}
 
 	public static File getResourceFromFramework(String path) throws IOException {
-		return getResourceSafe(path, TestingCommons.class);
+		return getResourceSafe(path, Commons.class);
 	}
 	
 	/**
@@ -201,4 +204,11 @@ public class TestingCommons {
 			return OperatingSystem.MACOS;
 		return OperatingSystem.LINUX;
 	}
+	
+	public static TextComponentTranslation format(TextFormatting color, String str, Object... args)
+    {
+        TextComponentTranslation ret = new TextComponentTranslation(str, args);
+        ret.getStyle().setColor(color);
+        return ret;
+    }
 }

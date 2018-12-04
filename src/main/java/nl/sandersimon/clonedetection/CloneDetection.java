@@ -14,11 +14,13 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import nl.sandersimon.clonedetection.common.ResourceCommons;
-import nl.sandersimon.clonedetection.common.TestingCommons;
+import nl.sandersimon.clonedetection.common.Commons;
 
 @Mod(modid = CloneDetection.MODID, name = CloneDetection.NAME, version = CloneDetection.VERSION)
 public class CloneDetection
 {
+	public static final String PROJECT_FOLDER = "/home/simon/.clone/projects/";
+	
 	public static final String MODID = "clonedetection";
 	public static final String NAME = "Clone Detection";
 	public static final String VERSION = "1.0";
@@ -57,7 +59,7 @@ public class CloneDetection
 
 	private Process getProcess(String command, File dir) throws IOException {
 		String[] com;
-		if(TestingCommons.getOS().isUnix())
+		if(Commons.getOS().isUnix())
 			com = new String[]{"bash", "-c", command};
 		else 
 			com = command.split(" ");

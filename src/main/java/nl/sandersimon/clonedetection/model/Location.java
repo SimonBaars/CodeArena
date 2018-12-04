@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.function.BiConsumer;
 
-import nl.sandersimon.clonedetection.common.TestingCommons;
+import nl.sandersimon.clonedetection.common.Commons;
 
 public class Location {
 	String type;
@@ -164,8 +164,6 @@ public class Location {
 		numLoc = parseNumber(stringRepr, Location::setEndLine, loc, numLoc);
 		numLoc = parseNumber(stringRepr, Location::setBeginCol, loc, numLoc+2);
 		parseNumber(stringRepr, Location::setEndCol, loc, numLoc);
-		System.out.println(loc);
-		System.out.println(loc.getSnippet());
 		return loc;
 	}
 
@@ -196,7 +194,7 @@ public class Location {
 
 	public String getSnippet() {
 		try {
-			String content = TestingCommons.getFileAsString(new File(file));
+			String content = Commons.getFileAsString(new File(file));
 			return content.substring(offset, offset+length);
 		} catch (IOException e) {
 			e.printStackTrace();
