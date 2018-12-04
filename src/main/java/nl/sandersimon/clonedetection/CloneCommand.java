@@ -1,5 +1,6 @@
 package nl.sandersimon.clonedetection;
 
+import java.io.File;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -10,6 +11,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import nl.sandersimon.clonedetection.common.Commons;
+import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.thread.CloneDetectionThread;
 
 public class CloneCommand implements ICommand {
@@ -40,6 +42,8 @@ public class CloneCommand implements ICommand {
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if(args.length==0) {
 			sender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.BLUE, "Please choose the project you'd like to search for code clones:"));
+			new File(SavePaths.getProjectFolder()).listFilesv xz();
+			CloneDetection.dialoge = 1;
 			return;
 		}
 		CloneDetectionThread.startWorker(sender, args[0]);

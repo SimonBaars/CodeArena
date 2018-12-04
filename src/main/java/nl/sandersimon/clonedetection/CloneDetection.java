@@ -8,27 +8,31 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import nl.sandersimon.clonedetection.common.ResourceCommons;
 import nl.sandersimon.clonedetection.common.Commons;
+import nl.sandersimon.clonedetection.common.ResourceCommons;
 
 @Mod(modid = CloneDetection.MODID, name = CloneDetection.NAME, version = CloneDetection.VERSION)
 public class CloneDetection
 {
-	public static final String PROJECT_FOLDER = "/home/simon/.clone/projects/";
-	
 	public static final String MODID = "clonedetection";
 	public static final String NAME = "Clone Detection";
 	public static final String VERSION = "1.0";
+	
+	public static nl.sandersimon.clonedetection.minecraft.EventHandler eventHandler;
 
 	Process rascal;
 	BufferedWriter rascalOut;
 	InputStreamReader rascalIn;
 	private static CloneDetection cloneDetection;
+
+	public static int dialoge;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){
@@ -55,6 +59,9 @@ public class CloneDetection
 		} catch (IOException e) {
 			throw new RuntimeException("Rascal could not be started!", e);
 		}
+		eventHandler = new nl.sandersimon.clonedetection.minecraft.EventHandler();
+		FMLCommonHandler.instance().bus().register(eventHandler);
+		MinecraftForge.EVENT_BUS.register(new nl.sandersimon.clonedetection.minecraft.ForgeEventHandler());
 	}
 
 	private Process getProcess(String command, File dir) throws IOException {
