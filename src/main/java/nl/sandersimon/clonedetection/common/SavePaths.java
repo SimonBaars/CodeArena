@@ -25,6 +25,10 @@ public class SavePaths {
 		return getApplicationDataFolder() + "resources" + File.separator;
 	}
 	
+	public static String getProjectFolder() {
+		return getApplicationDataFolder() + "projects" + File.separator;
+	}
+	
 	public static boolean resourceFolderExists() {
 		return new File(getResourceFolder()).exists();
 	}
