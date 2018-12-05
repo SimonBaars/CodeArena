@@ -60,4 +60,8 @@ public class CloneDetectionThread extends Thread {
 		s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "Searching for clones, please wait..."));
 		worker = new CloneDetectionThread(project);
 	}
+
+	public static CloneDetectionThread getWorker() {
+		return worker;
+	}
 }
