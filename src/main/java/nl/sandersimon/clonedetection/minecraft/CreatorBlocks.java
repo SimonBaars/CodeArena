@@ -1,4 +1,4 @@
-package modid.imsm.core;
+package nl.sandersimon.clonedetection.minecraft;
 
 import net.minecraft.world.World;
 

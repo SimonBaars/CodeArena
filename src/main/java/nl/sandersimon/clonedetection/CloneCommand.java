@@ -2,6 +2,7 @@ package nl.sandersimon.clonedetection;
 
 import java.io.File;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import com.google.common.collect.Lists;
 
@@ -41,8 +42,9 @@ public class CloneCommand implements ICommand {
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if(args.length==0) {
-			sender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.BLUE, "Please choose the project you'd like to search for code clones:"));
-			new File(SavePaths.getProjectFolder()).listFilesv xz();
+			sender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.BLUE, "Please enter the number of the project you'd like to search for code clones:"));
+			String[] projects = new File(SavePaths.getProjectFolder()).list();
+			IntStream.range(0, projects.length).forEach(i -> Commons.format(net.minecraft.util.text.TextFormatting.WHITE, "["+(i+1)+"] "+projects[i]));
 			CloneDetection.dialoge = 1;
 			return;
 		}

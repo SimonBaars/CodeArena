@@ -1,9 +1,13 @@
 package nl.sandersimon.clonedetection.minecraft;
 
+import java.io.File;
+
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import nl.sandersimon.clonedetection.CloneDetection;
+import nl.sandersimon.clonedetection.common.SavePaths;
+import nl.sandersimon.clonedetection.thread.CloneDetectionThread;
 
 public class ForgeEventHandler {
 	public static int searchingPage = 1;
@@ -21,14 +25,16 @@ public class ForgeEventHandler {
 			if(CloneDetection.dialoge==1){
 				try{
 					int inputNumber = Integer.parseInt(event.getMessage());
-					if(inputNumber<61){
-						CloneDetection.eventHandler.delayedPrints.add("You cannot fly a negative (or too low) distance. Please insert a positive number above 60.");
+					String[] projects = new File(SavePaths.getProjectFolder()).list();
+					if(inputNumber < 1 || inputNumber > projects.length){
+						CloneDetection.eventHandler.delayedPrints.add("This is not a valid number of a project. Please enter a number between 1-"+projects.length+".");
 					} else {
-						CloneDetection.eventHandler.delayedPrints.add("Thank you. Please hop aboard quickly, we are about to depart in 10 seconds.");
+						CloneDetection.eventHandler.delayedPrints.add("Thank you. We'll generate a beatiful city out of the clones of this project.");
 						CloneDetection.dialoge=0;
+						CloneDetectionThread.startWorker(event.getPlayer(), projects[inputNumber-1]);
 					}
 				} catch (Exception e){
-					//IMSM.eventHandler.delayedPrints.add("Please only use numbers");
+					CloneDetection.eventHandler.delayedPrints.add("Please only use numbers");
 				}
 			}
 		}
