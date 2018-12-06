@@ -1,4 +1,4 @@
-//Notes: hoe zorgen we ervoor dat subtree niet ook als duplicate wordt gezien
+// map(loc, map(line, list[comparableastvalues]);
 
 module astCreation
 
@@ -17,13 +17,14 @@ import util::Math;
 int minAmountOfLines = 6;
 
 public list[list[loc]] getDuplication(list[Declaration] asts) {
-    map[int, list[node]] bucketAsts = bucketMapGeneration(asts);
+    map[loc, map[int, list[value]]] fileLineAsts = ();
+    fileLineAsts = fileLineMapGeneration(asts, fileLineAsts);
     map[int, set[loc]] duplicateSet = ();
-    for(bucket <- bucketAsts){
-    	duplicateSet = calcDupAsts(bucketAsts[bucket], duplicateSet);
-    }
+    //for(bucket <- bucketAsts){
+    //	duplicateSet = calcDupAsts(bucketAsts[bucket], duplicateSet);
+    //}
 	list[list[loc]] duplicateList = dupSetToList(duplicateSet);
-    iprint(duplicateList);
+    iprint(fileLineAsts);
     return duplicateList;
 }
 
@@ -32,6 +33,35 @@ public list[list[loc]] dupSetToList(map[int, set[loc]] duplicateSet){
 	for(dupSet <- duplicateSet)
 		duplicateList += [toList(duplicateSet[dupSet])];
 	return duplicateList;
+}
+
+public map[loc, map[int, list[value]]] fileLineMapGeneration(list[Declaration] asts, map[loc, map[int, list[value]]] fileLineAsts) {
+	for (m <- asts){
+		fileLineAsts[m.src] = getLocLineAst(m);
+	}
+	return fileLineAsts;
+}
+
+public map[int, list[value]] getLocLineAst(Declaration location) {
+	map[int, list[value]] astMap = (); 
+	visit (location) {
+        case Declaration d: astMap = addToMap(astMap, d);
+		case Statement d: astMap = addToMap(astMap, d);
+	 	case Expression d: astMap = addToMap(astMap, d);
+    }
+	return astMap;
+}
+
+public map[int, list[value]] addToMap(map[int, list[value]] astMap, node d){
+	int beginLine = getSrc(d).begin.line;
+	int endLine = getSrc(d).end.line;
+	if(beginLine in astMap)
+		astMap[beginLine] += getComparablesType1(d);
+	else astMap[beginLine] = getComparablesType1(d);
+	if(endLine in astMap)
+		astMap[endLine] += getComparablesType1(d);
+	else astMap[endLine] = getComparablesType1(d);
+	return astMap;
 }
 
 public map[int, set[loc]] calcDupAsts(list[node] bucket, map[int, set[loc]] duplicateSet){
@@ -74,32 +104,6 @@ public map[int, set[loc]] addToDupSet(map[int, set[loc]] duplicateSet, loc sourc
 	if(!found)
 		duplicateSet[lastItem + 1] = {sourceOne, sourceTwo};
 	return duplicateSet;
-}
-
-public map[int, list[node]] bucketMapGeneration(list[Declaration] asts) {
-	map[int, list[node]] bucketMap = ();
-	for (m <- asts){
-		bucketMap = getBucketAst(m, bucketMap);
-	}
-	return bucketMap;
-}
-
-public map[int, list[node]] getBucketAst(Declaration location, map[int, list[node]] bucketMap) {
-	bottom-up visit (location) {
-        case Declaration d: bucketMap = addToMap(bucketMap, arity(d), d);
-		case Statement d: bucketMap = addToMap(bucketMap, arity(d), d);
-	 	case Expression d: bucketMap = addToMap(bucketMap, arity(d), d);
-    }
-	return bucketMap;
-}
-
-public map[int, list[node]] addToMap(map[int, list[node]] bucketMap, int treeSize, node n){
-	if(getSourceLength(n) >= minAmountOfLines){
-		if(treeSize in bucketMap)
-			bucketMap[treeSize] += n;
-		else bucketMap[treeSize] = [n];
-	}
-	return bucketMap;
 }
 
 public int getSourceLength(node n){
@@ -163,7 +167,7 @@ list[value] getComparablesType1(node n){
 	    case \annotationType(str name, list[Declaration] body) : return [name] + listComparablesType1(body);
 	    case \annotationTypeMember(Type \type, str name) : return [\type] + [name];
 	    case \annotationTypeMember(Type \type, str name, Expression defaultBlock) : return [\type] + [name] + getComparablesType1(defaultBlock);
-	    case \parameter(Type \type, str name, int extraDimensions) : return [\type] + [name] + [extraDimensions];
+	    case \parameter(Type \type, str name, int extraDimensions) : return [\type.typ] + [name] + [extraDimensions];
 	    case \vararg(Type \type, str name) : return [\type] + [name];
 	   
     ////Exprs
@@ -237,136 +241,10 @@ list[value] getComparablesType1(node n){
 	   case \expressionStatement(Expression stmt) : return getComparablesType1(stmt);
 	   case \constructorCall(bool isSuper, Expression expr, list[Expression] arguments) : return [isSuper] + getComparablesType1(expr) + listComparablesType1(arguments);
 	   case \constructorCall(bool isSuper, list[Expression] arguments) : return [isSuper] + listComparablesType1(arguments);
+	   
+    //////Type
+    //   case arrayType(Type \type) : return [sss];
+    //   case simpleType(Expression name) : return getComparablesType1(name);
     }
     return [];
 }
-
-
-
-// --------------------- Functies die we miss nog gaan gebruiken ----------------------
-//public map[int, list[loc]] getDuplication(list[Declaration] asts) {
-//	map[int, list[loc]] hashDuplicates = ();
-//    map[int, map[int, list[value]]] bucketMap = bucketMapGeneration(asts);
-//    for(bucket <- bucketMap) {
-//    	int i = 0;
-//    	for(hashedAst <- bucketMap[bucket]){
-//    		//println(bucketMap[bucket][hashedAst]);
-//    		if(size(bucketMap[bucket][hashedAst]) > 1){
-//	    		for(ast <- bucketMap[bucket][hashedAst]){
-//	    			if(hashedAst in hashDuplicates)
-//						hashDuplicates[hashedAst] += getSrc(ast);
-//					else hashDuplicates[hashedAst] = [getSrc(ast)];
-//	    		}
-//    		}
-//    	}	
-//    }
-//    println(hashDuplicates);
-//    return hashDuplicates;
-//}
-
-
-//public map[int, map[int, list[value]]] bucketMapGeneration(list[Declaration] asts) {
-//	map[int, map[int, list[value]]] bucketMap = ();
-//	for (m <- asts)
-//		bucketMap = getBucketAst(m, bucketMap);
-//	return bucketMap;
-//}
-
-//bucketmap == [treeSize. [hash, ast]]
-//public map[int, map[int, list[value]]] getBucketAst(Declaration location, map[int, map[int, list[value]]] bucketMap) {
-//	bottom-up visit (location) {
-//        case Declaration d: {
-//        	int hashD = hash(d);
-//        	int treeSize = arity(d);
-//        	if(treeSize in bucketMap){
-//	        	if(hashD in bucketMap[treeSize])
-//	        		bucketMap[treeSize][hashD] += d;
-//	        	else bucketMap[treeSize][hashD] = [d];
-//        	} else bucketMap[treeSize] = (hashD : [d]);
-//		}
-//		case Statement d: {
-//        	int hashD = hash(d);
-//        	int treeSize = arity(d);
-//        	if(treeSize in bucketMap){
-//	        	if(hashD in bucketMap[treeSize])
-//	        		bucketMap[treeSize][hashD] += d;
-//	        	else bucketMap[treeSize][hashD] = [d];
-//        	} else bucketMap[treeSize] = (hashD : [d]);
-//		}
-//	 	case Expression d: {
-//        	int hashD = hash(d);
-//        	int treeSize = arity(d);
-//        	if(treeSize in bucketMap){
-//	        	if(hashD in bucketMap[treeSize])
-//	        		bucketMap[treeSize][hashD] += d;
-//	        	else bucketMap[treeSize][hashD] = [d];
-//        	} else bucketMap[treeSize] = (hashD : [d]);
-//		}
-//    }
-//	return bucketMap;
-//}
-
-//public map[value, int] getNodeSizes(node ast, map[value, int] nodeSizes){
-//	int treeSize = 1;
-//	println(ast);
-//	println(nodeSizes);
-//	println(getChildren(ast));
-//	for(lVals <- getChildren(ast)){
-//		if(\node := lVals 
-//		treeSize += nodeSizes[lVals]; 
-//	}
-//	nodeSizes[ast] = treeSize;
-//	return nodeSizes;
-//}
-
-//public int getNodeSizes(value ast, map[list[value], int] nodeSizes){
-//	int treeSize = 1;
-//	treeSize += nodeSizes[ast]; 
-//	return treeSize;
-//}
-
-//public int hash(node ast) {
-//	node cleanAst = cleanAst(ast);
-//	println(cleanAst);
-//	list[int] charRepresentation = chars(toString(ast));
-//	int hash = 7;
-//	for(int i <- charRepresentation) {
-//		if(i == 32)
-//			continue;
-//		hash += hash*31 + i;
-//	}
-//	return hash;
-//}
-
-//public node cleanAst(node ast) {
-//	node newAst;
-//	newAst = visit (ast) {
-//        case Statement (_,-_,src: {
-//			d.src = |unknown:///|;
-//		}
-//        case Declaration d: {
-//			d = unsetRec(d);
-//		}
-//        case Expression d: {
-//			d = unsetRec(d);
-//		}
-//	}
-//	return newAst;
-//}
-
-//public bool equalAst(node ast, node ast2) {
-//	if(typeOf(ast)!=typeOf(ast2)) return false;
-//	if(\variable := ast) return ast.name == ast2.name && ast.extraDimensions == ast2.extraDimensions;
-//}
-
-//public map[loc, map[int, list[value]]] convertSrc(map[loc, map[int, list[value]]] astMap){
-//	for (item <- astMap){
-//		for(tree <- astMap[item]){
-//			astMap[item[tree]] = astMap[item[tree]]{
-//				case node n: {
-//					n.src = |unknown:///|;
-//				}
-//			}
-//		}
-//	}
-//}
