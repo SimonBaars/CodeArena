@@ -233,5 +233,5 @@ tuple[int,list[value]] getComparables(node n, int t){
     //   case arrayType(Type \type) : return [sss];
     //   case simpleType(Expression name) : return getComparablesType1(name);
     }
-    return [];
+    return <99, []>;
 }
