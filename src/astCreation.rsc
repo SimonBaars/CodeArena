@@ -15,7 +15,6 @@ import lang::java::jdt::m3::AST;
 import util::Math;
 
 public list[list[loc]] getDuplication(list[Declaration] asts) {
-
 	map[int, set[loc]] duplicateSet = ();
     map[int, list[node]] bucketAsts = bucketMapGeneration(asts);
     for(bucket <- bucketAsts){
