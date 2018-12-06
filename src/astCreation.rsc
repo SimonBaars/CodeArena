@@ -14,9 +14,11 @@ import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 import util::Math;
 
+int minAmountOfLines = 6;
+
 public list[list[loc]] getDuplication(list[Declaration] asts) {
-	map[int, set[loc]] duplicateSet = ();
     map[int, list[node]] bucketAsts = bucketMapGeneration(asts);
+    map[int, set[loc]] duplicateSet = ();
     for(bucket <- bucketAsts){
     	duplicateSet = calcDupAsts(bucketAsts[bucket], duplicateSet);
     }
@@ -32,22 +34,15 @@ public list[list[loc]] dupSetToList(map[int, set[loc]] duplicateSet){
 	return duplicateList;
 }
 
-public map[int, set[loc]] calcDupAsts(list[node] bucket, map[int, set[loc]] duplicateSet ){
+public map[int, set[loc]] calcDupAsts(list[node] bucket, map[int, set[loc]] duplicateSet){
 	list[node] newBucket = bucket;
-	for(cntr <- bucket){
-		tuple[node nood, list[node] tailBucket] htBucket = headTail(newBucket);
-		for(tailNode <- htBucket.tailBucket){
-			try{
-				loc headSrc = getSrc(htBucket.nood);
-				loc tailSrc = getSrc(tailNode);
-				if(headSrc != tailSrc && ( headSrc.end.line - headSrc.begin.line > 5) && ( tailSrc.end.line - tailSrc.begin.line > 5)){
-					if(compareAsts(getComparablesType1(htBucket.nood), getComparablesType1(tailNode)))
-						duplicateSet = addToDupSet(duplicateSet, headSrc, tailSrc);
-				}
-			}
-			catch UnavailableInformation(): continue;
+	for(i <- [0..size(bucket)-1]){
+		loc headSrc = getSrc(bucket[i]);
+		for(j <- [i..size(bucket)]){
+			loc tailSrc = getSrc(bucket[j]);
+			if(headSrc != tailSrc && compareAsts(getComparablesType1(htBucket.nood), getComparablesType1(tailNode)))
+				duplicateSet = addToDupSet(duplicateSet, headSrc, tailSrc);
 		}
-		newBucket = htBucket.tailBucket;
 	}
 	return duplicateSet;
 }
@@ -92,26 +87,25 @@ public map[int, list[node]] bucketMapGeneration(list[Declaration] asts) {
 
 public map[int, list[node]] getBucketAst(Declaration location, map[int, list[node]] bucketMap) {
 	bottom-up visit (location) {
-        case Declaration d: {
-			treeSize = arity(d);
-			if(treeSize in bucketMap)
-				bucketMap[treeSize] += d;
-			else bucketMap[treeSize] = [d];
-		}
-		case Statement d: {
-			treeSize = arity(d);
-			if(treeSize in bucketMap)
-				bucketMap[treeSize] += d;
-			else bucketMap[treeSize] = [d];
-		}
-	 	case Expression d: {
-			treeSize = arity(d);
-			if(treeSize in bucketMap)
-				bucketMap[treeSize] += d;
-			else bucketMap[treeSize] = [d];
-		}
+        case Declaration d: addToMap(bucketMap, arity(d), d);
+		case Statement d: addToMap(bucketMap, arity(d), d);
+	 	case Expression d: addToMap(bucketMap, arity(d), d);
     }
 	return bucketMap;
+}
+
+public void addToMap(map[int, list[node]] bucketMap, int treeSize, node n){
+	if(treeSize in bucketMap && getSourceLength(n) >= minAmountOfLines)
+		bucketMap[treeSize] += d;
+	else bucketMap[treeSize] = [d];
+}
+
+public int getSourceLength(node n){
+	loc l = getSrc(n);
+	if(l == |unknown:///|){
+		return -1;
+	}
+	return l.end.line-l.begin.line;
 }
 
 public loc getSrc(value ast) {
