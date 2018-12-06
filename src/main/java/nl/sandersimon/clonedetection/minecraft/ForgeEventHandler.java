@@ -14,8 +14,7 @@ public class ForgeEventHandler {
 	boolean searchByTitle;
 	
 	@SubscribeEvent
-	public void livingSpawnEvent(WorldEvent.Load event)
-	{
+	public void livingSpawnEvent(WorldEvent.Load event){
 		CloneDetection.dialoge=0;
 	}
 		
