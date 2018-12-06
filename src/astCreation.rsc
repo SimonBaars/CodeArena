@@ -35,12 +35,11 @@ public list[list[loc]] dupSetToList(map[int, set[loc]] duplicateSet){
 }
 
 public map[int, set[loc]] calcDupAsts(list[node] bucket, map[int, set[loc]] duplicateSet){
-	list[node] newBucket = bucket;
 	for(i <- [0..size(bucket)-1]){
 		loc headSrc = getSrc(bucket[i]);
 		for(j <- [i..size(bucket)]){
 			loc tailSrc = getSrc(bucket[j]);
-			if(headSrc != tailSrc && compareAsts(getComparablesType1(htBucket.nood), getComparablesType1(tailNode)))
+			if(headSrc != tailSrc && compareAsts(getComparablesType1(bucket[i]), getComparablesType1(bucket[j])))
 				duplicateSet = addToDupSet(duplicateSet, headSrc, tailSrc);
 		}
 	}
@@ -87,17 +86,18 @@ public map[int, list[node]] bucketMapGeneration(list[Declaration] asts) {
 
 public map[int, list[node]] getBucketAst(Declaration location, map[int, list[node]] bucketMap) {
 	bottom-up visit (location) {
-        case Declaration d: addToMap(bucketMap, arity(d), d);
-		case Statement d: addToMap(bucketMap, arity(d), d);
-	 	case Expression d: addToMap(bucketMap, arity(d), d);
+        case Declaration d: bucketMap = addToMap(bucketMap, arity(d), d);
+		case Statement d: bucketMap = addToMap(bucketMap, arity(d), d);
+	 	case Expression d: bucketMap = addToMap(bucketMap, arity(d), d);
     }
 	return bucketMap;
 }
 
-public void addToMap(map[int, list[node]] bucketMap, int treeSize, node n){
+public map[int, list[node]] addToMap(map[int, list[node]] bucketMap, int treeSize, node n){
 	if(treeSize in bucketMap && getSourceLength(n) >= minAmountOfLines)
-		bucketMap[treeSize] += d;
-	else bucketMap[treeSize] = [d];
+		bucketMap[treeSize] += n;
+	else bucketMap[treeSize] = [n];
+	return bucketMap;
 }
 
 public int getSourceLength(node n){
