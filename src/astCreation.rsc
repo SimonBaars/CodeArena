@@ -13,7 +13,7 @@ import lang::java::jdt::m3::AST;
 import util::Math;
 
 int minAmountOfLines = 6;
-alias Monster = Monster;
+alias Monster = map[loc, map[int, list[tuple[int, list[value]]]]];
 
 public list[list[loc]] getDuplication(int t, list[Declaration] asts) {
     Monster fileLineAsts = fileLineMapGeneration(t, asts);
@@ -28,9 +28,9 @@ public map[int, list[loc]] calculateLocationsOfNodeTypes(Monster fileLineAsts){
 	for(location <- fileLineAsts){
 		map[int, list[tuple[int, list[value]]]] fileLines = fileLineAsts[location];
 		for(lineNumber <- fileLines){
-			list[tuple[int, list[value]]] stuffOnLine = fileLines[lineNumber];
+			list[tuple[int code, list[value]]] stuffOnLine = fileLines[lineNumber];
 			int stuffSize = size(stuffOnLine);
-			int firstElementCode = head(stuffOnLine);
+			int firstElementCode = head(stuffOnLine).code;
 			loc l = |unknown:///|;
 			l.uri = location.uri;
 			l.begin.line = lineNumber;
@@ -65,8 +65,8 @@ public map[int, list[tuple[int, list[value]]]] getLocLineAst(int t, Declaration 
 	return astMap;
 }
 
-public map[int, list[tuple[int, list[value]]]] addToASTMap(map[int, list[value]] astMap, node n){
-	loc location = getSrc(d);
+public map[int, list[tuple[int, list[value]]]] addToASTMap(int t, map[int, list[value]] astMap, node n){
+	loc location = getSrc(n);
 	tuple[int, list[value]] values = getComparables(n, t);
 	astMap = addToMap(astMap, location.begin.line, n);
 	if(beginLine!=endLine)
@@ -153,7 +153,7 @@ public loc getSrc(value ast) {
 tuple[int,list[value]] getComparables(node n, int t){
 	if(t == 3){
 		switch(n){
-			case Statement d: return -1;
+			case Statement d: return <98, []>;
 		}
 	}
     switch(n){
