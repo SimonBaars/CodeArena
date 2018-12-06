@@ -66,7 +66,7 @@ public map[int, set[loc]] getDupSet(map[loc, map[int, list[value]]] fileLineAsts
 		loc headSrc = getSrc(bucket[i]);
 		for(j <- [i..size(bucket)]){
 			loc tailSrc = getSrc(bucket[j]);
-			if(headSrc != tailSrc && compareAsts(getComparablesType1(bucket[i]), getComparablesType1(bucket[j])))
+			if(headSrc != tailSrc && compareAsts(getComparables(bucket[i]), getComparables(bucket[j])))
 				duplicateSet = addToDupSet(duplicateSet, headSrc, tailSrc);
 		}
 	}
@@ -122,24 +122,24 @@ public bool compareAsts(list[value] ast1, list[value] ast2){
 	return false;
 }
 
-list[value] listComparablesType1(list[node] n){
+/*list[value] listComparablesType1(list[node] n){
 	list[value] noodList = [];
 	for(nood <- n)
 		noodList += getComparablesType1(nood);
 	return noodList;
-}
+}*/
 
 //(type == 1 ? [name] : [])
-list[value] getComparablesType1(node n){
+tuple[int,list[value]] getComparables(node n, int t){
     switch(n){
     //Decls
-        case \compilationUnit(list[Declaration] imports, list[Declaration] types) : return listComparablesType1(imports)+listComparablesType1(types);
-	    case \compilationUnit(Declaration package, list[Declaration] imports, list[Declaration] types) : return listComparablesType1(imports)+listComparablesType1(types);
-	    case \enum(str name, list[Type] implements, list[Declaration] constants, list[Declaration] body) : return  [name]+listComparablesType1(constants)+listComparablesType1(body);
-	    case \enumConstant(str name, list[Expression] arguments, Declaration class) : return [name] + listComparablesType1(arguments) +getComparablesType1(class);
-	    case \enumConstant(str name, list[Expression] arguments) : return [name] + listComparablesType1(arguments);
-	    case \class(str name, list[Type] extends, list[Type] implements, list[Declaration] body) : return [name] + listComparablesType1(extends) + listComparablesType1(implements) + listComparablesType1(body);
-	    case \class(list[Declaration] body) : return listComparablesType1(body);
+        case \compilationUnit(list[Declaration] imports, list[Declaration] types) : return <1,[]>;
+	    case \compilationUnit(Declaration package, list[Declaration] imports, list[Declaration] types) : return <2,[]>;
+	    case \enum(str name, list[Type] implements, list[Declaration] constants, list[Declaration] body) : return <3,t==1?[name]:[]>;
+	    case \enumConstant(str name, list[Expression] arguments, Declaration class) : return [4] + (t == 1 ? [name] : []);
+	    case \enumConstant(str name, list[Expression] arguments) : return [5] + (t == 1 ? [name] : []);
+	    case \class(str name, list[Type] extends, list[Type] implements, list[Declaration] body) : return [6] + (t == 1 ? [name] : []);
+	    case \class(list[Declaration] body) : return [7];
 	    case \interface(str name, list[Type] extends, list[Type] implements, list[Declaration] body) : return [name] + listComparablesType1(extends) + listComparablesType1(implements) + listComparablesType1(body);
 	    case \field(Type \type, list[Expression] fragments) : return [\type] + listComparablesType1(fragments);
 	    case \initializer(Statement initializerBody) : return getComparablesType1(initializerBody);
