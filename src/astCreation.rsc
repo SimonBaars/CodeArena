@@ -19,10 +19,7 @@ int minAmountOfLines = 6;
 public list[list[loc]] getDuplication(list[Declaration] asts) {
     map[loc, map[int, list[value]]] fileLineAsts = ();
     fileLineAsts = fileLineMapGeneration(asts, fileLineAsts);
-    map[int, set[loc]] duplicateSet = ();
-    //for(bucket <- bucketAsts){
-    //	duplicateSet = calcDupAsts(bucketAsts[bucket], duplicateSet);
-    //}
+    map[int, set[loc]] duplicateSet = getDupSet(fileLineAsts);
 	list[list[loc]] duplicateList = dupSetToList(duplicateSet);
     iprint(fileLineAsts);
     return duplicateList;
@@ -64,7 +61,7 @@ public map[int, list[value]] addToMap(map[int, list[value]] astMap, node d){
 	return astMap;
 }
 
-public map[int, set[loc]] calcDupAsts(list[node] bucket, map[int, set[loc]] duplicateSet){
+public map[int, set[loc]] getDupSet(map[loc, map[int, list[value]]] fileLineAsts){
 	for(i <- [0..size(bucket)-1]){
 		loc headSrc = getSrc(bucket[i]);
 		for(j <- [i..size(bucket)]){
@@ -74,37 +71,27 @@ public map[int, set[loc]] calcDupAsts(list[node] bucket, map[int, set[loc]] dupl
 		}
 	}
 	return duplicateSet;
-}
+}	
 
-	//try{
-	//	visit(dec){
-	//		case \method(_,str name,_,_,_): methodNames += name;
-	//		case \method(_,str name,_,_): methodNames += name;
-	//	}
-	//	return methodNames;
-	//}
-	//catch IO(message):
-	
-
-public map[int, set[loc]] addToDupSet(map[int, set[loc]] duplicateSet, loc sourceOne, loc sourceTwo) {
-	bool found = false;
-	int lastItem = 0;
-	for(locSet <- duplicateSet){
-		if(sourceOne in duplicateSet[locSet]){
-			found = true;
-			duplicateSet[locSet] += sourceTwo;
-		}
-		if(sourceTwo in duplicateSet[locSet]){
-			found = true;
-			duplicateSet[locSet] += sourceOne;
-		}
-		if(locSet > lastItem)
-			lastItem = locSet;
-	}
-	if(!found)
-		duplicateSet[lastItem + 1] = {sourceOne, sourceTwo};
-	return duplicateSet;
-}
+//public map[int, set[loc]] addToDupSet(map[int, set[loc]] duplicateSet, loc sourceOne, loc sourceTwo) {
+//	bool found = false;
+//	int lastItem = 0;
+//	for(locSet <- duplicateSet){
+//		if(sourceOne in duplicateSet[locSet]){
+//			found = true;
+//			duplicateSet[locSet] += sourceTwo;
+//		}
+//		if(sourceTwo in duplicateSet[locSet]){
+//			found = true;
+//			duplicateSet[locSet] += sourceOne;
+//		}
+//		if(locSet > lastItem)
+//			lastItem = locSet;
+//	}
+//	if(!found)
+//		duplicateSet[lastItem + 1] = {sourceOne, sourceTwo};
+//	return duplicateSet;
+//}
 
 public int getSourceLength(node n){
 	loc l = getSrc(n);
