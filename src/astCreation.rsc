@@ -94,9 +94,11 @@ public map[int, list[node]] getBucketAst(Declaration location, map[int, list[nod
 }
 
 public map[int, list[node]] addToMap(map[int, list[node]] bucketMap, int treeSize, node n){
-	if(treeSize in bucketMap && getSourceLength(n) >= minAmountOfLines)
-		bucketMap[treeSize] += n;
-	else bucketMap[treeSize] = [n];
+	if(getSourceLength(n) >= minAmountOfLines){
+		if(treeSize in bucketMap)
+			bucketMap[treeSize] += n;
+		else bucketMap[treeSize] = [n];
+	}
 	return bucketMap;
 }
 
@@ -105,20 +107,14 @@ public int getSourceLength(node n){
 	if(l == |unknown:///|){
 		return -1;
 	}
-	return l.end.line-l.begin.line;
+	return l.end.line-l.begin.line+1;
 }
 
 public loc getSrc(value ast) {
 	switch (ast) {
-        case Declaration d: {
-			return d.src;
-		}
-		case Statement d: {
-			return d.src;
-		}
-	 	case Expression d: {
-			return d.src;
-		}
+        case Declaration d: return d.src;
+		case Statement d: return d.src;
+	 	case Expression d: return d.src;
 	}
 }
 

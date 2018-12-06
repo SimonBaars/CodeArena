@@ -10,7 +10,7 @@ import lang::java::jdt::m3::AST;
 import astCreation;
 
 void main() {
-	M3 model = createM3FromEclipseProject(|project://testJavaProject|);
+	M3 model = createM3FromEclipseProject(|project://ProjectWithDuplicateBetweenFiles|);
 	map[loc, Declaration] astsMap = ();
 	list[Declaration] asts = [];
 	for (m <- model.containment, m[0].scheme == "java+compilationUnit"){
