@@ -22,7 +22,7 @@ public list[list[loc]] getDuplication(list[Declaration] asts) {
     	duplicateSet = calcDupAsts(bucketAsts[bucket], duplicateSet);
     }
 	list[list[loc]] duplicateList = dupSetToList(duplicateSet);
-	iprint(duplicateList);
+    iprint(duplicateList);
     return duplicateList;
 }
 
@@ -36,13 +36,15 @@ public list[list[loc]] dupSetToList(map[int, set[loc]] duplicateSet){
 public map[int, set[loc]] calcDupAsts(list[node] bucket, map[int, set[loc]] duplicateSet ){
 	list[node] newBucket = bucket;
 	for(cntr <- bucket){
-		println(cntr);
 		tuple[node nood, list[node] tailBucket] htBucket = headTail(newBucket);
 		for(tailNode <- htBucket.tailBucket){
-			try{ if(getSrc(htBucket.nood) != getSrc(tailNode) && ( getSrc(htBucket.nood).end.line - getSrc(htBucket.nood).begin.line > 1) && ( getSrc(tailNode).end.line - getSrc(tailNode).begin.line > 1)){
+			try{
+				loc headSrc = getSrc(htBucket.nood);
+				loc tailSrc = getSrc(tailNode);
+				if(headSrc != tailSrc && ( headSrc.end.line - headSrc.begin.line > 5) && ( tailSrc.end.line - tailSrc.begin.line > 5)){
 					if(compareAsts(getComparablesType1(htBucket.nood), getComparablesType1(tailNode)))
-						duplicateSet = addToDupSet(duplicateSet, getSrc(htBucket.nood), getSrc(tailNode));
-				 }
+						duplicateSet = addToDupSet(duplicateSet, headSrc, tailSrc);
+				}
 			}
 			catch UnavailableInformation(): continue;
 		}
@@ -84,7 +86,6 @@ public map[int, set[loc]] addToDupSet(map[int, set[loc]] duplicateSet, loc sourc
 public map[int, list[node]] bucketMapGeneration(list[Declaration] asts) {
 	map[int, list[node]] bucketMap = ();
 	for (m <- asts){
-		println("AA");
 		bucketMap = getBucketAst(m, bucketMap);
 	}
 	return bucketMap;
