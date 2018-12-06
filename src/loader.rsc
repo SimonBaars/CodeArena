@@ -9,8 +9,8 @@ import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 import astCreation;
 
-void main() {
-	M3 model = createM3FromEclipseProject(|project://testJavaProject|);
+void calculateCodeDuplication(loc location){
+	M3 model = createM3FromDirectory(location);
 	map[loc, Declaration] astsMap = ();
 	list[Declaration] asts = [];
 	for (m <- model.containment, m[0].scheme == "java+compilationUnit"){
@@ -19,5 +19,8 @@ void main() {
 		asts += ast;
 	}
 	
-	getDuplication(asts);
+	result = getDuplication(asts);
+	str buffer = toString(result);
+	println(size(buffer));
+	println(buffer);
 }

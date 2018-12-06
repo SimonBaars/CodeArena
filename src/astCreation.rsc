@@ -1,5 +1,3 @@
-// map(loc, map(line, list[comparableastvalues]);
-
 module astCreation
 
 import IO;
@@ -15,89 +13,110 @@ import lang::java::jdt::m3::AST;
 import util::Math;
 
 int minAmountOfLines = 6;
+alias Monster = Monster;
 
-public list[list[loc]] getDuplication(list[Declaration] asts) {
-    map[loc, map[int, list[value]]] fileLineAsts = ();
-    fileLineAsts = fileLineMapGeneration(asts, fileLineAsts);
-    map[int, set[loc]] duplicateSet = getDupSet(fileLineAsts);
-	list[list[loc]] duplicateList = dupSetToList(duplicateSet);
-    iprint(fileLineAsts);
+public list[list[loc]] getDuplication(int t, list[Declaration] asts) {
+    Monster fileLineAsts = fileLineMapGeneration(t, asts);
+    map[int, list[loc]] locsAtInt = calculateLocationsOfNodeTypes(fileLineAsts);
+    list[list[loc]] duplicateList = getDupList(fileLineAsts, locsAtInt);
+    iprint(duplicateList);
     return duplicateList;
 }
 
-public list[list[loc]] dupSetToList(map[int, set[loc]] duplicateSet){
-	list[list[loc]] duplicateList = [];
-	for(dupSet <- duplicateSet)
-		duplicateList += [toList(duplicateSet[dupSet])];
-	return duplicateList;
+public map[int, list[loc]] calculateLocationsOfNodeTypes(Monster fileLineAsts){
+	map[int, list[loc]] registry = ();
+	for(location <- fileLineAsts){
+		map[int, list[tuple[int, list[value]]]] fileLines = fileLineAsts[location];
+		for(lineNumber <- fileLines){
+			list[tuple[int, list[value]]] stuffOnLine = fileLines[lineNumber];
+			int stuffSize = size(stuffOnLine);
+			int firstElementCode = head(stuffOnLine);
+			loc l = |unknown:///|;
+			l.uri = location.uri;
+			l.begin.line = lineNumber;
+			l.end.line = lineNumber;
+			registry = addTo(registry, (stuffSize * 100) + firstElementCode, l);
+		}
+	}
+	return registry;
 }
 
-public map[loc, map[int, list[value]]] fileLineMapGeneration(list[Declaration] asts, map[loc, map[int, list[value]]] fileLineAsts) {
-	for (m <- asts){
-		fileLineAsts[m.src] = getLocLineAst(m);
-	}
+public map[int, list[loc]] addTo(map[int, list[loc]] numberMap, int codeNumber, loc l){
+	if(codeNumber in numberMap)
+		numberMap[codeNumber] += l;
+	else numberMap[codeNumber] = [l];
+	return numberMap;
+}
+
+public Monster fileLineMapGeneration(int t, list[Declaration] asts) {
+	map[loc, map[int, list[value]]] fileLineAsts = ();
+	for (m <- asts)
+		fileLineAsts[m.src] = getLocLineAst(t, m);
 	return fileLineAsts;
 }
 
-public map[int, list[value]] getLocLineAst(Declaration location) {
-	map[int, list[value]] astMap = (); 
-	visit (location) {
-        case Declaration d: astMap = addToMap(astMap, d);
-		case Statement d: astMap = addToMap(astMap, d);
-	 	case Expression d: astMap = addToMap(astMap, d);
+public map[int, list[tuple[int, list[value]]]] getLocLineAst(int t, Declaration location) {
+	map[int, list[tuple[int, list[value]]]] astMap = (); 
+	top-down visit (location) {
+        case Declaration d: astMap = addToASTMap(t, astMap, d);
+		case Statement s: astMap = addToASTMap(t, astMap, s);
+	 	case Expression e: astMap = addToASTMap(t, astMap, e);
     }
 	return astMap;
 }
 
-public map[int, list[value]] addToMap(map[int, list[value]] astMap, node d){
-	int beginLine = getSrc(d).begin.line;
-	int endLine = getSrc(d).end.line;
-	if(beginLine in astMap)
-		astMap[beginLine] += getComparablesType1(d);
-	else astMap[beginLine] = getComparablesType1(d);
-	if(endLine in astMap)
-		astMap[endLine] += getComparablesType1(d);
-	else astMap[endLine] = getComparablesType1(d);
+public map[int, list[tuple[int, list[value]]]] addToASTMap(map[int, list[value]] astMap, node n){
+	loc location = getSrc(d);
+	tuple[int, list[value]] values = getComparables(n, t);
+	astMap = addToMap(astMap, location.begin.line, n);
+	if(beginLine!=endLine)
+		astMap = addToMap(astMap, location.end.line, n);
 	return astMap;
 }
 
-public map[int, set[loc]] getDupSet(map[loc, map[int, list[value]]] fileLineAsts){
-	for(i <- [0..size(bucket)-1]){
-		loc headSrc = getSrc(bucket[i]);
-		for(j <- [i..size(bucket)]){
-			loc tailSrc = getSrc(bucket[j]);
-			if(headSrc != tailSrc && compareAsts(getComparables(bucket[i]), getComparables(bucket[j])))
-				duplicateSet = addToDupSet(duplicateSet, headSrc, tailSrc);
+public map[int, list[tuple[int, list[value]]]] addToMap(map[int, list[tuple[int, list[value]]]] astMap, int line, tuple[int, list[value]] n){
+	if(line in astMap)
+		astMap[line] += n;
+	else astMap[line] = [n];
+	return astMap;
+}
+
+public list[list[loc]] getDupList(Monster fileLineAsts, map[int, list[loc]] locsAtInt){
+	list[list[loc]] dupList = []; 
+	for(location <- fileLineAsts){
+		list[loc] potentialDuplicates = [];
+		map[int, list[tuple[int, list[value]]]] fileLines = fileLineAsts[location];
+		for(lineNumber <- fileLines){
+			list[tuple[int, list[value]]] stuffOnLine = fileLines[lineNumber];
+			int stuffSize = size(stuffOnLine);
+			int firstElementCode = head(stuffOnLine);
+			list[loc] dupLines = locsAtInt[(stuffSize * 100) + firstElementCode];
+			list[loc] newPotentialDuplicates = [];
+			for(potDupNew <- dupLines){ //abc
+				bool partOfChain = false;
+				for(potDupOld <- potentialDuplicates){//xyz
+					if(potDupNew.uri == potDupOld.uri && potDupOld.end.line+1 == potDupNew.begin.line){
+						potDupNew.begin.line = potDupOld.begin.line;
+						newPotentialDuplicates += dupLine;
+						partOfChain = true;
+					}
+				}
+				if(!partOfChain)
+					newPotentialDuplicates+=potDupNew;
+			}
+			list[loc] dupGroup = [x <- potentialDuplicates, potDupNew.end.line-potDupNew.begin.line+1>=6];
+			potentialDuplicates = newPotentialDuplicates;
+			
+			
 		}
 	}
-	return duplicateSet;
+	return dupList;
 }	
-
-//public map[int, set[loc]] addToDupSet(map[int, set[loc]] duplicateSet, loc sourceOne, loc sourceTwo) {
-//	bool found = false;
-//	int lastItem = 0;
-//	for(locSet <- duplicateSet){
-//		if(sourceOne in duplicateSet[locSet]){
-//			found = true;
-//			duplicateSet[locSet] += sourceTwo;
-//		}
-//		if(sourceTwo in duplicateSet[locSet]){
-//			found = true;
-//			duplicateSet[locSet] += sourceOne;
-//		}
-//		if(locSet > lastItem)
-//			lastItem = locSet;
-//	}
-//	if(!found)
-//		duplicateSet[lastItem + 1] = {sourceOne, sourceTwo};
-//	return duplicateSet;
-//}
 
 public int getSourceLength(node n){
 	loc l = getSrc(n);
-	if(l == |unknown:///|){
+	if(l == |unknown:///|)
 		return -1;
-	}
 	return l.end.line-l.begin.line+1;
 }
 
@@ -109,28 +128,12 @@ public loc getSrc(value ast) {
 	}
 }
 
-public bool compareAsts(list[value] ast1, list[value] ast2){
-	//println("DIT ZIJN DE TWEE ASTS");
-	//iprint(ast1);
-	//iprint(ast2);
-	//println();
-	if(ast1 == ast2){
-		//iprint(ast1);
-		//iprint(ast2);
-		//println("DE TWEE ASTS ZIJN GELIJK");
-		return true;}
-	return false;
-}
-
-/*list[value] listComparablesType1(list[node] n){
-	list[value] noodList = [];
-	for(nood <- n)
-		noodList += getComparablesType1(nood);
-	return noodList;
-}*/
-
-//(type == 1 ? [name] : [])
 tuple[int,list[value]] getComparables(node n, int t){
+	if(t == 3){
+		switch(n){
+			case Statement d: return -1;
+		}
+	}
     switch(n){
     //Decls
         case \compilationUnit(list[Declaration] imports, list[Declaration] types) : return <1,[]>;
@@ -228,10 +231,6 @@ tuple[int,list[value]] getComparables(node n, int t){
 	   case \expressionStatement(Expression stmt) : return <89, []>;
 	   case \constructorCall(bool isSuper, Expression expr, list[Expression] arguments) : return <90, [isSuper]>;
 	   case \constructorCall(bool isSuper, list[Expression] arguments) : return <91, [isSuper]>;
-	   
-    //////Type
-    //   case arrayType(Type \type) : return [sss];
-    //   case simpleType(Expression name) : return getComparablesType1(name);
     }
     return <99, []>;
 }
