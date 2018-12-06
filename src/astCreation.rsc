@@ -26,9 +26,9 @@ public list[list[loc]] getDuplication(int t, list[Declaration] asts) {
 public map[int, list[loc]] calculateLocationsOfNodeTypes(Monster fileLineAsts){
 	map[int, list[loc]] registry = ();
 	for(location <- fileLineAsts){
-		map[int, list[tuple[int code, list[value]]]] fileLines = fileLineAsts[location];
+		map[int, list[tuple[int code, list[value] valueList]]] fileLines = fileLineAsts[location];
 		for(lineNumber <- fileLines){
-			list[tuple[int code, list[value]]] stuffOnLine = fileLines[lineNumber];
+			list[tuple[int code, list[value] valueList]] stuffOnLine = fileLines[lineNumber];
 			int stuffSize = size(stuffOnLine);
 			int firstElementCode = head(stuffOnLine).code;
 			loc l = |unknown:///|;
@@ -67,10 +67,12 @@ public map[int, list[tuple[int, list[value]]]] getLocLineAst(int t, Declaration 
 
 public map[int, list[tuple[int, list[value]]]] addToASTMap(int t, map[int, list[tuple[int, list[value]]]] astMap, node n){
 	loc location = getSrc(n);
-	tuple[int, list[value]] values = getComparables(n, t);
-	astMap = addToMap(astMap, location.begin.line, values);
-	if(location.begin.line!=location.end.line)
-		astMap = addToMap(astMap, location.end.line, values);
+	if(location!=|unknown:///|){
+		tuple[int, list[value]] values = getComparables(n, t);
+		astMap = addToMap(astMap, location.begin.line, values);
+		if(location.begin.line!=location.end.line)
+			astMap = addToMap(astMap, location.end.line, values);
+	}
 	return astMap;
 }
 
@@ -85,9 +87,9 @@ public list[list[loc]] getDupList(Monster fileLineAsts, map[int, list[loc]] locs
 	list[list[loc]] dupList = []; 
 	for(location <- fileLineAsts){
 		list[loc] potentialDuplicates = [];
-		map[int, list[tuple[int, list[value]]]] fileLines = fileLineAsts[location];
+		map[int, list[tuple[int code, list[value] valueList]]] fileLines = fileLineAsts[location];
 		for(lineNumber <- fileLines){
-			list[tuple[int code, list[value]]] stuffOnLine = fileLines[lineNumber];
+			list[tuple[int code, list[value] valueList]] stuffOnLine = fileLines[lineNumber];
 			int stuffSize = size(stuffOnLine);
 			int firstElementCode = head(stuffOnLine).code;
 			list[loc] dupLines = locsAtInt[(stuffSize * 100) + firstElementCode];
