@@ -31,10 +31,10 @@ public map[int, list[loc]] calculateLocationsOfNodeTypes(Monster fileLineAsts){
 			list[tuple[int code, list[value] valueList]] stuffOnLine = fileLines[lineNumber];
 			int stuffSize = size(stuffOnLine);
 			int firstElementCode = head(stuffOnLine).code;
-			loc l = |unknown:///|;
+			loc l = |unknown:///|(0,0,<0,0>,<0,0>);
 			l.uri = location.uri;
-			l.begin.line = lineNumber;
 			l.end.line = lineNumber;
+			l.begin.line = lineNumber;
 			registry = addTo(registry, (stuffSize * 100) + firstElementCode, l);
 		}
 	}
@@ -99,7 +99,7 @@ public list[list[loc]] getDupList(Monster fileLineAsts, map[int, list[loc]] locs
 				for(potDupOld <- potentialDuplicates){//xyz
 					if(potDupNew.uri == potDupOld.uri && potDupOld.end.line+1 == potDupNew.begin.line){
 						potDupNew.begin.line = potDupOld.begin.line;
-						newPotentialDuplicates += dupLine;
+						newPotentialDuplicates += potDupNew;
 						partOfChain = true;
 					}
 				}
@@ -114,9 +114,9 @@ public list[list[loc]] getDupList(Monster fileLineAsts, map[int, list[loc]] locs
 }
 
 public list[list[loc]] populateBeforeRemoval(list[list[loc]] dupList, list[loc] potentialDuplicates, list[loc] newPotentialDuplicates, loc location, int lineNumber){
-	list[loc] dupGroup = [x <- potentialDuplicates, getSourceLength(x)>=6];
+	//list[loc] dupGroup = [x <- potentialDuplicates, getSourceLength(x)>=6];
 	map[int, list[loc]] finalizedDups = ();
-	for(dup <- dupGroup){
+	for(dup <- potentialDuplicates, getSourceLength(dup)>=6){
 		bool sameIn = false;
 		for(pot <- newPotentialDuplicates){
 			if(pot.uri == dup.uri && pot.begin.line == dup.begin.line){
@@ -128,8 +128,8 @@ public list[list[loc]] populateBeforeRemoval(list[list[loc]] dupList, list[loc] 
 			if(srcLength in finalizedDups){
 				finalizedDups[srcLength]+=dup;
 			} else {
-				location.begin.line = lineNumber-srcLength-1;
 				location.end.line = lineNumber-1;
+				location.begin.line = lineNumber-srcLength-1;
 				finalizedDups[srcLength]=[location, dup];
 			}
 		}
