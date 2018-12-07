@@ -25,9 +25,9 @@ public list[list[loc]] getDuplication(int t, list[Declaration] asts) {
 public map[int, list[loc]] calculateLocationsOfNodeTypes(LineRegistry fileLineAsts){
 	map[int, list[loc]] registry = ();
 	for(location <- fileLineAsts){
-		map[int, list[tuple[int code, list[value] valueList]]] fileLines = fileLineAsts[location];
+		map[int, list[value]] fileLines = fileLineAsts[location];
 		for(lineNumber <- fileLines){
-			list[tuple[int code, list[value] valueList]] stuffOnLine = fileLines[lineNumber];
+			list[value] stuffOnLine = fileLines[lineNumber];
 			loc l = |unknown:///|(0,0,<0,0>,<0,0>);
 			l.uri = location.uri;
 			l.end.line = lineNumber;
@@ -40,16 +40,13 @@ public map[int, list[loc]] calculateLocationsOfNodeTypes(LineRegistry fileLineAs
 	return registry;
 }
 
-public int makeHashOfLine(list[tuple[int code, list[value] valueList]] lines){
+public int makeHashOfLine(list[value] lines){
 	int hash = 7;
-	for(line <- lines) {
-		hash += hash*31 + line.code;
-		for(lineVal <- line.valueList) {
-			switch(lineVal){
-				case int n: hash += hash*31 + n;
-				case str n: hash = doHash(hash, n);
-				case node n: hash = doHash(hash, toString(n));
-			}
+	for(lineVal <- lines) {
+		switch(lineVal){
+			case int n: hash += hash*31 + n;
+			case str n: hash = doHash(hash, n);
+			case node n: hash = doHash(hash, toString(n));
 		}
 	}
 	return hash;
@@ -75,8 +72,8 @@ public LineRegistry fileLineMapGeneration(int t, list[Declaration] asts) {
 	return fileLineAsts;
 }
 
-public map[int, list[tuple[int, list[value]]]] getLocLineAst(int t, Declaration location) {
-	map[int, list[tuple[int, list[value]]]] astMap = (); 
+public map[int, list[value]] getLocLineAst(int t, Declaration location) {
+	map[int, list[value]] astMap = (); 
 	top-down visit (location) {
         case Declaration d: astMap = addToASTMap(t, astMap, d);
 		case Statement s: astMap = addToASTMap(t, astMap, s);
@@ -85,12 +82,12 @@ public map[int, list[tuple[int, list[value]]]] getLocLineAst(int t, Declaration 
 	return astMap;
 }
 
-public map[int, list[tuple[int, list[value]]]] addToASTMap(int t, map[int, list[tuple[int, list[value]]]] astMap, node n){
+public map[int, list[value]] addToASTMap(int t, map[int, list[value]] astMap, node n){
 	loc location = getSrc(n);
 	//print("VISIT ");
 	//println(location);
 	if(location!=|unknown:///|){
-		tuple[int, list[value]] values = getComparables(n, t);
+		list[value] values = getComparables(n, t);
 		astMap = addToMap(astMap, location.begin.line, values);
 		if(location.begin.line!=location.end.line)
 			astMap = addToMap(astMap, location.end.line, values);
@@ -98,10 +95,10 @@ public map[int, list[tuple[int, list[value]]]] addToASTMap(int t, map[int, list[
 	return astMap;
 }
 
-public map[int, list[tuple[int, list[value]]]] addToMap(map[int, list[tuple[int, list[value]]]] astMap, int line, tuple[int, list[value]] n){
+public map[int, list[value]] addToMap(map[int, list[value]] astMap, int line, list[value] n){
 	if(line in astMap)
 		astMap[line] += n;
-	else astMap[line] = [n];
+	else astMap[line] = n;
 	return astMap;
 }
 
@@ -109,10 +106,10 @@ public list[list[loc]] getDupList(LineRegistry fileLineAsts, map[int, list[loc]]
 	list[list[loc]] dupList = []; 
 	for(location <- fileLineAsts){
 		list[tuple[int lines, loc duplicate]] potentialDuplicates = [];
-		map[int, list[tuple[int code, list[value] valueList]]] fileLines = fileLineAsts[location];
+		map[int, list[value]] fileLines = fileLineAsts[location];
 		list[int] sortedDomain = sort(domain(fileLines));
 		for(lineNumber <- sortedDomain){
-			list[tuple[int code, list[value] valueList]] stuffOnLine = fileLines[lineNumber];
+			list[value] stuffOnLine = fileLines[lineNumber];
 			list[loc] dupLines = locsAtInt[makeHashOfLine(stuffOnLine)];
 			list[tuple[int lines, loc duplicate]] newPotentialDuplicates = [];
 			for(potDupNew <- dupLines){ //abc
@@ -208,16 +205,16 @@ list[value] getComparables(node n, int t){
 	    case \method(Type \return, str name, list[Declaration] parameters, list[Expression] exceptions, Statement impl) : return [11] + extractType(\return) + (t == 1 ? [name] : []); 
 	    case \method(Type \return, str name, list[Declaration] parameters, list[Expression] exceptions) : return [12] + extractType(\return) + (t == 1 ? [name] : []);
 	    case \constructor(str name, list[Declaration] parameters, list[Expression] exceptions, Statement impl) : return [13] + (t == 1 ? [name] : []);
-	    case \import(str name) : return [14} + (t == 1 ? [name] : []);
-	    case \package(str name) : return [15} + (t == 1 ? [name] : []);
-	    case \package(Declaration parentPackage, str name) : return [16} + (t == 1 ? [name] : []);
+	    case \import(str name) : return [14] + (t == 1 ? [name] : []);
+	    case \package(str name) : return [15] + (t == 1 ? [name] : []);
+	    case \package(Declaration parentPackage, str name) : return [16] + (t == 1 ? [name] : []);
 	    case \variables(Type \type, list[Expression] \fragments) : return [17] + extractType(\type);
-	    case \typeParameter(str name, list[Type] extendsList) : return [18} + (t == 1 ? [name] : []);
-	    case \annotationType(str name, list[Declaration] body) : return [19} + (t == 1 ? [name] : []);
-	    case \annotationTypeMember(Type \type, str name) : return [20 + extractType(\type) + (t == 1 ? [name] : []);
+	    case \typeParameter(str name, list[Type] extendsList) : return [18] + (t == 1 ? [name] : []);
+	    case \annotationType(str name, list[Declaration] body) : return [19] + (t == 1 ? [name] : []);
+	    case \annotationTypeMember(Type \type, str name) : return [20] + extractType(\type) + (t == 1 ? [name] : []);
 	    case \annotationTypeMember(Type \type, str name, Expression defaultBlock) : return [21] + extractType(\type) + (t == 1 ? [name] : []);
 	    case \parameter(Type \type, str name, int extraDimensions) : return [22, extraDimensions] + extractType(\type) + (t == 1 ? [name] : []);
-	    case \vararg(Type \type, str name) : return [23 + extractType(\type) + (t == 1 ? [name] : []);
+	    case \vararg(Type \type, str name) : return [23] + extractType(\type) + (t == 1 ? [name] : []);
 	   
     ////Exprs
 	   case \arrayAccess(Expression array, Expression index) : return [24];
@@ -274,7 +271,7 @@ list[value] getComparables(node n, int t){
 	   case \for(list[Expression] initializers, list[Expression] updaters, Statement body) : return [73];
 	   case \if(Expression condition, Statement thenBranch) : return [74];
 	   case \if(Expression condition, Statement thenBranch, Statement elseBranch) : return [75];
-	   case \label(str name, Statement body) : [76} + (t == 1 ? [name] : []);
+	   case \label(str name, Statement body) : [76] + (t == 1 ? [name] : []);
 	   case \return(Expression expression) : return [77];
 	   case \return() : return [78];
 	   case \switch(Expression expression, list[Statement] statements) : return [79];
