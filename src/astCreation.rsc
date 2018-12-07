@@ -129,9 +129,7 @@ public list[list[loc]] populateBeforeRemoval(list[list[loc]] dupList, list[tuple
 			finalizedDups[potDup.lines]=[location, potDup.duplicate];
 		}
 	}
-	for(finDup <- finalizedDups){
-		dupList+=finalizedDups[finDup];
-	}
+	dupList += [[*finalizedDups[finDup]] | finDup <- finalizedDups];
 	return dupList;
 }
 
