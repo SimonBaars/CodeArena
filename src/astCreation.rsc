@@ -36,10 +36,17 @@ public map[int, list[loc]] calculateLocationsOfNodeTypes(Monster fileLineAsts){
 			l.uri = location.uri;
 			l.end.line = lineNumber;
 			l.begin.line = lineNumber;
-			registry = registry[(stuffSize * 100) + firstElementCode]?[] += l;
+			registry = addTo(registry, (stuffSize * 100) + firstElementCode, l);
 		}
 	}
 	return registry;
+}
+
+public map[int, list[loc]] addTo(map[int, list[loc]] numberMap, int codeNumber, loc l){
+	if(codeNumber in numberMap)
+		numberMap[codeNumber] += l;
+	else numberMap[codeNumber] = [l];
+	return numberMap;
 }
 
 public Monster fileLineMapGeneration(int t, list[Declaration] asts) {
@@ -65,10 +72,17 @@ public map[int, list[tuple[int, list[value]]]] addToASTMap(int t, map[int, list[
 	println(location);
 	if(location!=|unknown:///|){
 		tuple[int, list[value]] values = getComparables(n, t);
-		astMap[location.begin.line]?[] += [values];
+		astMap = addToMap(astMap, location.begin.line, values);
 		if(location.begin.line!=location.end.line)
-			astMap[location.end.line]?[] += [values];
+			astMap = addToMap(astMap, location.end.line, values);
 	}
+	return astMap;
+}
+
+public map[int, list[tuple[int, list[value]]]] addToMap(map[int, list[tuple[int, list[value]]]] astMap, int line, tuple[int, list[value]] n){
+	if(line in astMap)
+		astMap[line] += n;
+	else astMap[line] = [n];
 	return astMap;
 }
 
@@ -103,30 +117,28 @@ public list[list[loc]] getDupList(Monster fileLineAsts, map[int, list[loc]] locs
 }
 
 public list[list[loc]] populateBeforeRemoval(list[list[loc]] dupList, list[loc] potentialDuplicates, list[loc] newPotentialDuplicates, loc location, int lineNumber){
-	//list[loc] dupGroup = [x <- potentialDuplicates, getSourceLength(x)>=6];
 	map[int, list[loc]] finalizedDups = ();
-	for(dup <- potentialDuplicates, getSourceLength(dup)>=6){
-		bool sameIn = false;
-		for(pot <- newPotentialDuplicates){
-			if(pot.uri == dup.uri && pot.begin.line == dup.begin.line){
-				sameIn = true;
-			}
-		}
-		if(!sameIn){
-			int srcLength = getSourceLength(dup);
-			if(srcLength in finalizedDups){
-				finalizedDups[srcLength]+=dup;
-			} else {
-				location.end.line = lineNumber-1;
-				location.begin.line = lineNumber-srcLength-1;
-				finalizedDups[srcLength]=[location, dup];
-			}
+	for(dup <- potentialDuplicates, getSourceLength(dup)>=6, willBeRemoved(dup, newPotentialDuplicates)){
+		int srcLength = getSourceLength(dup);
+		if(srcLength in finalizedDups){
+			finalizedDups[srcLength]+=[dup];
+		} else {
+			location.end.line = lineNumber-1;
+			location.begin.line = lineNumber-srcLength-1;
+			finalizedDups[srcLength]=[location, dup];
 		}
 	}
 	for(dup <- finalizedDups){
-		dupList+=finalizedDups[dup]; //Here we have the information of how many lines each dup is... Do we want to extract?
+		dupList+=finalizedDups[dup];
 	}
 	return dupList;
+}
+
+public bool willBeRemoved(loc dup, list[loc] newPotentialDuplicates){
+	for(pot <- newPotentialDuplicates)
+		if(pot.uri == dup.uri && pot.begin.line == dup.begin.line)
+			return false;
+	return true;
 }
 
 public int getSourceLength(loc l){
