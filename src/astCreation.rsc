@@ -17,7 +17,6 @@ alias Monster = map[loc, map[int, list[tuple[int, list[value]]]]];
 
 public list[list[loc]] getDuplication(int t, list[Declaration] asts) {
     Monster fileLineAsts = fileLineMapGeneration(t, asts);
-    iprintln(fileLineAsts);
     map[int, list[loc]] locsAtInt = calculateLocationsOfNodeTypes(fileLineAsts);
     list[list[loc]] duplicateList = getDupList(fileLineAsts, locsAtInt);
     iprint(duplicateList);
@@ -30,16 +29,35 @@ public map[int, list[loc]] calculateLocationsOfNodeTypes(Monster fileLineAsts){
 		map[int, list[tuple[int code, list[value] valueList]]] fileLines = fileLineAsts[location];
 		for(lineNumber <- fileLines){
 			list[tuple[int code, list[value] valueList]] stuffOnLine = fileLines[lineNumber];
-			int stuffSize = size(stuffOnLine);
-			int firstElementCode = head(stuffOnLine).code;
 			loc l = |unknown:///|(0,0,<0,0>,<0,0>);
 			l.uri = location.uri;
 			l.end.line = lineNumber;
 			l.begin.line = lineNumber;
-			registry = addTo(registry, (stuffSize * 100) + firstElementCode, l);
+			registry = addTo(registry, makeHashOfLine(stuffOnLine), l);
 		}
 	}
 	return registry;
+}
+
+public int makeHashOfLine(list[tuple[int code, list[value] valueList]] lines){
+	int hash = 7;
+	for(line <- lines) {
+		hash += hash*31 + line.code;
+		for(lineVal <- line.valueList) {
+			switch(lineVal){
+				case int n: hash += hash*31 + n;
+				case str n: hash = doHash(hash, n);
+				case node n: hash = doHash(hash, toString(n));
+			}
+		}
+	}
+	return hash;
+}
+
+public int doHash(int hash, str string){
+	for(int j <- [0 .. size(string)])
+		hash += hash*31 + charAt(string, j);
+	return hash;
 }
 
 public map[int, list[loc]] addTo(map[int, list[loc]] numberMap, int codeNumber, loc l){
@@ -94,9 +112,7 @@ public list[list[loc]] getDupList(Monster fileLineAsts, map[int, list[loc]] locs
 		list[int] sortedDomain = sort(domain(fileLines));
 		for(lineNumber <- sortedDomain){
 			list[tuple[int code, list[value] valueList]] stuffOnLine = fileLines[lineNumber];
-			int stuffSize = size(stuffOnLine);
-			int firstElementCode = head(stuffOnLine).code;
-			list[loc] dupLines = locsAtInt[(stuffSize * 100) + firstElementCode];
+			list[loc] dupLines = locsAtInt[makeHashOfLine(stuffOnLine)];
 			list[tuple[int lines, loc duplicate]] newPotentialDuplicates = [];
 			for(potDupNew <- dupLines){ //abc
 				bool partOfChain = false;
@@ -122,11 +138,15 @@ public list[list[loc]] populateBeforeRemoval(list[list[loc]] dupList, list[tuple
 	for(potDup <- potentialDuplicates, potDup.lines>=6, isLast || willBeRemoved(potDup.duplicate, newPotentialDuplicates)){
 		if(potDup.lines in finalizedDups){
 			finalizedDups[potDup.lines]+=[potDup.duplicate];
+			print("SECOND ADD");
+			println(finalizedDups[potDup.lines]);
 		} else {
 			int indexOfPrev = indexOf(sortedDomain, lineNumber)-1;
 			location.end.line = sortedDomain[indexOfPrev];
 			location.begin.line = sortedDomain[indexOfPrev-potDup.lines];
 			finalizedDups[potDup.lines]=[location, potDup.duplicate];
+			print("FIRST ADD");
+			println(finalizedDups[potDup.lines]);
 		}
 	}
 	dupList += [[*finalizedDups[finDup]] | finDup <- finalizedDups];
