@@ -176,46 +176,46 @@ list[value] getComparables(node n, int t){
 	    case \class(str name, list[Type] extends, list[Type] implements, list[Declaration] body) : return [6] + (t == 1 ? [name] : []);
 	    case \class(list[Declaration] body) : return [7];
 	    case \interface(str name, list[Type] extends, list[Type] implements, list[Declaration] body) : return [8] + (t == 1 ? [name] : []);
-	    case \field(Type \type, list[Expression] fragments) : return [9] + extractType(\type);
+	    case \field(Type \type, list[Expression] fragments) : return [9] + extractType(\type, t);
 	    case \initializer(Statement initializerBody) : return [10];
-	    case \method(Type \return, str name, list[Declaration] parameters, list[Expression] exceptions, Statement impl) : return [11] + extractType(\return) + (t == 1 ? [name] : []); 
-	    case \method(Type \return, str name, list[Declaration] parameters, list[Expression] exceptions) : return [12] + extractType(\return) + (t == 1 ? [name] : []);
+	    case \method(Type \return, str name, list[Declaration] parameters, list[Expression] exceptions, Statement impl) : return [11] + extractType(\return, t) + (t == 1 ? [name] : []); 
+	    case \method(Type \return, str name, list[Declaration] parameters, list[Expression] exceptions) : return [12] + extractType(\return, t) + (t == 1 ? [name] : []);
 	    case \constructor(str name, list[Declaration] parameters, list[Expression] exceptions, Statement impl) : return [13] + (t == 1 ? [name] : []);
 	    case \import(str name) : return [14] + (t == 1 ? [name] : []);
 	    case \package(str name) : return [15] + (t == 1 ? [name] : []);
 	    case \package(Declaration parentPackage, str name) : return [16] + (t == 1 ? [name] : []);
-	    case \variables(Type \type, list[Expression] \fragments) : return [17] + extractType(\type);
+	    case \variables(Type \type, list[Expression] \fragments) : return [17] + extractType(\type, t);
 	    case \typeParameter(str name, list[Type] extendsList) : return [18] + (t == 1 ? [name] : []);
 	    case \annotationType(str name, list[Declaration] body) : return [19] + (t == 1 ? [name] : []);
-	    case \annotationTypeMember(Type \type, str name) : return [20] + extractType(\type) + (t == 1 ? [name] : []);
-	    case \annotationTypeMember(Type \type, str name, Expression defaultBlock) : return [21] + extractType(\type) + (t == 1 ? [name] : []);
-	    case \parameter(Type \type, str name, int extraDimensions) : return [22, extraDimensions] + extractType(\type) + (t == 1 ? [name] : []);
-	    case \vararg(Type \type, str name) : return [23] + extractType(\type) + (t == 1 ? [name] : []);
+	    case \annotationTypeMember(Type \type, str name) : return [20] + extractType(\type, t) + (t == 1 ? [name] : []);
+	    case \annotationTypeMember(Type \type, str name, Expression defaultBlock) : return [21] + extractType(\type, t) + (t == 1 ? [name] : []);
+	    case \parameter(Type \type, str name, int extraDimensions) : return [22, extraDimensions] + extractType(\type, t) + (t == 1 ? [name] : []);
+	    case \vararg(Type \type, str name) : return [23] + extractType(\type, t) + (t == 1 ? [name] : []);
 	   
     ////Exprs
 	   case \arrayAccess(Expression array, Expression index) : return [24];
-	   case \newArray(Type \type, list[Expression] dimensions, Expression init) : return [25] + extractType(\type);
-	   case \newArray(Type \type, list[Expression] dimensions) : return [26] + extractType(\type);
+	   case \newArray(Type \type, list[Expression] dimensions, Expression init) : return [25] + extractType(\type, t);
+	   case \newArray(Type \type, list[Expression] dimensions) : return [26] + extractType(\type, t);
 	   case \arrayInitializer(list[Expression] elements) : return [27];
 	   case \assignment(Expression lhs, str operator, Expression rhs) : return [28, operator];
-	   case \cast(Type \type, Expression expression) : return [29] + extractType(\type);
+	   case \cast(Type \type, Expression expression) : return [29] + extractType(\type, t);
 	   case \characterLiteral(str charValue) : return [30, charValue];
-	   case \newObject(Expression expr, Type \type, list[Expression] args, Declaration class) : return [31] + extractType(\type);
- 	   case \newObject(Expression expr, Type \type, list[Expression] args) : return [32] + extractType(\type);
-	   case \newObject(Type \type, list[Expression] args, Declaration class) : return [33] + extractType(\type);
-	   case \newObject(Type \type, list[Expression] args) : return [34] + extractType(\type);
+	   case \newObject(Expression expr, Type \type, list[Expression] args, Declaration class) : return [31] + extractType(\type, t);
+ 	   case \newObject(Expression expr, Type \type, list[Expression] args) : return [32] + extractType(\type, t);
+	   case \newObject(Type \type, list[Expression] args, Declaration class) : return [33] + extractType(\type, t);
+	   case \newObject(Type \type, list[Expression] args) : return [34] + extractType(\type, t);
 	   case \qualifiedName(Expression qualifier, Expression expression) : return [35];
 	   case \conditional(Expression expression, Expression thenBranch, Expression elseBranch) : return [36];
 	   case \fieldAccess(bool isSuper, Expression expression, str name) : return [37, isSuper] + (t == 1 ? [name] : []);
 	   case \fieldAccess(bool isSuper, str name) : return [38, isSuper] + (t == 1 ? [name] : []);
-	   case \instanceof(Expression leftSide, Type rightSide) : return [39] + extractType(rightSide);
+	   case \instanceof(Expression leftSide, Type rightSide) : return [39] + extractType(rightSide, t);
 	   case \methodCall(bool isSuper, str name, list[Expression] arguments) : return [40, isSuper] + (t == 1 ? [name] : []);
 	   case \methodCall(bool isSuper, Expression receiver, str name, list[Expression] arguments) : return [41, isSuper] + (t == 1 ? [name] : []);
 	   //case \null() : return [42];
 	   case \number(str numberValue) : return [43, numberValue];
 	   case \booleanLiteral(bool boolValue) : return  [44, boolValue];
 	   case \stringLiteral(str stringValue) : return [45, stringValue];
-	   case \type(Type \type) : return [46] + extractType(\type);
+	   case \type(Type \type) : return [46] + extractType(\type, t);
 	   case \variable(str name, int extraDimensions) : return [47, extraDimensions] + (t == 1 ? [name] : []);
 	   case \variable(str name, int extraDimensions, Expression \initializer) : return [48, extraDimensions] + (t == 1 ? [name] : []);
 	   case \bracket(Expression expression) : return [49];
@@ -267,12 +267,12 @@ list[value] getComparables(node n, int t){
     return [0];
 }
 
-public list[value] extractType(Type t){
+public list[value] extractType(Type t, int ty){
 	switch(t){
-		case arrayType(Type \type): return [109] + extractType(\type);
-		case parameterizedType(Type \type): return [108] + extractType(\type);
+		case arrayType(Type \type): return [109] + extractType(\type, ty);
+		case parameterizedType(Type \type): return [108] + extractType(\type, ty);
     	// case qualifiedType(Type qualifier, Expression simpleName) return [107] + extractType(qualifier);
-    	case simpleType(Expression name): return [106] + getComparables(name);
+    	case simpleType(Expression name): return [106] + getComparables(name, ty);
     	// case unionType(list[Type] types): return [105] + [extractType(ty), ty <- types];
     	case wildcard(): return [104];
     	// case upperbound(Type \type) return [103] + extractType(\type);
