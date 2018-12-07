@@ -160,30 +160,6 @@ public loc getSrc(value ast) {
 	}
 }
 
-public list[value] extractType(Type t){
-	switch(t){
-		case arrayType(Type \type): return [109] + extractType(\type);
-		case parameterizedType(Type \type): return [108] + extractType(\type);
-    	case qualifiedType(Type qualifier, Expression simpleName) return [107] + extractType(qualifier);
-    	case simpleType(Expression name): return [106] + getComparables(name);
-    	case unionType(list[Type] types): return [105] + [extractType(ty), ty <- types];
-    	case wildcard(): return [104];
-    	case upperbound(Type \type) return [103] + extractType(\type);
-    	case lowerbound(Type \type) return [102] + extractType(\type);
-    	case \int(): return [101];
-   		case short(): return [100];
-    	case long(): return [99];
-    	case float(): return [98];
-    	case double(): return [97];
-    	case char(): return [96];
-    	case string(): return [95];
-    	case byte(): return [94];
-    	case \void(): return [93];
-    	case \boolean(): return [92];
-	}
-	return [42]; // The answer to life, the universe and everything
-}
-
 list[value] getComparables(node n, int t){
 	if(t == 3){
 		switch(n){
@@ -289,4 +265,28 @@ list[value] getComparables(node n, int t){
 	   case \constructorCall(bool isSuper, list[Expression] arguments) : return [91, isSuper];
     }
     return [0];
+}
+
+public list[value] extractType(Type t){
+	switch(t){
+		case arrayType(Type \type): return [109] + extractType(\type);
+		case parameterizedType(Type \type): return [108] + extractType(\type);
+    	// case qualifiedType(Type qualifier, Expression simpleName) return [107] + extractType(qualifier);
+    	case simpleType(Expression name): return [106] + getComparables(name);
+    	// case unionType(list[Type] types): return [105] + [extractType(ty), ty <- types];
+    	case wildcard(): return [104];
+    	// case upperbound(Type \type) return [103] + extractType(\type);
+    	// case lowerbound(Type \type) return [102] + extractType(\type);
+    	case \int(): return [101];
+   		case short(): return [100];
+    	case long(): return [99];
+    	case float(): return [98];
+    	case double(): return [97];
+    	case char(): return [96];
+    	case string(): return [95];
+    	case byte(): return [94];
+    	case \void(): return [93];
+    	case \boolean(): return [92];
+	}
+	return [42]; // The answer to life, the universe and everything
 }
