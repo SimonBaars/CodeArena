@@ -19,7 +19,6 @@ public list[list[loc]] getDuplication(int t, list[Declaration] asts) {
     Monster fileLineAsts = fileLineMapGeneration(t, asts);
     map[int, list[loc]] locsAtInt = calculateLocationsOfNodeTypes(fileLineAsts);
     list[list[loc]] duplicateList = getDupList(fileLineAsts, locsAtInt);
-    iprint(duplicateList);
     return duplicateList;
 }
 
@@ -136,7 +135,7 @@ public list[list[loc]] getDupList(Monster fileLineAsts, map[int, list[loc]] locs
 public list[list[loc]] populateBeforeRemoval(list[list[loc]] dupList, list[tuple[int lines, loc duplicate]] potentialDuplicates, list[tuple[int lines, loc duplicate]] newPotentialDuplicates, list[int] sortedDomain, loc location, int lineNumber, bool isLast){
 	map[int, list[loc]] finalizedDups = ();
 	for(potDup <- potentialDuplicates, potDup.lines>=6, isLast || willBeRemoved(potDup.duplicate, newPotentialDuplicates)){
-		addTo(finalizedDups, potDup.lines, potDup.duplicate);
+		finalizedDups = addTo(finalizedDups, potDup.lines, potDup.duplicate);
 	}
 	dupList += [[*finalizedDups[finDup]] | finDup <- finalizedDups, size(finalizedDups[finDup])>=2, any(loc aDup <- finalizedDups[finDup], willBeRemoved(aDup, newPotentialDuplicates))];
 	return dupList;
