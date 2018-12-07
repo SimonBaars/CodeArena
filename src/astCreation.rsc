@@ -86,8 +86,8 @@ public map[int, list[tuple[int, list[value]]]] getLocLineAst(int t, Declaration 
 
 public map[int, list[tuple[int, list[value]]]] addToASTMap(int t, map[int, list[tuple[int, list[value]]]] astMap, node n){
 	loc location = getSrc(n);
-	print("VISIT ");
-	println(location);
+	//print("VISIT ");
+	//println(location);
 	if(location!=|unknown:///|){
 		tuple[int, list[value]] values = getComparables(n, t);
 		astMap = addToMap(astMap, location.begin.line, values);
@@ -136,20 +136,9 @@ public list[list[loc]] getDupList(Monster fileLineAsts, map[int, list[loc]] locs
 public list[list[loc]] populateBeforeRemoval(list[list[loc]] dupList, list[tuple[int lines, loc duplicate]] potentialDuplicates, list[tuple[int lines, loc duplicate]] newPotentialDuplicates, list[int] sortedDomain, loc location, int lineNumber, bool isLast){
 	map[int, list[loc]] finalizedDups = ();
 	for(potDup <- potentialDuplicates, potDup.lines>=6, isLast || willBeRemoved(potDup.duplicate, newPotentialDuplicates)){
-		if(potDup.lines in finalizedDups){
-			finalizedDups[potDup.lines]+=[potDup.duplicate];
-			print("SECOND ADD");
-			println(finalizedDups[potDup.lines]);
-		} else {
-			int indexOfPrev = indexOf(sortedDomain, lineNumber)-1;
-			location.end.line = sortedDomain[indexOfPrev];
-			location.begin.line = sortedDomain[indexOfPrev-potDup.lines];
-			finalizedDups[potDup.lines]=[location, potDup.duplicate];
-			print("FIRST ADD");
-			println(finalizedDups[potDup.lines]);
-		}
+		addTo(finalizedDups, potDup.lines, potDup.duplicate);
 	}
-	dupList += [[*finalizedDups[finDup]] | finDup <- finalizedDups];
+	dupList += [[*finalizedDups[finDup]] | finDup <- finalizedDups, size(finalizedDups[finDup])>=2, any(loc aDup <- finalizedDups[finDup], willBeRemoved(aDup, newPotentialDuplicates))];
 	return dupList;
 }
 
