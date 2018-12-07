@@ -23,5 +23,5 @@ void calculateCodeDuplication(loc location){
 	list[list[loc]] result = getDuplication(1, asts);
 	str buffer = toString(result);
 	println(size(buffer));
-	iprintln(buffer); //iprintln for testing purposes! Should be println() in production!
+	iprintln(result); //iprintln(result) for testing purposes! Should be println(buffer) in production!
 }

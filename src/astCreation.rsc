@@ -32,6 +32,8 @@ public map[int, list[loc]] calculateLocationsOfNodeTypes(Monster fileLineAsts){
 			l.uri = location.uri;
 			l.end.line = lineNumber;
 			l.begin.line = lineNumber;
+			println("Line <lineNumber> of file <indexOf(sort(domain(fileLineAsts)), location)> has hash <makeHashOfLine(stuffOnLine)>");
+			println(stuffOnLine);
 			registry = addTo(registry, makeHashOfLine(stuffOnLine), l);
 		}
 	}
@@ -138,6 +140,7 @@ public list[list[loc]] populateBeforeRemoval(list[list[loc]] dupList, list[tuple
 		finalizedDups = addTo(finalizedDups, potDup.lines, potDup.duplicate);
 	}
 	dupList += [[*finalizedDups[finDup]] | finDup <- finalizedDups, size(finalizedDups[finDup])>=2, any(loc aDup <- finalizedDups[finDup], willBeRemoved(aDup, newPotentialDuplicates))];
+	println(size(dupList));
 	return dupList;
 }
 
@@ -160,7 +163,31 @@ public loc getSrc(value ast) {
 	}
 }
 
-tuple[int,list[value]] getComparables(node n, int t){
+public list[value] extractType(Type t){
+	switch(t){
+		case arrayType(Type \type): return extractType(\type);
+		case parameterizedType(Type \type): return extractType(\type);
+    	case qualifiedType(Type qualifier, Expression simpleName) return extractType(qualifier);
+    	case simpleType(Expression name): return getComparables(name);
+    	case unionType(list[Type] types): return [extractType(ty), ty <- types];
+    	case wildcard(): return [102];
+    	case upperbound(Type \type) return extractType(\type);
+    	case lowerbound(Type \type) return extractType(\type);
+    	case \int(): return [101];
+   		case short(): return [100];
+    	case long(): return [99];
+    	case float(): return [98];
+    	case double(): return [97];
+    	case char(): return [96];
+    	case string(): return [95];
+    	case byte(): return [94];
+    	case \void(): return [93];
+    	case \boolean(): return [92];
+	}
+	return "";
+}
+
+list[value] getComparables(node n, int t){
 	if(t == 3){
 		switch(n){
 			case Statement d: return <98, []>;
@@ -168,14 +195,14 @@ tuple[int,list[value]] getComparables(node n, int t){
 	}
     switch(n){
     //Decls
-        case \compilationUnit(list[Declaration] imports, list[Declaration] types) : return <1,[]>;
-	    case \compilationUnit(Declaration package, list[Declaration] imports, list[Declaration] types) : return <2,[]>;
-	    case \enum(str name, list[Type] implements, list[Declaration] constants, list[Declaration] body) : return <3,t==1?[name]:[]>;
-	    case \enumConstant(str name, list[Expression] arguments, Declaration class) : return <4, (t == 1 ? [name] : [])>;
-	    case \enumConstant(str name, list[Expression] arguments) : return <5, (t == 1 ? [name] : [])>;
-	    case \class(str name, list[Type] extends, list[Type] implements, list[Declaration] body) : return <6, (t == 1 ? [name] : [])>;
-	    case \class(list[Declaration] body) : return <7, []>;
-	    case \interface(str name, list[Type] extends, list[Type] implements, list[Declaration] body) : return <8, (t == 1 ? [name] : [])>;
+        case \compilationUnit(list[Declaration] imports, list[Declaration] types) : return [1];
+	    case \compilationUnit(Declaration package, list[Declaration] imports, list[Declaration] types) : return [2];
+	    case \enum(str name, list[Type] implements, list[Declaration] constants, list[Declaration] body) : return [3] + (t==1?[name]:[]);
+	    case \enumConstant(str name, list[Expression] arguments, Declaration class) : return [4] + (t == 1 ? [name] : []);
+	    case \enumConstant(str name, list[Expression] arguments) : return [5] + (t == 1 ? [name] : []);
+	    case \class(str name, list[Type] extends, list[Type] implements, list[Declaration] body) : return [6] + (t == 1 ? [name] : []);
+	    case \class(list[Declaration] body) : return [7];
+	    case \interface(str name, list[Type] extends, list[Type] implements, list[Declaration] body) : return [8] + (t == 1 ? [name] : []);
 	    case \field(Type \type, list[Expression] fragments) : return <9, [\type]>;
 	    case \initializer(Statement initializerBody) : return <10, []>;
 	    case \method(Type \return, str name, list[Declaration] parameters, list[Expression] exceptions, Statement impl) : return <11, [\return] + (t == 1 ? [name] : [])>; 
@@ -264,5 +291,5 @@ tuple[int,list[value]] getComparables(node n, int t){
 	   case \constructorCall(bool isSuper, Expression expr, list[Expression] arguments) : return <90, [isSuper]>;
 	   case \constructorCall(bool isSuper, list[Expression] arguments) : return <91, [isSuper]>;
     }
-    return <99, []>;
+    return <127, []>;
 }
