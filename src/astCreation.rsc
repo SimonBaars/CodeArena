@@ -17,6 +17,7 @@ alias Monster = map[loc, map[int, list[tuple[int, list[value]]]]];
 
 public list[list[loc]] getDuplication(int t, list[Declaration] asts) {
     Monster fileLineAsts = fileLineMapGeneration(t, asts);
+    iprintln(fileLineAsts);
     map[int, list[loc]] locsAtInt = calculateLocationsOfNodeTypes(fileLineAsts);
     list[list[loc]] duplicateList = getDupList(fileLineAsts, locsAtInt);
     iprint(duplicateList);
@@ -35,17 +36,10 @@ public map[int, list[loc]] calculateLocationsOfNodeTypes(Monster fileLineAsts){
 			l.uri = location.uri;
 			l.end.line = lineNumber;
 			l.begin.line = lineNumber;
-			registry = addTo(registry, (stuffSize * 100) + firstElementCode, l);
+			registry = registry[(stuffSize * 100) + firstElementCode]?[] += l;
 		}
 	}
 	return registry;
-}
-
-public map[int, list[loc]] addTo(map[int, list[loc]] numberMap, int codeNumber, loc l){
-	if(codeNumber in numberMap)
-		numberMap[codeNumber] += l;
-	else numberMap[codeNumber] = [l];
-	return numberMap;
 }
 
 public Monster fileLineMapGeneration(int t, list[Declaration] asts) {
@@ -67,19 +61,14 @@ public map[int, list[tuple[int, list[value]]]] getLocLineAst(int t, Declaration 
 
 public map[int, list[tuple[int, list[value]]]] addToASTMap(int t, map[int, list[tuple[int, list[value]]]] astMap, node n){
 	loc location = getSrc(n);
+	print("VISIT ");
+	println(location);
 	if(location!=|unknown:///|){
 		tuple[int, list[value]] values = getComparables(n, t);
-		astMap = addToMap(astMap, location.begin.line, values);
+		astMap[location.begin.line]?[] += [values];
 		if(location.begin.line!=location.end.line)
-			astMap = addToMap(astMap, location.end.line, values);
+			astMap[location.end.line]?[] += [values];
 	}
-	return astMap;
-}
-
-public map[int, list[tuple[int, list[value]]]] addToMap(map[int, list[tuple[int, list[value]]]] astMap, int line, tuple[int, list[value]] n){
-	if(line in astMap)
-		astMap[line] += n;
-	else astMap[line] = [n];
 	return astMap;
 }
 
@@ -88,7 +77,7 @@ public list[list[loc]] getDupList(Monster fileLineAsts, map[int, list[loc]] locs
 	for(location <- fileLineAsts){
 		list[loc] potentialDuplicates = [];
 		map[int, list[tuple[int code, list[value] valueList]]] fileLines = fileLineAsts[location];
-		for(lineNumber <- fileLines){
+		for(lineNumber <- sort(domain(fileLines))){
 			list[tuple[int code, list[value] valueList]] stuffOnLine = fileLines[lineNumber];
 			int stuffSize = size(stuffOnLine);
 			int firstElementCode = head(stuffOnLine).code;
@@ -124,7 +113,7 @@ public list[list[loc]] populateBeforeRemoval(list[list[loc]] dupList, list[loc] 
 			}
 		}
 		if(!sameIn){
-			int srcLength = getSourceLength(x);
+			int srcLength = getSourceLength(dup);
 			if(srcLength in finalizedDups){
 				finalizedDups[srcLength]+=dup;
 			} else {
