@@ -11,6 +11,7 @@ import lang::java::m3::AST;
 import util::Math;
 
 int minAmountOfLines = 6;
+//Class met map van regelnummers, en wat er op elke line staat
 alias LineRegistry = map[loc, map[int, list[value]]];
 
 public list[list[loc]] getDuplication(int t, list[Declaration] asts) {
@@ -19,6 +20,7 @@ public list[list[loc]] getDuplication(int t, list[Declaration] asts) {
     map[int, list[loc]] locsAtInt = nodeRegs.locRegistries;
     map[str, list[int]] sortedDomains = nodeRegs.sortedDomains;
     list[list[loc]] duplicateList = getDupList(fileLineAsts, locsAtInt, sortedDomains);
+    iprintln(duplicateList);
     return duplicateList;
 }
 
@@ -114,7 +116,7 @@ public list[list[loc]] getDupList(LineRegistry fileLineAsts, map[int, list[loc]]
 		for(int lineNumber <- sortedDomain){
 			list[value] stuffOnLine = fileLines[lineNumber];
 			list[loc] dupLines = locsAtInt[makeHashOfLine(stuffOnLine)];
-			//println("line <lineNumber>, file <location>, stuffFound = <dupLines>");
+			//iprintln("line <lineNumber>, file <location>, stuffFound = <dupLines>");
 			list[tuple[int lines, loc duplicate]] newPotentialDuplicates = [];
 			for(loc potDupNew <- dupLines){
 				if(potDupNew.uri notin parsedURIs && (potDupNew.uri != location.uri || potDupNew.begin.line > lineNumber)){
@@ -145,6 +147,7 @@ public list[list[loc]] populateBeforeRemoval(list[list[loc]] dupList, list[tuple
 	map[int, list[loc]] finalizedDups = ();
 	for(tuple[int lines, loc duplicate] potDup <- potentialDuplicates, potDup.lines>=6){
 		if(potDup.lines notin finalizedDups){
+			//** OPMERKING VAN SANDER: ik weet niet zeker of de -1 hieronder bij begin.line ook moet (zorgt iig voor issue 17)
 			location.begin.line = sortedDomain[indexOf(sortedDomain, lineNumber)-potDup.lines-1];
 			location.end.line = sortedDomain[indexOf(sortedDomain, lineNumber)-1];
 			finalizedDups[potDup.lines] = [location];
@@ -153,6 +156,15 @@ public list[list[loc]] populateBeforeRemoval(list[list[loc]] dupList, list[tuple
 		finalizedDups[potDup.lines] += potDup.duplicate;
 		//finalizedDups = addTo(finalizedDups, potDup.lines, potDup.duplicate);
 	}
+	//iprintln(finalizedDups);
+	//** OPMERKING VAN SANDER: regel hieronder zorgt idd nog dat er veel misgaat:
+		//** als we alleen: dupList += [[*finalizedDups[finDup]] | finDup <- finalizedDups]; laten staan solven we issue 15 lijkt het
+		
+		//** issue 15 komt ook niet meer voor als we true en false van willBeRemoved omdraaien
+		
+		//** Als willBeRemoved altijd false returned dan vinden we alleen nog de juiste duplicatie bij mijn test, zonder alle kortere varianten van dezelfde duplicatie
+		
+		//** kortom ik snap niet genoeg van die regel om het preciese probleem te vinden maar het gaat iig beetje mis
 	dupList += [[*finalizedDups[finDup]] | finDup <- finalizedDups, isLast || any(loc aDup <- finalizedDups[finDup], willBeRemoved(aDup, newPotentialDuplicates))];
 	//println("size = <size(dupList)>, potDups = <potentialDuplicates>");
 	return dupList;
