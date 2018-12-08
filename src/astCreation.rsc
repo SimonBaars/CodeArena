@@ -143,13 +143,15 @@ public list[list[loc]] getDupList(LineRegistry fileLineAsts, map[int, list[loc]]
 
 public list[list[loc]] populateBeforeRemoval(list[list[loc]] dupList, list[tuple[int lines, loc duplicate]] potentialDuplicates, list[tuple[int lines, loc duplicate]] newPotentialDuplicates, list[int] sortedDomain, loc location, int lineNumber, bool isLast){
 	map[int, list[loc]] finalizedDups = ();
-	for(potDup <- potentialDuplicates, potDup.lines>=6){
-		finalizedDups = addTo(finalizedDups, potDup.lines, potDup.duplicate);
-		if(size(finalizedDups[potDup.lines]) == 1){
+	for(tuple[int lines, loc duplicate] potDup <- potentialDuplicates, potDup.lines>=6){
+		if(potDup.lines notin finalizedDups){
 			location.begin.line = sortedDomain[indexOf(sortedDomain, lineNumber)-potDup.lines-1];
 			location.end.line = sortedDomain[indexOf(sortedDomain, lineNumber)-1];
-			addTo(finalizedDups, potDup.lines, location);
+			finalizedDups[potDup.lines] = [location];
+			//addTo(finalizedDups, potDup.lines, location);
 		}
+		finalizedDups[potDup.lines] += potDup.duplicate;
+		//finalizedDups = addTo(finalizedDups, potDup.lines, potDup.duplicate);
 	}
 	dupList += [[*finalizedDups[finDup]] | finDup <- finalizedDups, isLast || any(loc aDup <- finalizedDups[finDup], willBeRemoved(aDup, newPotentialDuplicates))];
 	//println("size = <size(dupList)>, potDups = <potentialDuplicates>");
