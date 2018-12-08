@@ -17,13 +17,16 @@ alias LineRegistry = map[loc, map[int, list[value]]];
 
 public list[list[loc]] getDuplication(int t, list[Declaration] asts) {
     LineRegistry fileLineAsts = fileLineMapGeneration(t, asts);
-    map[int, list[loc]] locsAtInt = calculateLocationsOfNodeTypes(fileLineAsts);
-    list[list[loc]] duplicateList = getDupList(fileLineAsts, locsAtInt);
+   tuple[map[int, list[loc]] locRegistries,map[str, list[int]] sortedDomains] nodeRegs = calculateLocationsOfNodeTypes(fileLineAsts);
+    map[int, list[loc]] locsAtInt = nodeRegs.locRegistries;
+    map[str, list[int]] sortedDomains = nodeRegs.sortedDomains;
+    list[list[loc]] duplicateList = getDupList(fileLineAsts, locsAtInt, sortedDomains);
     return duplicateList;
 }
 
-public map[int, list[loc]] calculateLocationsOfNodeTypes(LineRegistry fileLineAsts){
+public tuple[map[int, list[loc]] locRegistries,map[str, list[int]] sortedDomains] calculateLocationsOfNodeTypes(LineRegistry fileLineAsts){
 	map[int, list[loc]] registry = ();
+	map[str, list[int]] sortedDomains = ();
 	for(location <- fileLineAsts){
 		map[int, list[value]] fileLines = fileLineAsts[location];
 		for(lineNumber <- fileLines){
@@ -36,8 +39,9 @@ public map[int, list[loc]] calculateLocationsOfNodeTypes(LineRegistry fileLineAs
 			//println(stuffOnLine);
 			registry = addTo(registry, makeHashOfLine(stuffOnLine), l);
 		}
+		sortedDomains[location.uri] = sort(domain(fileLines));
 	}
-	return registry;
+	return <registry, sortedDomains>;
 }
 
 public int makeHashOfLine(list[value] lines){
@@ -102,34 +106,38 @@ public map[int, list[value]] addToMap(map[int, list[value]] astMap, int line, li
 	return astMap;
 }
 
-public list[list[loc]] getDupList(LineRegistry fileLineAsts, map[int, list[loc]] locsAtInt){
-	list[list[loc]] dupList = []; 
+public list[list[loc]] getDupList(LineRegistry fileLineAsts, map[int, list[loc]] locsAtInt, map[str, list[int]] sortedDomains){
+	list[list[loc]] dupList = [];
+	list[str] parsedURIs = [];
 	for(location <- fileLineAsts){
 		list[tuple[int lines, loc duplicate]] potentialDuplicates = [];
 		map[int, list[value]] fileLines = fileLineAsts[location];
-		list[int] sortedDomain = sort(domain(fileLines));
+		list[int] sortedDomain = sortedDomains[location.uri];
 		for(lineNumber <- sortedDomain){
 			list[value] stuffOnLine = fileLines[lineNumber];
 			list[loc] dupLines = locsAtInt[makeHashOfLine(stuffOnLine)];
 			//println("line <lineNumber>, file <location>, stuffFound = <dupLines>");
 			list[tuple[int lines, loc duplicate]] newPotentialDuplicates = [];
-			for(potDupNew <- dupLines){ //abc
-				bool partOfChain = false;
-				for(potDupOld <- potentialDuplicates){//xyz
-					if(potDupNew.uri == potDupOld.duplicate.uri){
-						potDupNew.begin.line = potDupOld.duplicate.begin.line;
-						newPotentialDuplicates += <potDupOld.lines+1, potDupNew>;
-						partOfChain = true;
-						break;
+			for(loc potDupNew <- dupLines){ //abc
+				if(potDupNew.uri notin parsedURIs && (potDupNew.uri != location.uri || potDupNew.begin.line >= lineNumber)){
+					bool partOfChain = false;
+					for(tuple[int lines, loc duplicate] potDupOld <- potentialDuplicates){//xyz
+						if(potDupNew.uri == potDupOld.duplicate.uri){
+							potDupNew.begin.line = potDupOld.duplicate.begin.line;
+							newPotentialDuplicates += <potDupOld.lines+1, potDupNew>;
+							partOfChain = true;
+							break;
+						}
 					}
+					if(!partOfChain)
+						newPotentialDuplicates+=<1, potDupNew>;
 				}
-				if(!partOfChain)
-					newPotentialDuplicates+=<1, potDupNew>;
 			}
 			dupList = populateBeforeRemoval(dupList, potentialDuplicates, newPotentialDuplicates, lineNumber == last(sortedDomain));
 			potentialDuplicates = newPotentialDuplicates;
-			println("line = <lineNumber>, newPotDup = <newPotentialDuplicates>");
+			//println("line = <lineNumber>, newPotDup = <newPotentialDuplicates>");
 		}
+		parsedURIs += location.uri;
 	}
 	return dupList;
 }
