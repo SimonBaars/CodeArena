@@ -17,7 +17,7 @@ alias LineRegistry = map[loc, map[int, list[value]]];
 
 public list[list[loc]] getDuplication(int t, list[Declaration] asts) {
     LineRegistry fileLineAsts = fileLineMapGeneration(t, asts);
-   tuple[map[int, list[loc]] locRegistries,map[str, list[int]] sortedDomains] nodeRegs = calculateLocationsOfNodeTypes(fileLineAsts);
+    tuple[map[int, list[loc]] locRegistries,map[str, list[int]] sortedDomains] nodeRegs = calculateLocationsOfNodeTypes(fileLineAsts);
     map[int, list[loc]] locsAtInt = nodeRegs.locRegistries;
     map[str, list[int]] sortedDomains = nodeRegs.sortedDomains;
     list[list[loc]] duplicateList = getDupList(fileLineAsts, locsAtInt, sortedDomains);
@@ -109,22 +109,23 @@ public map[int, list[value]] addToMap(map[int, list[value]] astMap, int line, li
 public list[list[loc]] getDupList(LineRegistry fileLineAsts, map[int, list[loc]] locsAtInt, map[str, list[int]] sortedDomains){
 	list[list[loc]] dupList = [];
 	list[str] parsedURIs = [];
-	for(location <- fileLineAsts){
+	for(loc location <- fileLineAsts){
 		list[tuple[int lines, loc duplicate]] potentialDuplicates = [];
 		map[int, list[value]] fileLines = fileLineAsts[location];
 		list[int] sortedDomain = sortedDomains[location.uri];
-		for(lineNumber <- sortedDomain){
+		for(int lineNumber <- sortedDomain){
 			list[value] stuffOnLine = fileLines[lineNumber];
 			list[loc] dupLines = locsAtInt[makeHashOfLine(stuffOnLine)];
 			//println("line <lineNumber>, file <location>, stuffFound = <dupLines>");
 			list[tuple[int lines, loc duplicate]] newPotentialDuplicates = [];
-			for(loc potDupNew <- dupLines){ //abc
-				if(potDupNew.uri notin parsedURIs && (potDupNew.uri != location.uri || potDupNew.begin.line >= lineNumber)){
+			for(loc potDupNew <- dupLines){
+				if(potDupNew.uri notin parsedURIs && (potDupNew.uri != location.uri || potDupNew.begin.line > lineNumber)){
 					bool partOfChain = false;
-					for(tuple[int lines, loc duplicate] potDupOld <- potentialDuplicates){//xyz
-						if(potDupNew.uri == potDupOld.duplicate.uri){
+					for(tuple[int lines, loc duplicate] potDupOld <- potentialDuplicates){
+						if(potDupNew.uri == potDupOld.duplicate.uri && potDupOld.duplicate.end.line == sortedDomains[potDupNew.uri][indexOf(sortedDomains[potDupNew.uri], potDupNew.begin.line)-1]){
 							potDupNew.begin.line = potDupOld.duplicate.begin.line;
 							newPotentialDuplicates += <potDupOld.lines+1, potDupNew>;
+							//println("We upped thing to <potDupOld.lines+1>");
 							partOfChain = true;
 							break;
 						}
@@ -133,7 +134,7 @@ public list[list[loc]] getDupList(LineRegistry fileLineAsts, map[int, list[loc]]
 						newPotentialDuplicates+=<1, potDupNew>;
 				}
 			}
-			dupList = populateBeforeRemoval(dupList, potentialDuplicates, newPotentialDuplicates, lineNumber == last(sortedDomain));
+			dupList = populateBeforeRemoval(dupList, potentialDuplicates, newPotentialDuplicates, sortedDomain, location, lineNumber, lineNumber == last(sortedDomain));
 			potentialDuplicates = newPotentialDuplicates;
 			//println("line = <lineNumber>, newPotDup = <newPotentialDuplicates>");
 		}
@@ -142,12 +143,17 @@ public list[list[loc]] getDupList(LineRegistry fileLineAsts, map[int, list[loc]]
 	return dupList;
 }
 
-public list[list[loc]] populateBeforeRemoval(list[list[loc]] dupList, list[tuple[int lines, loc duplicate]] potentialDuplicates, list[tuple[int lines, loc duplicate]] newPotentialDuplicates, bool isLast){
+public list[list[loc]] populateBeforeRemoval(list[list[loc]] dupList, list[tuple[int lines, loc duplicate]] potentialDuplicates, list[tuple[int lines, loc duplicate]] newPotentialDuplicates, list[int] sortedDomain, loc location, int lineNumber, bool isLast){
 	map[int, list[loc]] finalizedDups = ();
 	for(potDup <- potentialDuplicates, potDup.lines>=6){
 		finalizedDups = addTo(finalizedDups, potDup.lines, potDup.duplicate);
+		if(size(finalizedDups[potDup.lines]) == 1){
+			location.begin.line = sortedDomain[indexOf(sortedDomain, lineNumber)-potDup.lines-1];
+			location.end.line = sortedDomain[indexOf(sortedDomain, lineNumber)-1];
+			addTo(finalizedDups, potDup.lines, location);
+		}
 	}
-	dupList += [[*finalizedDups[finDup]] | finDup <- finalizedDups, size(finalizedDups[finDup])>=2, isLast || any(loc aDup <- finalizedDups[finDup], willBeRemoved(aDup, newPotentialDuplicates))];
+	dupList += [[*finalizedDups[finDup]] | finDup <- finalizedDups, isLast || any(loc aDup <- finalizedDups[finDup], willBeRemoved(aDup, newPotentialDuplicates))];
 	//println("size = <size(dupList)>, potDups = <potentialDuplicates>");
 	return dupList;
 }
