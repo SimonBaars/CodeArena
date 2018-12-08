@@ -8,8 +8,6 @@ import Node;
 import String;
 import lang::java::m3::Core;
 import lang::java::m3::AST;
-import lang::java::jdt::m3::Core;
-import lang::java::jdt::m3::AST;
 import util::Math;
 
 int minAmountOfLines = 6;
@@ -94,7 +92,7 @@ public map[int, list[value]] addToASTMap(int t, map[int, list[value]] astMap, no
 		list[value] values = getComparables(n, t);
 		astMap = addToMap(astMap, location.begin.line, values);
 		if(location.begin.line!=location.end.line)
-			astMap = addToMap(astMap, location.end.line, values);
+			astMap = addToMap(astMap, location.end.line, [0]);
 	}
 	return astMap;
 }
