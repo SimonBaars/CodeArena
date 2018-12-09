@@ -145,25 +145,16 @@ public list[list[loc]] getDupList(LineRegistry fileLineAsts, map[int, list[loc]]
 
 public list[list[loc]] populateBeforeRemoval(list[list[loc]] dupList, list[tuple[int lines, loc duplicate]] potentialDuplicates, list[tuple[int lines, loc duplicate]] newPotentialDuplicates, list[int] sortedDomain, loc location, int lineNumber, bool isLast){
 	map[int, list[loc]] finalizedDups = ();
-	for(tuple[int lines, loc duplicate] potDup <- potentialDuplicates, potDup.lines>=6){
+	for(tuple[int lines, loc duplicate] potDup <- potentialDuplicates, potDup.lines>=minAmountOfLines){
 		if(potDup.lines notin finalizedDups){
 			location.begin.line = sortedDomain[indexOf(sortedDomain, lineNumber)-potDup.lines];
 			location.end.line = sortedDomain[indexOf(sortedDomain, lineNumber)-1];
 			finalizedDups[potDup.lines] = [location];
-			//addTo(finalizedDups, potDup.lines, location);
+			newPotentialDuplicates+=<minAmountOfLines, location>;
 		}
 		finalizedDups[potDup.lines] += potDup.duplicate;
-		//finalizedDups = addTo(finalizedDups, potDup.lines, potDup.duplicate);
 	}
 	//iprintln(finalizedDups);
-	//** OPMERKING VAN SANDER: regel hieronder zorgt idd nog dat er veel misgaat:
-		//** als we alleen: dupList += [[*finalizedDups[finDup]] | finDup <- finalizedDups]; laten staan solven we issue 15 lijkt het
-		
-		//** issue 15 komt ook niet meer voor als we true en false van willBeRemoved omdraaien
-		
-		//** Als willBeRemoved altijd false returned dan vinden we alleen nog de juiste duplicatie bij mijn test, zonder alle kortere varianten van dezelfde duplicatie
-		
-		//** kortom ik snap niet genoeg van die regel om het preciese probleem te vinden maar het gaat iig beetje mis
 	dupList += [[*finalizedDups[finDup]] | finDup <- finalizedDups, isLast || any(loc aDup <- finalizedDups[finDup], willBeRemoved(aDup, newPotentialDuplicates))];
 	//println("size = <size(dupList)>, potDups = <potentialDuplicates>");
 	return dupList;
@@ -173,6 +164,7 @@ public bool willBeRemoved(loc dup, list[tuple[int lines, loc duplicate]] newPote
 	for(pot <- newPotentialDuplicates)
 		if(pot.duplicate.uri == dup.uri && pot.duplicate.begin.line == dup.begin.line)
 			return false;
+	println("Will be removed <dup> in <newPotentialDuplicates>");
 	return true;
 }
 
