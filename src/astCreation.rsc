@@ -147,8 +147,7 @@ public list[list[loc]] populateBeforeRemoval(list[list[loc]] dupList, list[tuple
 	map[int, list[loc]] finalizedDups = ();
 	for(tuple[int lines, loc duplicate] potDup <- potentialDuplicates, potDup.lines>=6){
 		if(potDup.lines notin finalizedDups){
-			//** OPMERKING VAN SANDER: ik weet niet zeker of de -1 hieronder bij begin.line ook moet (zorgt iig voor issue 17)
-			location.begin.line = sortedDomain[indexOf(sortedDomain, lineNumber)-potDup.lines-1];
+			location.begin.line = sortedDomain[indexOf(sortedDomain, lineNumber)-potDup.lines];
 			location.end.line = sortedDomain[indexOf(sortedDomain, lineNumber)-1];
 			finalizedDups[potDup.lines] = [location];
 			//addTo(finalizedDups, potDup.lines, location);
