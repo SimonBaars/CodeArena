@@ -15,7 +15,7 @@ public class TestConsole {
 		d.init(null);
 		CloneCommand c = new CloneCommand();
 		try {
-			c.execute(null, new CommandSenderWrapper(null, null, null, null, null, false), new String[] {"smallsql0.21_src"});
+			c.execute(null, new CommandSenderWrapper(null, null, null, null, null, false), new String[] {"ProjectWithDuplicateBetweenFiles"});
 		} catch (CommandException e) {
 			e.printStackTrace();
 		}

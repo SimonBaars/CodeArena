@@ -17,6 +17,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.ResourceCommons;
+import nl.sandersimon.clonedetection.model.Location;
 
 @Mod(modid = CloneDetection.MODID, name = CloneDetection.NAME, version = CloneDetection.VERSION)
 public class CloneDetection
@@ -27,10 +28,11 @@ public class CloneDetection
 	
 	public static nl.sandersimon.clonedetection.minecraft.EventHandler eventHandler;
 
-	Process rascal;
-	BufferedWriter rascalOut;
-	InputStreamReader rascalIn;
+	private Process rascal;
+	private BufferedWriter rascalOut;
+	private InputStreamReader rascalIn;
 	private static CloneDetection cloneDetection;
+	private List<List<Location>> clones;
 
 	public static int dialoge;
 
@@ -54,7 +56,7 @@ public class CloneDetection
 		try {
 			System.out.println("Starting Rascal..");
 			rascal = getProcess("java -jar "+ResourceCommons.getResource("Rascal.jar").getAbsolutePath(), ResourceCommons.getResource("rascal"));
-			executeRascal("import packagename::ClassName;");
+			executeRascal("import loader;");
 			System.out.println("Rascal Started!");
 		} catch (IOException e) {
 			throw new RuntimeException("Rascal could not be started!", e);
@@ -144,5 +146,13 @@ public class CloneDetection
 			e.printStackTrace();
 		}
 		return new String(cbuf);
+	}
+
+	public List<List<Location>> getClones() {
+		return clones;
+	}
+
+	public void setClones(List<List<Location>> clones) {
+		this.clones = clones;
 	}
 }

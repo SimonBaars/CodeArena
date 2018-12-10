@@ -25,8 +25,7 @@ public class CloneDetectionThread extends Thread {
 		int bufferSize = Integer.parseInt(bufferSizeString);
 		String res = CloneDetection.get().readBuffer(bufferSize);
 		CloneDetection.get().waitUntilExecuted();
-		System.out.println("Amount of locs = "+ populateResult(res).get(0).size());
-		System.out.println("DONE!");
+		CloneDetection.get().setClones(populateResult(res));
 	}
 	
 	public List<List<Location>> populateResult(String res){
