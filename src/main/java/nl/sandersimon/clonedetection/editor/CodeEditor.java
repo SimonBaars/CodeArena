@@ -1,8 +1,11 @@
 package nl.sandersimon.clonedetection.editor;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 
@@ -64,46 +67,82 @@ public class CodeEditor extends JFrame implements SearchListener {
 	private StatusBar statusBar;
 	private File file;
 
-	public CodeEditor(File file) {
+	public CodeEditor(File file, int markedRangeStart, int markedRangeEnd, int posX) {
 		this.file = file;
 		String content;
 		try {
 			content = TestingCommons.getFileAsString(file);
-		
-		initSearchDialogs();
 
-		JPanel contentPane = new JPanel(new BorderLayout());
-		setContentPane(contentPane);
-		csp = new CollapsibleSectionPanel();
-		contentPane.add(csp);
+			initSearchDialogs();
 
-		setJMenuBar(createMenuBar());
+			JPanel contentPane = new JPanel(new BorderLayout());
+			setLocation(posX, 0);
+			setContentPane(contentPane);
+			csp = new CollapsibleSectionPanel();
+			contentPane.add(csp);
 
-		textArea = new RSyntaxTextArea(25, 80);
-		textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
-		textArea.setCodeFoldingEnabled(true);
-		textArea.setMarkOccurrences(true);
-		textArea.setText(content);
-		RTextScrollPane sp = new RTextScrollPane(textArea);
-		csp.add(sp);
+			setJMenuBar(createMenuBar());
 
-		ErrorStrip errorStrip = new ErrorStrip(textArea);
-		contentPane.add(errorStrip, BorderLayout.LINE_END);
-//org.fife.rsta.ui.DocumentMap docMap = new org.fife.rsta.ui.DocumentMap(textArea);
-//contentPane.add(docMap, BorderLayout.LINE_END);
+			textArea = new RSyntaxTextArea(25, 80);
+			textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+			textArea.setCodeFoldingEnabled(true);
+			textArea.setMarkOccurrences(true);
+			textArea.setText(content);
 
-		statusBar = new StatusBar();
-		contentPane.add(statusBar, BorderLayout.SOUTH);
+			RTextScrollPane sp = new RTextScrollPane(textArea);
+			csp.add(sp);
 
-		setTitle("RSTAUI Demo Application");
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		pack();
-		setLocationRelativeTo(null);
+			for(int line = markedRangeStart; line<=markedRangeEnd && line>0; line++) {
+				try {
+					textArea.addLineHighlight(line-1, Color.CYAN);
+					//sp.scrollRectToVisible(new Rectangle(0, textArea.getLineStartOffset(line-1),0,0));
+				} catch (BadLocationException e) {
+					e.printStackTrace();
+				}
+			}
+
+			ErrorStrip errorStrip = new ErrorStrip(textArea);
+			contentPane.add(errorStrip, BorderLayout.LINE_END);
+			///org.fife.rsta.ui.DocumentMap docMap = new org.fife.rsta.ui.DocumentMap(textArea);
+			//contentPane.add(docMap, BorderLayout.LINE_END);
+
+			statusBar = new StatusBar();
+			contentPane.add(statusBar, BorderLayout.SOUTH);
+
+			setTitle("RSTAUI Demo Application");
+			setDefaultCloseOperation(EXIT_ON_CLOSE);
+			pack();
+			setLocationRelativeTo(null);
+
+			KeyStroke controlS = KeyStroke.getKeyStroke("control S");
+			textArea.getActionMap().put("save", new SaveFile(file, textArea, statusBar.label));
+			textArea.getInputMap().put(controlS, "save");
+			textArea.addKeyListener(new KeyListener() {
+				
+				@Override
+				public void keyTyped(KeyEvent e) {
+					if(!e.isControlDown())
+						statusBar.setLabel("Ready");
+				}
+				
+				@Override
+				public void keyReleased(KeyEvent e) {}
+				
+				@Override
+				public void keyPressed(KeyEvent e) {}
+			});
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
+	}
+
+	public CodeEditor(File file, int markedRangeStart, int markedRangeEnd) {
+		this(file, markedRangeStart, markedRangeEnd, 0);
+	}
+
+	public CodeEditor(File file) {
+		this(file, 0, 0);
 	}
 
 
@@ -122,6 +161,14 @@ public class CodeEditor extends JFrame implements SearchListener {
 		menu.add(new JMenuItem(new ShowReplaceDialogAction()));
 		menu.add(new JMenuItem(new GoToLineAction()));
 		menu.addSeparator();
+		
+		menu = new JMenu("File");
+		ButtonGroup bg = new ButtonGroup();
+		LookAndFeelInfo[] infos = UIManager.getInstalledLookAndFeels();
+		JMenuItem menuItem = new JMenuItem("Save");
+		menuItem.setAction(new SaveFile(file, textArea, statusBar.label));
+		menu.add(menuItem);
+		mb.add(menu);
 
 		int ctrl = getToolkit().getMenuShortcutKeyMask();
 		int shift = InputEvent.SHIFT_MASK;
@@ -134,14 +181,6 @@ public class CodeEditor extends JFrame implements SearchListener {
 		a.putValue(Action.NAME, "Show Replace Search Bar");
 		menu.add(new JMenuItem(a));
 
-		mb.add(menu);
-
-		menu = new JMenu("LookAndFeel");
-		ButtonGroup bg = new ButtonGroup();
-		LookAndFeelInfo[] infos = UIManager.getInstalledLookAndFeels();
-		for (int i=0; i<infos.length; i++) {
-			addItem(new LookAndFeelAction(infos[i]), bg, menu);
-		}
 		mb.add(menu);
 
 		return mb;
@@ -189,27 +228,27 @@ public class CodeEditor extends JFrame implements SearchListener {
 		SearchResult result = null;
 
 		switch (type) {
-			default: // Prevent FindBugs warning later
-			case MARK_ALL:
-				result = SearchEngine.markAll(textArea, context);
-				break;
-			case FIND:
-				result = SearchEngine.find(textArea, context);
-				if (!result.wasFound()) {
-					UIManager.getLookAndFeel().provideErrorFeedback(textArea);
-				}
-				break;
-			case REPLACE:
-				result = SearchEngine.replace(textArea, context);
-				if (!result.wasFound()) {
-					UIManager.getLookAndFeel().provideErrorFeedback(textArea);
-				}
-				break;
-			case REPLACE_ALL:
-				result = SearchEngine.replaceAll(textArea, context);
-				JOptionPane.showMessageDialog(null, result.getCount() +
-						" occurrences replaced.");
-				break;
+		default: // Prevent FindBugs warning later
+		case MARK_ALL:
+			result = SearchEngine.markAll(textArea, context);
+			break;
+		case FIND:
+			result = SearchEngine.find(textArea, context);
+			if (!result.wasFound()) {
+				UIManager.getLookAndFeel().provideErrorFeedback(textArea);
+			}
+			break;
+		case REPLACE:
+			result = SearchEngine.replace(textArea, context);
+			if (!result.wasFound()) {
+				UIManager.getLookAndFeel().provideErrorFeedback(textArea);
+			}
+			break;
+		case REPLACE_ALL:
+			result = SearchEngine.replaceAll(textArea, context);
+			JOptionPane.showMessageDialog(null, result.getCount() +
+					" occurrences replaced.");
+			break;
 		}
 
 		String text = null;
@@ -231,9 +270,9 @@ public class CodeEditor extends JFrame implements SearchListener {
 
 	}
 
-    /**
-     * Opens the "Go to Line" dialog.
-     */
+	/**
+	 * Opens the "Go to Line" dialog.
+	 */
 	private class GoToLineAction extends AbstractAction {
 
 		GoToLineAction() {
@@ -267,9 +306,9 @@ public class CodeEditor extends JFrame implements SearchListener {
 	}
 
 
-    /**
-     * Changes the Look and Feel.
-     */
+	/**
+	 * Changes the Look and Feel.
+	 */
 	private class LookAndFeelAction extends AbstractAction {
 
 		private LookAndFeelInfo info;
@@ -298,9 +337,9 @@ public class CodeEditor extends JFrame implements SearchListener {
 	}
 
 
-    /**
-     * Shows the Find dialog.
-     */
+	/**
+	 * Shows the Find dialog.
+	 */
 	private class ShowFindDialogAction extends AbstractAction {
 
 		ShowFindDialogAction() {
@@ -320,9 +359,9 @@ public class CodeEditor extends JFrame implements SearchListener {
 	}
 
 
-    /**
-     * Shows the Replace dialog.
-     */
+	/**
+	 * Shows the Replace dialog.
+	 */
 	private class ShowReplaceDialogAction extends AbstractAction {
 
 		ShowReplaceDialogAction() {
@@ -342,9 +381,9 @@ public class CodeEditor extends JFrame implements SearchListener {
 	}
 
 
-    /**
-     * The status bar for this application.
-     */
+	/**
+	 * The status bar for this application.
+	 */
 	private static class StatusBar extends JPanel {
 
 		private JLabel label;
@@ -359,7 +398,6 @@ public class CodeEditor extends JFrame implements SearchListener {
 		void setLabel(String label) {
 			this.label.setText(label);
 		}
-
 	}
 
 
