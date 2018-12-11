@@ -33,8 +33,8 @@ public tuple[map[int, list[loc]] locRegistries,map[str, list[int]] sortedDomains
 			l.uri = location.uri;
 			l.end.line = lineNumber;
 			l.begin.line = lineNumber;
-			println("Line <lineNumber> of file <indexOf(sort(domain(fileLineAsts)), location)> has hash <makeHashOfLine(stuffOnLine)>");
-			println(stuffOnLine);
+			//println("Line <lineNumber> of file <indexOf(sort(domain(fileLineAsts)), location)> has hash <makeHashOfLine(stuffOnLine)>");
+			//println(stuffOnLine);
 			registry = addTo(registry, makeHashOfLine(stuffOnLine), l);
 		}
 		sortedDomains[location.uri] = sort(domain(fileLines));
@@ -118,7 +118,7 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 			//println("WWW");
 			//iprintln("line <lineNumber>, file <location>, stuffFound = <dupLines>");
 			list[tuple[int lines, loc duplicate]] newPotentialDuplicates = [];
-			//iprintln(dupLines);
+			iprintln(dupLines);
 			for(loc potDupNew <- dupLines){
 				if(potDupNew.uri notin parsedURIs && (potDupNew.uri != location.uri || potDupNew.begin.line > lineNumber)){
 					bool partOfChain = false;
@@ -137,7 +137,6 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 						newPotentialDuplicates+=<1, potDupNew>;
 				}
 			}
-			//iprintln(newPotentialDuplicates);
 			dupList = populateBeforeRemoval(dupList, potentialDuplicates, newPotentialDuplicates, sortedDomain, location, lineNumber, lineNumber == last(sortedDomain));
 			potentialDuplicates = newPotentialDuplicates;
 			//iprintln("line = <lineNumber>, newPotDup = <newPotentialDuplicates>");
@@ -151,16 +150,20 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 	map[int, list[loc]] finalizedDups = ();
 	for(tuple[int lines, loc duplicate] potDup <- potentialDuplicates, potDup.lines>=minAmountOfLines){
 		if(potDup.lines notin finalizedDups){
-			location.begin.line = sortedDomain[indexOf(sortedDomain, lineNumber)-potDup.lines];
-			location.end.line = sortedDomain[indexOf(sortedDomain, lineNumber)-1];
-			finalizedDups[potDup.lines] = [location];
-			newPotentialDuplicates+=<minAmountOfLines, location>;
+			loc l = |unknown:///|(0,0,<0,0>,<0,0>);
+			l.uri = location.uri;
+			l.end.line = sortedDomain[indexOf(sortedDomain, lineNumber)-1];
+			l.begin.line = sortedDomain[indexOf(sortedDomain, lineNumber)-potDup.lines];
+			finalizedDups[potDup.lines] = [l];
+			newPotentialDuplicates+=<minAmountOfLines, l>;
 		}
 		//println("WW");
 		//iprintln(potDup);
 		finalizedDups[potDup.lines] += potDup.duplicate;
 	}
-	dupList += [*[<finDup, finalizedDups[finDup]>] | finDup <- finalizedDups, isLast || any(loc aDup <- finalizedDups[finDup], willBeRemoved(aDup, newPotentialDuplicates))];
+	//iprintln(finalizedDups);
+	
+	dupList += [*[<finDup, finalizedDups[finDup]>] | finDup <- finalizedDups, isLast || any(loc aDup <- finalizedDups[finDup], willBeRemoved(aDup, newPotentialDuplicates)), !(any(tuple[int, list[loc]] aDup <- dupList, finalizedDups[finDup] <= aDup[1]))];
 	//println("size = <size(dupList)>, potDups = <potentialDuplicates>");
 	return dupList;
 }
