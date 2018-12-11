@@ -7,6 +7,7 @@ import net.minecraft.command.ICommandSender;
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.SavePaths;
+import nl.sandersimon.clonedetection.model.CloneClass;
 import nl.sandersimon.clonedetection.model.Location;
 
 public class CloneDetectionThread extends Thread {
@@ -15,8 +16,12 @@ public class CloneDetectionThread extends Thread {
 	private final String project;
 
 	public CloneDetectionThread(String project) {
+		this(project, false);
+	}
+	
+	public CloneDetectionThread(String project, boolean start) {
 		this.project = project;
-		start();
+		if(start) start();
 	}
 
 	public void run() {
@@ -28,18 +33,19 @@ public class CloneDetectionThread extends Thread {
 		CloneDetection.get().setClones(populateResult(res));
 	}
 	
-	public List<List<Location>> populateResult(String res){
-		List<List<Location>> locs = new ArrayList<>();
+	public List<CloneClass> populateResult(String res){
+		List<CloneClass> locs = new ArrayList<>();
 		int listLoc = 1;
-		while (listLoc < res.length() && res.charAt(listLoc) == '[') {
-			List<Location> loc = new ArrayList<>();
-			listLoc = parseList(loc, res, listLoc+1)+1;
+		while (listLoc < res.length() && res.charAt(listLoc) == '<') {
+			CloneClass loc = new CloneClass();
+			listLoc = parseList(loc, res, listLoc+1)+2;
 			locs.add(loc);
 		}
 		return locs;
 	}
 
-	private int parseList(List<Location> loc, String res, int elementLoc) {
+	private int parseList(CloneClass loc, String res, int elementLoc) {
+		elementLoc = Location.parseNumber(res, CloneClass::setLines, loc, elementLoc)+1;
 		while(res.charAt(elementLoc) == '|') {
 			int indexOf = res.indexOf(')', elementLoc+1);
 			if(indexOf == -1)

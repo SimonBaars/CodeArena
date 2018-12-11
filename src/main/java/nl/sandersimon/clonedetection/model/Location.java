@@ -167,7 +167,7 @@ public class Location {
 		return loc;
 	}
 
-	private static int parseNumber(String stringRepr, BiConsumer<Location, Integer> function, Location loc, int startIndex) {
+	public static<T> int parseNumber(String stringRepr, BiConsumer<T, Integer> function, T loc, int startIndex) {
 		String offsetStr = collectInt(stringRepr, startIndex);
 		function.accept(loc, Integer.parseInt(offsetStr));
 		startIndex+=offsetStr.length()+1;
