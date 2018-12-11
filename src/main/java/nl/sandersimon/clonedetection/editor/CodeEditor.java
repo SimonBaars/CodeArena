@@ -1,7 +1,7 @@
 package nl.sandersimon.clonedetection.editor;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Rectangle;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -43,6 +43,7 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 import org.fife.ui.rtextarea.SearchContext;
 import org.fife.ui.rtextarea.SearchEngine;
 import org.fife.ui.rtextarea.SearchResult;
+import org.lwjgl.util.Rectangle;
 
 import nl.sandersimon.clonedetection.common.TestingCommons;
 
@@ -67,7 +68,7 @@ public class CodeEditor extends JFrame implements SearchListener {
 	private StatusBar statusBar;
 	private File file;
 
-	public CodeEditor(File file, int markedRangeStart, int markedRangeEnd, int posX) {
+	public CodeEditor(File file, int markedRangeStart, int markedRangeEnd, int pos, int amount) {
 		this.file = file;
 		String content;
 		try {
@@ -76,7 +77,6 @@ public class CodeEditor extends JFrame implements SearchListener {
 			initSearchDialogs();
 
 			JPanel contentPane = new JPanel(new BorderLayout());
-			setLocation(posX, 0);
 			setContentPane(contentPane);
 			csp = new CollapsibleSectionPanel();
 			contentPane.add(csp);
@@ -109,7 +109,7 @@ public class CodeEditor extends JFrame implements SearchListener {
 			statusBar = new StatusBar();
 			contentPane.add(statusBar, BorderLayout.SOUTH);
 
-			setTitle("RSTAUI Demo Application");
+			setTitle("SanSim Code Editor");
 			setDefaultCloseOperation(EXIT_ON_CLOSE);
 			pack();
 			setLocationRelativeTo(null);
@@ -131,6 +131,9 @@ public class CodeEditor extends JFrame implements SearchListener {
 				@Override
 				public void keyPressed(KeyEvent e) {}
 			});
+			java.awt.Rectangle maxBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+			int width2 = (int)maxBounds.getWidth()/amount;
+			setBounds(width2*pos, 0, width2, (int)maxBounds.getHeight());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -138,7 +141,7 @@ public class CodeEditor extends JFrame implements SearchListener {
 	}
 
 	public CodeEditor(File file, int markedRangeStart, int markedRangeEnd) {
-		this(file, markedRangeStart, markedRangeEnd, 0);
+		this(file, markedRangeStart, markedRangeEnd, 0, 1);
 	}
 
 	public CodeEditor(File file) {

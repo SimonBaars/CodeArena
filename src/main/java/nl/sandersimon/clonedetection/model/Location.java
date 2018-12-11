@@ -161,8 +161,8 @@ public class Location {
 		numLoc = parseNumber(stringRepr, Location::setOffset, loc, numLoc+2);
 		numLoc = parseNumber(stringRepr, Location::setLength, loc, numLoc);
 		numLoc = parseNumber(stringRepr, Location::setBeginLine, loc, numLoc+1);
-		numLoc = parseNumber(stringRepr, Location::setEndLine, loc, numLoc);
-		numLoc = parseNumber(stringRepr, Location::setBeginCol, loc, numLoc+2);
+		numLoc = parseNumber(stringRepr, Location::setBeginCol, loc, numLoc);
+		numLoc = parseNumber(stringRepr, Location::setEndLine, loc, numLoc+2);
 		parseNumber(stringRepr, Location::setEndCol, loc, numLoc);
 		return loc;
 	}
@@ -200,5 +200,9 @@ public class Location {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public File file() {
+		return new File(getFile());
 	}
 }
