@@ -16,7 +16,7 @@ public class CloneDetectionThread extends Thread {
 	private final String project;
 
 	public CloneDetectionThread(String project) {
-		this(project, false);
+		this(project, true);
 	}
 	
 	public CloneDetectionThread(String project, boolean start) {
@@ -29,6 +29,7 @@ public class CloneDetectionThread extends Thread {
 		String bufferSizeString = CloneDetection.get().waitUntilExecuted('\n').get(0);
 		int bufferSize = Integer.parseInt(bufferSizeString);
 		String res = CloneDetection.get().readBuffer(bufferSize);
+		System.out.println(res+", "+bufferSizeString);
 		CloneDetection.get().waitUntilExecuted();
 		CloneDetection.get().setClones(populateResult(res));
 	}

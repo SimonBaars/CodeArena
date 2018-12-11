@@ -114,19 +114,21 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 		map[int, list[value]] fileLines = fileLineAsts[location];
 		list[int] sortedDomain = sortedDomains[location.uri];
 		int sortedDomainSize = size(sortedDomain);
-		for(int i <- [0..sortedDomainSize]){
-			if(i+5>=sortedDomainSize) continue;
-			for(int j <- [0..5]){
-				if(size(locsAtInt[makeHashOfLine(fileLines[sortedDomain[i+j]])])<=1){
-					i+=j;
-					continue;
+		int i = 0;
+		while(i < sortedDomainSize){
+			if(!(i+5>=sortedDomainSize)){
+				for(int j <- [0..5]){
+					if(size(locsAtInt[makeHashOfLine(fileLines[sortedDomain[i+j]])])<=1){
+						potentialDuplicates = [];
+						i+=j+1;
+						continue;
+					}
 				}
 			}
 			int lineNumber = sortedDomain[i];
-			println(lineNumber);
+			//println(lineNumber);
 			list[value] stuffOnLine = fileLines[lineNumber];
 			list[loc] dupLines = locsAtInt[makeHashOfLine(stuffOnLine)];
-			if(size(dupLines) <= 1) continue;
 			//iprintln(dupLines);
 			//println("WWW");
 			//iprintln("line <lineNumber>, file <location>, stuffFound = <dupLines>");
@@ -157,6 +159,7 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 			dupList = populateBeforeRemoval(dupList, potentialDuplicates, newPotentialDuplicates, sortedDomain, location, lineNumber, lineNumber == last(sortedDomain));
 			potentialDuplicates = newPotentialDuplicates;
 			//iprintln("line = <lineNumber>, newPotDup = <newPotentialDuplicates>");
+			i+=1;
 		}
 		parsedURIs += location.uri;
 	}
