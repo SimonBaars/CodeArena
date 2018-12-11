@@ -18,10 +18,8 @@ void calculateCodeDuplication(loc location){
 		asts += ast;
 	}
 	
-	list[list[loc]] result = getDuplication(1, asts);
+	list[tuple[int, list[loc]]] result = getDuplication(1, asts);
 	str buffer = toString(result);
-	//println(size(buffer));
-	//iprintln(result); //iprintln(result) for testing purposes! Should be println(buffer) in production!
+	println(size(buffer));
+	println(result);
 }
-
-//|file:///home/sander/.clone/projects/testJavaProject|

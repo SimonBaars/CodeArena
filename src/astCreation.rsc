@@ -14,14 +14,12 @@ int minAmountOfLines = 6;
 //Class met map van regelnummers, en wat er op elke line staat
 alias LineRegistry = map[loc, map[int, list[value]]];
 
-public list[list[loc]] getDuplication(int t, list[Declaration] asts) {
+public list[tuple[int, list[loc]]] getDuplication(int t, list[Declaration] asts) {
     LineRegistry fileLineAsts = fileLineMapGeneration(t, asts);
     tuple[map[int, list[loc]] locRegistries,map[str, list[int]] sortedDomains] nodeRegs = calculateLocationsOfNodeTypes(fileLineAsts);
     map[int, list[loc]] locsAtInt = nodeRegs.locRegistries;
     map[str, list[int]] sortedDomains = nodeRegs.sortedDomains;
-    list[list[loc]] duplicateList = getDupList(fileLineAsts, locsAtInt, sortedDomains);
-    iprintln(duplicateList);
-    return duplicateList;
+    return getDupList(fileLineAsts, locsAtInt, sortedDomains);
 }
 
 public tuple[map[int, list[loc]] locRegistries,map[str, list[int]] sortedDomains] calculateLocationsOfNodeTypes(LineRegistry fileLineAsts){
@@ -106,8 +104,8 @@ public map[int, list[value]] addToMap(map[int, list[value]] astMap, int line, li
 	return astMap;
 }
 
-public list[list[loc]] getDupList(LineRegistry fileLineAsts, map[int, list[loc]] locsAtInt, map[str, list[int]] sortedDomains){
-	list[list[loc]] dupList = [];
+public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int, list[loc]] locsAtInt, map[str, list[int]] sortedDomains){
+	list[tuple[int, list[loc]]] dupList = [];
 	list[str] parsedURIs = [];
 	for(loc location <- fileLineAsts){
 		list[tuple[int lines, loc duplicate]] potentialDuplicates = [];
@@ -143,7 +141,7 @@ public list[list[loc]] getDupList(LineRegistry fileLineAsts, map[int, list[loc]]
 	return dupList;
 }
 
-public list[list[loc]] populateBeforeRemoval(list[list[loc]] dupList, list[tuple[int lines, loc duplicate]] potentialDuplicates, list[tuple[int lines, loc duplicate]] newPotentialDuplicates, list[int] sortedDomain, loc location, int lineNumber, bool isLast){
+public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[loc]]] dupList, list[tuple[int lines, loc duplicate]] potentialDuplicates, list[tuple[int lines, loc duplicate]] newPotentialDuplicates, list[int] sortedDomain, loc location, int lineNumber, bool isLast){
 	map[int, list[loc]] finalizedDups = ();
 	for(tuple[int lines, loc duplicate] potDup <- potentialDuplicates, potDup.lines>=minAmountOfLines){
 		if(potDup.lines notin finalizedDups){
@@ -154,8 +152,7 @@ public list[list[loc]] populateBeforeRemoval(list[list[loc]] dupList, list[tuple
 		}
 		finalizedDups[potDup.lines] += potDup.duplicate;
 	}
-	//iprintln(finalizedDups);
-	dupList += [[*finalizedDups[finDup]] | finDup <- finalizedDups, isLast || any(loc aDup <- finalizedDups[finDup], willBeRemoved(aDup, newPotentialDuplicates))];
+	dupList += [*[<finDup, finalizedDups[finDup]>] | finDup <- finalizedDups, isLast || any(loc aDup <- finalizedDups[finDup], willBeRemoved(aDup, newPotentialDuplicates))];
 	//println("size = <size(dupList)>, potDups = <potentialDuplicates>");
 	return dupList;
 }
@@ -164,7 +161,7 @@ public bool willBeRemoved(loc dup, list[tuple[int lines, loc duplicate]] newPote
 	for(pot <- newPotentialDuplicates)
 		if(pot.duplicate.uri == dup.uri && pot.duplicate.begin.line == dup.begin.line)
 			return false;
-	println("Will be removed <dup> in <newPotentialDuplicates>");
+	//println("Will be removed <dup> in <newPotentialDuplicates>");
 	return true;
 }
 
