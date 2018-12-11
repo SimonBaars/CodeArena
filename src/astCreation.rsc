@@ -13,21 +13,21 @@ import util::Math;
 int minAmountOfLines = 6;
 //Class met map van regelnummers, en wat er op elke line staat
 alias LineRegistry = map[loc, map[int, list[value]]];
-alias SortedDomainHashes = map[str, list[tuple[int line,int hash]]];
 
 public list[tuple[int, list[loc]]] getDuplication(int t, list[Declaration] asts) {
     LineRegistry fileLineAsts = fileLineMapGeneration(t, asts);
-    tuple[map[int, list[loc]] locRegistries,SortedDomainHashes sortedDomains] nodeRegs = calculateLocationsOfNodeTypes(fileLineAsts);
-    return getDupList(nodeRegs.locRegistries, nodeRegs.sortedDomains);
+    tuple[map[int, list[loc]] locRegistries,map[str, list[int]] sortedDomains] nodeRegs = calculateLocationsOfNodeTypes(fileLineAsts);
+    map[int, list[loc]] locsAtInt = nodeRegs.locRegistries;
+    map[str, list[int]] sortedDomains = nodeRegs.sortedDomains;
+    return getDupList(fileLineAsts, locsAtInt, sortedDomains);
 }
 
-public tuple[map[int, list[loc]] locRegistries, SortedDomainHashes sortedDomains] calculateLocationsOfNodeTypes(LineRegistry fileLineAsts){
+public tuple[map[int, list[loc]] locRegistries,map[str, list[int]] sortedDomains] calculateLocationsOfNodeTypes(LineRegistry fileLineAsts){
 	map[int, list[loc]] registry = ();
-	map[str, list[tuple[int,int]]] sortedDomains = ();
+	map[str, list[int]] sortedDomains = ();
 	for(location <- fileLineAsts){
 		map[int, list[value]] fileLines = fileLineAsts[location];
-		sortedDomains[location.uri] = [];
-		for(lineNumber <- sort(domain(fileLines))){
+		for(lineNumber <- fileLines){
 			list[value] stuffOnLine = fileLines[lineNumber];
 			loc l = |unknown:///|(0,0,<0,0>,<0,0>);
 			l.uri = location.uri;
@@ -35,10 +35,9 @@ public tuple[map[int, list[loc]] locRegistries, SortedDomainHashes sortedDomains
 			l.begin.line = lineNumber;
 			//println("Line <lineNumber> of file <indexOf(sort(domain(fileLineAsts)), location)> has hash <makeHashOfLine(stuffOnLine)>");
 			//println(stuffOnLine);
-			int hashCode = makeHashOfLine(stuffOnLine);
-			registry = addTo(registry, hashCode, l);
-			sortedDomains[location.uri] += [<lineNumber, hashCode>];
+			registry = addTo(registry, makeHashOfLine(stuffOnLine), l);
 		}
+		sortedDomains[location.uri] = sort(domain(fileLines));
 	}
 	return <registry, sortedDomains>;
 }
@@ -105,23 +104,26 @@ public map[int, list[value]] addToMap(map[int, list[value]] astMap, int line, li
 	return astMap;
 }
 
-public list[tuple[int, list[loc]]] getDupList(map[int, list[loc]] locsAtInt, SortedDomainHashes sortedDomains){
+public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int, list[loc]] locsAtInt, map[str, list[int]] sortedDomains){
 	list[tuple[int, list[loc]]] dupList = [];
 	list[str] parsedURIs = [];
-	for(str location <- sortedDomains){
+	for(loc location <- fileLineAsts){
 		list[tuple[int lines, loc duplicate]] potentialDuplicates = [];
-		list[tuple[int line, int hash]] sortedDomain = sortedDomains[location];
+		map[int, list[value]] fileLines = fileLineAsts[location];
+		list[int] sortedDomain = sortedDomains[location.uri];
 		int sortedDomainSize = size(sortedDomain);
 		for(int i <- [0..sortedDomainSize]){
-			if(i+minAmountOfLines-1>=sortedDomainSize) continue;
-			for(int j <- [0..minAmountOfLines-1]){
-				if(size(locsAtInt[sortedDomain[i+j].hash])<=1){
+			if(i+5>=sortedDomainSize) continue;
+			for(int j <- [0..5]){
+				if(size(locsAtInt[makeHashOfLine(fileLines[sortedDomain[i+j]])])<=1){
 					i+=j;
 					continue;
 				}
 			}
-			int lineNumber = sortedDomain[i].line;
-			list[loc] dupLines = locsAtInt[sortedDomain[i].hash];
+			int lineNumber = sortedDomain[i];
+			println(lineNumber);
+			list[value] stuffOnLine = fileLines[lineNumber];
+			list[loc] dupLines = locsAtInt[makeHashOfLine(stuffOnLine)];
 			if(size(dupLines) <= 1) continue;
 			//iprintln(dupLines);
 			//println("WWW");
@@ -130,12 +132,12 @@ public list[tuple[int, list[loc]]] getDupList(map[int, list[loc]] locsAtInt, Sor
 			//iprintln(dupLines);
 						
 			for(loc potDupNew <- dupLines){
-				if(potDupNew.uri notin parsedURIs && (potDupNew.uri != location || potDupNew.begin.line > lineNumber)){
+				if(potDupNew.uri notin parsedURIs && (potDupNew.uri != location.uri || potDupNew.begin.line > lineNumber)){
 					bool partOfChain = false;
 					//println("WW");
 					//iprintln(potDupNew);
 					for(tuple[int lines, loc duplicate] potDupOld <- potentialDuplicates){
-						if(potDupNew.uri == potDupOld.duplicate.uri && potDupOld.duplicate.end.line == sortedDomains[potDupNew.uri][indexOf(sortedDomains[potDupNew.uri].line, potDupNew.begin.line)-1]){
+						if(potDupNew.uri == potDupOld.duplicate.uri && potDupOld.duplicate.end.line == sortedDomains[potDupNew.uri][indexOf(sortedDomains[potDupNew.uri], potDupNew.begin.line)-1]){
 							potDupNew.begin.line = potDupOld.duplicate.begin.line;
 							newPotentialDuplicates += <potDupOld.lines+1, potDupNew>;
 							//println("We upped thing to <potDupOld.lines+1>");
@@ -151,19 +153,19 @@ public list[tuple[int, list[loc]]] getDupList(map[int, list[loc]] locsAtInt, Sor
 			potentialDuplicates = newPotentialDuplicates;
 			//iprintln("line = <lineNumber>, newPotDup = <newPotentialDuplicates>");
 		}
-		parsedURIs += location;
+		parsedURIs += location.uri;
 	}
 	return dupList;
 }
 
-public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[loc]]] dupList, list[tuple[int lines, loc duplicate]] potentialDuplicates, list[tuple[int lines, loc duplicate]] newPotentialDuplicates, list[tuple[int line, int hash]] sortedDomain, str location, int lineNumber, bool isLast){
+public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[loc]]] dupList, list[tuple[int lines, loc duplicate]] potentialDuplicates, list[tuple[int lines, loc duplicate]] newPotentialDuplicates, list[int] sortedDomain, loc location, int lineNumber, bool isLast){
 	map[int, list[loc]] finalizedDups = ();
 	for(tuple[int lines, loc duplicate] potDup <- potentialDuplicates, potDup.lines>=minAmountOfLines){
 		if(potDup.lines notin finalizedDups){
 			loc l = |unknown:///|(0,0,<0,0>,<0,0>);
-			l.uri = location;
-			l.end.line = sortedDomain[indexOf(sortedDomain, lineNumber)-1].line;
-			l.begin.line = sortedDomain[indexOf(sortedDomain, lineNumber)-potDup.lines].line;
+			l.uri = location.uri;
+			l.end.line = sortedDomain[indexOf(sortedDomain, lineNumber)-1];
+			l.begin.line = sortedDomain[indexOf(sortedDomain, lineNumber)-potDup.lines];
 			finalizedDups[potDup.lines] = [l];
 			newPotentialDuplicates+=<minAmountOfLines, l>;
 		}
