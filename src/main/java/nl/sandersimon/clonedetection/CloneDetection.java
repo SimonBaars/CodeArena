@@ -66,9 +66,11 @@ public class CloneDetection
 		} catch (IOException e) {
 			throw new RuntimeException("Rascal could not be started!", e);
 		}
-		eventHandler = new nl.sandersimon.clonedetection.minecraft.EventHandler();
-		FMLCommonHandler.instance().bus().register(eventHandler);
-		MinecraftForge.EVENT_BUS.register(new nl.sandersimon.clonedetection.minecraft.ForgeEventHandler());
+		if(eventHandler!=null)	{
+			eventHandler = new nl.sandersimon.clonedetection.minecraft.EventHandler();
+			FMLCommonHandler.instance().bus().register(eventHandler);
+			MinecraftForge.EVENT_BUS.register(new nl.sandersimon.clonedetection.minecraft.ForgeEventHandler());
+		}
 	}
 
 	private Process getProcess(String command, File dir) throws IOException {

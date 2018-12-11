@@ -112,12 +112,15 @@ public list[tuple[int, list[loc]]] getDupList(map[int, list[loc]] locsAtInt, Sor
 		list[tuple[int lines, loc duplicate]] potentialDuplicates = [];
 		list[tuple[int line, int hash]] sortedDomain = sortedDomains[location];
 		int sortedDomainSize = size(sortedDomain);
-		for(int i <- [0..sortedDomainSize]){
-			if(i+minAmountOfLines-1>=sortedDomainSize) continue;
-			for(int j <- [0..minAmountOfLines-1]){
-				if(size(locsAtInt[sortedDomain[i+j].hash])<=1){
-					i+=j;
-					continue;
+		int i = 0;
+		while(i < sortedDomainSize){
+			if(!(i+5>=sortedDomainSize)){
+				for(int j <- [0..5]){
+					if(size(locsAtInt[makeHashOfLine(fileLines[sortedDomain[i+j]])])<=1){
+						potentialDuplicates = [];
+						i+=j+1;
+						continue;
+					}
 				}
 			}
 			int lineNumber = sortedDomain[i].line;
@@ -150,6 +153,7 @@ public list[tuple[int, list[loc]]] getDupList(map[int, list[loc]] locsAtInt, Sor
 			dupList = populateBeforeRemoval(dupList, potentialDuplicates, newPotentialDuplicates, sortedDomain, location, lineNumber, lineNumber == last(sortedDomain));
 			potentialDuplicates = newPotentialDuplicates;
 			//iprintln("line = <lineNumber>, newPotDup = <newPotentialDuplicates>");
+			i+=1;
 		}
 		parsedURIs += location;
 	}
