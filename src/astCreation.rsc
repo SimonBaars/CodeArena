@@ -18,6 +18,7 @@ public list[tuple[int, list[loc]]] getDuplication(int t, list[Declaration] asts)
     LineRegistry fileLineAsts = fileLineMapGeneration(t, asts);
     tuple[map[int, list[loc]] locRegistries,map[str, list[int]] sortedDomains] nodeRegs = calculateLocationsOfNodeTypes(fileLineAsts);
     map[int, list[loc]] locsAtInt = nodeRegs.locRegistries;
+    //locsAtInt willen we houden
     map[str, list[int]] sortedDomains = nodeRegs.sortedDomains;
     return getDupList(fileLineAsts, locsAtInt, sortedDomains);
 }
@@ -108,6 +109,7 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 	list[tuple[int, list[loc]]] dupList = [];
 	list[str] parsedURIs = [];
 	for(loc location <- fileLineAsts){
+		println(location);
 		list[tuple[int lines, loc duplicate]] potentialDuplicates = [];
 		map[int, list[value]] fileLines = fileLineAsts[location];
 		list[int] sortedDomain = sortedDomains[location.uri];
@@ -131,7 +133,10 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 			list[tuple[int lines, loc duplicate]] newPotentialDuplicates = [];
 			//iprintln(dupLines);
 						
+			//iprintln(dupLines);
+			//DEZE FORLOOP DUURT TE LANG PER ENTRY
 			for(loc potDupNew <- dupLines){
+				//println(potDupNew);
 				if(potDupNew.uri notin parsedURIs && (potDupNew.uri != location.uri || potDupNew.begin.line > lineNumber)){
 					bool partOfChain = false;
 					//println("WW");
