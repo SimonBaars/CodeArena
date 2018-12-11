@@ -116,7 +116,7 @@ public list[tuple[int, list[loc]]] getDupList(map[int, list[loc]] locsAtInt, Sor
 		while(i < sortedDomainSize){
 			if(!(i+5>=sortedDomainSize)){
 				for(int j <- [0..5]){
-					if(size(locsAtInt[makeHashOfLine(fileLines[sortedDomain[i+j]])])<=1){
+					if(size(locsAtInt[sortedDomain[i+j].hash])<=1){
 						potentialDuplicates = [];
 						i+=j+1;
 						continue;
