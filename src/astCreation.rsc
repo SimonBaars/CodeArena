@@ -109,8 +109,9 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 	list[tuple[int, list[loc]]] dupList = [];
 	list[str] parsedURIs = [];
 	for(loc location <- fileLineAsts){
-		println(location);
+		//println(location);
 		list[tuple[int lines, loc duplicate]] potentialDuplicates = [];
+		//map[int lines, loc duplicate] potentialDuplicates = ();
 		map[int, list[value]] fileLines = fileLineAsts[location];
 		list[int] sortedDomain = sortedDomains[location.uri];
 		int sortedDomainSize = size(sortedDomain);
@@ -134,10 +135,9 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 			//iprintln("line <lineNumber>, file <location>, stuffFound = <dupLines>");
 			list[tuple[int lines, loc duplicate]] newPotentialDuplicates = [];
 			//iprintln(dupLines);
-						
-			//iprintln(dupLines);
-			//DEZE FORLOOP DUURT TE LANG PER ENTRY
+			//Duplines is te groot -> we kunnen er dubbele map lookup van maken (van die list van tuples enzo)
 			for(loc potDupNew <- dupLines){
+				//println(size(potentialDuplicates));
 				//println(potDupNew);
 				if(potDupNew.uri notin parsedURIs && (potDupNew.uri != location.uri || potDupNew.begin.line > lineNumber)){
 					bool partOfChain = false;
