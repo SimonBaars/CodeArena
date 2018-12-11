@@ -156,19 +156,32 @@ public class CodeEditor extends JFrame implements SearchListener {
 	private JMenuBar createMenuBar() {
 
 		JMenuBar mb = new JMenuBar();
-		JMenu menu = new JMenu("Search");
+		
+		JMenu menu = new JMenu("File");
+		JMenuItem menuItem = new JMenuItem(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					TestingCommons.writeStringToFile(file, textArea.getText());
+					statusBar.setLabel("File successfully saved!");
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		menuItem.setText("Save");
+		menu.add(menuItem);
+		mb.add(menu);
+		
+		
+		menu = new JMenu("Search");
 		menu.add(new JMenuItem(new ShowFindDialogAction()));
 		menu.add(new JMenuItem(new ShowReplaceDialogAction()));
 		menu.add(new JMenuItem(new GoToLineAction()));
 		menu.addSeparator();
+	
 		
-		menu = new JMenu("File");
-		ButtonGroup bg = new ButtonGroup();
-		LookAndFeelInfo[] infos = UIManager.getInstalledLookAndFeels();
-		JMenuItem menuItem = new JMenuItem("Save");
-		menuItem.setAction(new SaveFile(file, textArea, statusBar.label));
-		menu.add(menuItem);
-		mb.add(menu);
 
 		int ctrl = getToolkit().getMenuShortcutKeyMask();
 		int shift = InputEvent.SHIFT_MASK;
