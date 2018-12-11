@@ -14,14 +14,12 @@ int minAmountOfLines = 6;
 //Class met map van regelnummers, en wat er op elke line staat
 alias LineRegistry = map[loc, map[int, list[value]]];
 
-public list[list[loc]] getDuplication(int t, list[Declaration] asts) {
+public list[tuple[int, list[loc]]] getDuplication(int t, list[Declaration] asts) {
     LineRegistry fileLineAsts = fileLineMapGeneration(t, asts);
     tuple[map[int, list[loc]] locRegistries,map[str, list[int]] sortedDomains] nodeRegs = calculateLocationsOfNodeTypes(fileLineAsts);
     map[int, list[loc]] locsAtInt = nodeRegs.locRegistries;
     map[str, list[int]] sortedDomains = nodeRegs.sortedDomains;
-    list[list[loc]] duplicateList = getDupList(fileLineAsts, locsAtInt, sortedDomains);
-    //iprintln(duplicateList);
-    return duplicateList;
+    return getDupList(fileLineAsts, locsAtInt, sortedDomains);
 }
 
 public tuple[map[int, list[loc]] locRegistries,map[str, list[int]] sortedDomains] calculateLocationsOfNodeTypes(LineRegistry fileLineAsts){
@@ -106,8 +104,8 @@ public map[int, list[value]] addToMap(map[int, list[value]] astMap, int line, li
 	return astMap;
 }
 
-public list[list[loc]] getDupList(LineRegistry fileLineAsts, map[int, list[loc]] locsAtInt, map[str, list[int]] sortedDomains){
-	list[list[loc]] dupList = [];
+public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int, list[loc]] locsAtInt, map[str, list[int]] sortedDomains){
+	list[tuple[int, list[loc]]] dupList = [];
 	list[str] parsedURIs = [];
 	for(loc location <- fileLineAsts){
 		list[tuple[int lines, loc duplicate]] potentialDuplicates = [];
@@ -116,11 +114,16 @@ public list[list[loc]] getDupList(LineRegistry fileLineAsts, map[int, list[loc]]
 		for(int lineNumber <- sortedDomain){
 			list[value] stuffOnLine = fileLines[lineNumber];
 			list[loc] dupLines = locsAtInt[makeHashOfLine(stuffOnLine)];
+			//iprintln(dupLines);
+			//println("WWW");
 			//iprintln("line <lineNumber>, file <location>, stuffFound = <dupLines>");
 			list[tuple[int lines, loc duplicate]] newPotentialDuplicates = [];
+			//iprintln(dupLines);
 			for(loc potDupNew <- dupLines){
 				if(potDupNew.uri notin parsedURIs && (potDupNew.uri != location.uri || potDupNew.begin.line > lineNumber)){
 					bool partOfChain = false;
+					//println("WW");
+					//iprintln(potDupNew);
 					for(tuple[int lines, loc duplicate] potDupOld <- potentialDuplicates){
 						if(potDupNew.uri == potDupOld.duplicate.uri && potDupOld.duplicate.end.line == sortedDomains[potDupNew.uri][indexOf(sortedDomains[potDupNew.uri], potDupNew.begin.line)-1]){
 							potDupNew.begin.line = potDupOld.duplicate.begin.line;
@@ -136,26 +139,31 @@ public list[list[loc]] getDupList(LineRegistry fileLineAsts, map[int, list[loc]]
 			}
 			dupList = populateBeforeRemoval(dupList, potentialDuplicates, newPotentialDuplicates, sortedDomain, location, lineNumber, lineNumber == last(sortedDomain));
 			potentialDuplicates = newPotentialDuplicates;
-			//println("line = <lineNumber>, newPotDup = <newPotentialDuplicates>");
+			//iprintln("line = <lineNumber>, newPotDup = <newPotentialDuplicates>");
 		}
 		parsedURIs += location.uri;
 	}
 	return dupList;
 }
 
-public list[list[loc]] populateBeforeRemoval(list[list[loc]] dupList, list[tuple[int lines, loc duplicate]] potentialDuplicates, list[tuple[int lines, loc duplicate]] newPotentialDuplicates, list[int] sortedDomain, loc location, int lineNumber, bool isLast){
+public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[loc]]] dupList, list[tuple[int lines, loc duplicate]] potentialDuplicates, list[tuple[int lines, loc duplicate]] newPotentialDuplicates, list[int] sortedDomain, loc location, int lineNumber, bool isLast){
 	map[int, list[loc]] finalizedDups = ();
 	for(tuple[int lines, loc duplicate] potDup <- potentialDuplicates, potDup.lines>=minAmountOfLines){
 		if(potDup.lines notin finalizedDups){
-			location.begin.line = sortedDomain[indexOf(sortedDomain, lineNumber)-potDup.lines];
-			location.end.line = sortedDomain[indexOf(sortedDomain, lineNumber)-1];
-			finalizedDups[potDup.lines] = [location];
-			newPotentialDuplicates+=<minAmountOfLines, location>;
+			loc l = |unknown:///|(0,0,<0,0>,<0,0>);
+			l.uri = location.uri;
+			l.end.line = sortedDomain[indexOf(sortedDomain, lineNumber)-1];
+			l.begin.line = sortedDomain[indexOf(sortedDomain, lineNumber)-potDup.lines];
+			finalizedDups[potDup.lines] = [l];
+			newPotentialDuplicates+=<minAmountOfLines, l>;
 		}
+		//println("WW");
+		//iprintln(potDup);
 		finalizedDups[potDup.lines] += potDup.duplicate;
 	}
 	//iprintln(finalizedDups);
-	dupList += [[*finalizedDups[finDup]] | finDup <- finalizedDups, isLast || any(loc aDup <- finalizedDups[finDup], willBeRemoved(aDup, newPotentialDuplicates))];
+	
+	dupList += [*[<finDup, finalizedDups[finDup]>] | finDup <- finalizedDups, isLast || any(loc aDup <- finalizedDups[finDup], willBeRemoved(aDup, newPotentialDuplicates)), !(any(tuple[int, list[loc]] aDup <- dupList, finalizedDups[finDup] <= aDup[1]))];
 	//println("size = <size(dupList)>, potDups = <potentialDuplicates>");
 	return dupList;
 }
@@ -284,19 +292,19 @@ list[value] getComparables(node n, int t){
 	   case \constructorCall(bool isSuper, Expression expr, list[Expression] arguments) : return [90, isSuper];
 	   case \constructorCall(bool isSuper, list[Expression] arguments) : return [91, isSuper];
     }
-    return [0];
+    return [127];
 }
 
 public list[value] extractType(Type t, int ty){
 	switch(t){
 		case arrayType(Type \type): return [109] + extractType(\type, ty);
 		case parameterizedType(Type \type): return [108] + extractType(\type, ty);
-    	// case qualifiedType(Type qualifier, Expression simpleName) return [107] + extractType(qualifier);
+    	case qualifiedType(Type qualifier, Expression simpleName): return [107] + extractType(qualifier, ty);
     	case simpleType(Expression name): return [106] + getComparables(name, ty);
-    	// case unionType(list[Type] types): return [105] + [extractType(ty), ty <- types];
+    	case unionType(list[Type] types): return [105] + [extractType(teip, ty) | teip <- types];
     	case wildcard(): return [104];
-    	// case upperbound(Type \type) return [103] + extractType(\type);
-    	// case lowerbound(Type \type) return [102] + extractType(\type);
+    	case upperbound(Type \type): return [103] + extractType(\type, ty);
+    	case lowerbound(Type \type): return [102] + extractType(\type, ty);
     	case \int(): return [101];
    		case short(): return [100];
     	case long(): return [99];

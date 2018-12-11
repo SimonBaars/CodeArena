@@ -1,6 +1,7 @@
 package nl.sandersimon.clonedetection.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CloneClass implements Comparable<CloneClass>{
@@ -47,6 +48,11 @@ public class CloneClass implements Comparable<CloneClass>{
 
 	public Location get(int j) {
 		return locations.get(j);
+	}
+
+	@Override
+	public String toString() {
+		return "CloneClass [lines=" + lines + ", locations=" + Arrays.toString(locations.toArray()) + "]";
 	}
 
 }
