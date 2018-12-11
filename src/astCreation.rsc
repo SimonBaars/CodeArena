@@ -111,14 +111,26 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 		list[tuple[int lines, loc duplicate]] potentialDuplicates = [];
 		map[int, list[value]] fileLines = fileLineAsts[location];
 		list[int] sortedDomain = sortedDomains[location.uri];
-		for(int lineNumber <- sortedDomain){
+		int sortedDomainSize = size(sortedDomain);
+		for(int i <- [0..sortedDomainSize]){
+			if(i+5>=sortedDomainSize) continue;
+			for(int j <- [0..5]){
+				if(size(locsAtInt[makeHashOfLine(fileLines[sortedDomain[i+j]])])<=1){
+					i+=j;
+					continue;
+				}
+			}
+			int lineNumber = sortedDomain[i];
+			println(lineNumber);
 			list[value] stuffOnLine = fileLines[lineNumber];
 			list[loc] dupLines = locsAtInt[makeHashOfLine(stuffOnLine)];
+			if(size(dupLines) <= 1) continue;
 			//iprintln(dupLines);
 			//println("WWW");
 			//iprintln("line <lineNumber>, file <location>, stuffFound = <dupLines>");
 			list[tuple[int lines, loc duplicate]] newPotentialDuplicates = [];
-			iprintln(dupLines);
+			//iprintln(dupLines);
+						
 			for(loc potDupNew <- dupLines){
 				if(potDupNew.uri notin parsedURIs && (potDupNew.uri != location.uri || potDupNew.begin.line > lineNumber)){
 					bool partOfChain = false;
