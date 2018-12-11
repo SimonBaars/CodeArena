@@ -114,11 +114,16 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 		for(int lineNumber <- sortedDomain){
 			list[value] stuffOnLine = fileLines[lineNumber];
 			list[loc] dupLines = locsAtInt[makeHashOfLine(stuffOnLine)];
+			//iprintln(dupLines);
+			//println("WWW");
 			//iprintln("line <lineNumber>, file <location>, stuffFound = <dupLines>");
 			list[tuple[int lines, loc duplicate]] newPotentialDuplicates = [];
+			//iprintln(dupLines);
 			for(loc potDupNew <- dupLines){
 				if(potDupNew.uri notin parsedURIs && (potDupNew.uri != location.uri || potDupNew.begin.line > lineNumber)){
 					bool partOfChain = false;
+					//println("WW");
+					//iprintln(potDupNew);
 					for(tuple[int lines, loc duplicate] potDupOld <- potentialDuplicates){
 						if(potDupNew.uri == potDupOld.duplicate.uri && potDupOld.duplicate.end.line == sortedDomains[potDupNew.uri][indexOf(sortedDomains[potDupNew.uri], potDupNew.begin.line)-1]){
 							potDupNew.begin.line = potDupOld.duplicate.begin.line;
@@ -132,9 +137,10 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 						newPotentialDuplicates+=<1, potDupNew>;
 				}
 			}
+			//iprintln(newPotentialDuplicates);
 			dupList = populateBeforeRemoval(dupList, potentialDuplicates, newPotentialDuplicates, sortedDomain, location, lineNumber, lineNumber == last(sortedDomain));
 			potentialDuplicates = newPotentialDuplicates;
-			//println("line = <lineNumber>, newPotDup = <newPotentialDuplicates>");
+			//iprintln("line = <lineNumber>, newPotDup = <newPotentialDuplicates>");
 		}
 		parsedURIs += location.uri;
 	}
@@ -150,6 +156,8 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 			finalizedDups[potDup.lines] = [location];
 			newPotentialDuplicates+=<minAmountOfLines, location>;
 		}
+		//println("WW");
+		//iprintln(potDup);
 		finalizedDups[potDup.lines] += potDup.duplicate;
 	}
 	dupList += [*[<finDup, finalizedDups[finDup]>] | finDup <- finalizedDups, isLast || any(loc aDup <- finalizedDups[finDup], willBeRemoved(aDup, newPotentialDuplicates))];
