@@ -8,6 +8,7 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.scoreboard.Score;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -17,6 +18,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.ResourceCommons;
+import nl.sandersimon.clonedetection.model.CloneClass;
 import nl.sandersimon.clonedetection.model.Location;
 
 @Mod(modid = CloneDetection.MODID, name = CloneDetection.NAME, version = CloneDetection.VERSION)
@@ -32,7 +34,10 @@ public class CloneDetection
 	private BufferedWriter rascalOut;
 	private InputStreamReader rascalIn;
 	private static CloneDetection cloneDetection;
-	private List<List<Location>> clones;
+	private List<CloneClass> clones;
+	
+	private Score amountOfClonedLinesInCode;
+	private Score percentageOfProjectCloned;
 
 	public static int dialoge;
 
@@ -148,11 +153,11 @@ public class CloneDetection
 		return new String(cbuf);
 	}
 
-	public List<List<Location>> getClones() {
+	public List<CloneClass> getClones() {
 		return clones;
 	}
 
-	public void setClones(List<List<Location>> clones) {
+	public void setClones(List<CloneClass> clones) {
 		this.clones = clones;
 	}
 }
