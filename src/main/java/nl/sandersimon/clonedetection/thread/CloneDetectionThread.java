@@ -29,7 +29,7 @@ public class CloneDetectionThread extends Thread {
 		String bufferSizeString = CloneDetection.get().waitUntilExecuted('\n').get(0);
 		int bufferSize = Integer.parseInt(bufferSizeString);
 		String res = CloneDetection.get().readBuffer(bufferSize);
-		System.out.println(res+", "+bufferSizeString);
+		//System.out.println(res+", "+bufferSizeString);
 		CloneDetection.get().waitUntilExecuted();
 		CloneDetection.get().setClones(populateResult(res));
 	}
