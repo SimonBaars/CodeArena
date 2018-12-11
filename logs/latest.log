@@ -1,4 +1,4 @@
-[14:13:45] [main/ERROR] [FML]: Unable to determine registrant mod for nl.sandersimon.clonedetection.minecraft.EventHandler@5b87ed94. This is a critical error and should be impossible
+[17:39:59] [main/ERROR] [FML]: Unable to determine registrant mod for nl.sandersimon.clonedetection.minecraft.EventHandler@7fac631b. This is a critical error and should be impossible
 java.lang.Throwable: null
 	at net.minecraftforge.fml.common.eventhandler.EventBus.register(EventBus.java:75) [forgeSrc-1.12.2-14.23.5.2768.jar:?]
 	at nl.sandersimon.clonedetection.CloneDetection.init(CloneDetection.java:70) [bin/:?]
@@ -26,7 +26,7 @@ java.lang.Throwable: null
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:763) [.cp/:?]
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:463) [.cp/:?]
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:209) [.cp/:?]
-[14:13:45] [main/ERROR] [FML]: Error registering event handler: minecraft class net.minecraftforge.fml.common.gameevent.TickEvent$ClientTickEvent public void nl.sandersimon.clonedetection.minecraft.EventHandler.update(net.minecraftforge.fml.common.gameevent.TickEvent$ClientTickEvent)
+[17:39:59] [main/ERROR] [FML]: Error registering event handler: minecraft class net.minecraftforge.fml.common.gameevent.TickEvent$ClientTickEvent public void nl.sandersimon.clonedetection.minecraft.EventHandler.update(net.minecraftforge.fml.common.gameevent.TickEvent$ClientTickEvent)
 java.lang.NoSuchMethodException: net.minecraftforge.fml.common.gameevent.TickEvent$ClientTickEvent.<init>()
 	at java.lang.Class.getConstructor0(Class.java:3082) ~[?:1.8.0_192]
 	at java.lang.Class.getConstructor(Class.java:1825) ~[?:1.8.0_192]
@@ -57,7 +57,7 @@ java.lang.NoSuchMethodException: net.minecraftforge.fml.common.gameevent.TickEve
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:763) [.cp/:?]
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:463) [.cp/:?]
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:209) [.cp/:?]
-[14:13:45] [main/ERROR] [FML]: Error registering event handler: minecraft class net.minecraftforge.fml.common.gameevent.TickEvent$ServerTickEvent public void nl.sandersimon.clonedetection.minecraft.EventHandler.update(net.minecraftforge.fml.common.gameevent.TickEvent$ServerTickEvent)
+[17:39:59] [main/ERROR] [FML]: Error registering event handler: minecraft class net.minecraftforge.fml.common.gameevent.TickEvent$ServerTickEvent public void nl.sandersimon.clonedetection.minecraft.EventHandler.update(net.minecraftforge.fml.common.gameevent.TickEvent$ServerTickEvent)
 java.lang.NoSuchMethodException: net.minecraftforge.fml.common.gameevent.TickEvent$ServerTickEvent.<init>()
 	at java.lang.Class.getConstructor0(Class.java:3082) ~[?:1.8.0_192]
 	at java.lang.Class.getConstructor(Class.java:1825) ~[?:1.8.0_192]
@@ -88,7 +88,7 @@ java.lang.NoSuchMethodException: net.minecraftforge.fml.common.gameevent.TickEve
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:763) [.cp/:?]
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:463) [.cp/:?]
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:209) [.cp/:?]
-[14:13:45] [main/ERROR] [FML]: Unable to determine registrant mod for nl.sandersimon.clonedetection.minecraft.ForgeEventHandler@614ca7df. This is a critical error and should be impossible
+[17:39:59] [main/ERROR] [FML]: Unable to determine registrant mod for nl.sandersimon.clonedetection.minecraft.ForgeEventHandler@6cd28fa7. This is a critical error and should be impossible
 java.lang.Throwable: null
 	at net.minecraftforge.fml.common.eventhandler.EventBus.register(EventBus.java:75) [forgeSrc-1.12.2-14.23.5.2768.jar:?]
 	at nl.sandersimon.clonedetection.CloneDetection.init(CloneDetection.java:71) [bin/:?]
@@ -116,7 +116,7 @@ java.lang.Throwable: null
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:763) [.cp/:?]
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:463) [.cp/:?]
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:209) [.cp/:?]
-[14:13:45] [main/ERROR] [FML]: Error registering event handler: minecraft class net.minecraftforge.event.world.WorldEvent$Load public void nl.sandersimon.clonedetection.minecraft.ForgeEventHandler.livingSpawnEvent(net.minecraftforge.event.world.WorldEvent$Load)
+[17:39:59] [main/ERROR] [FML]: Error registering event handler: minecraft class net.minecraftforge.event.world.WorldEvent$Load public void nl.sandersimon.clonedetection.minecraft.ForgeEventHandler.livingSpawnEvent(net.minecraftforge.event.world.WorldEvent$Load)
 java.lang.NoSuchMethodException: net.minecraftforge.event.world.WorldEvent$Load.<init>()
 	at java.lang.Class.getConstructor0(Class.java:3082) ~[?:1.8.0_192]
 	at java.lang.Class.getConstructor(Class.java:1825) ~[?:1.8.0_192]
@@ -147,7 +147,7 @@ java.lang.NoSuchMethodException: net.minecraftforge.event.world.WorldEvent$Load.
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:763) [.cp/:?]
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:463) [.cp/:?]
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:209) [.cp/:?]
-[14:13:45] [main/ERROR] [FML]: Error registering event handler: minecraft class net.minecraftforge.event.ServerChatEvent public void nl.sandersimon.clonedetection.minecraft.ForgeEventHandler.playerChat(net.minecraftforge.event.ServerChatEvent)
+[17:39:59] [main/ERROR] [FML]: Error registering event handler: minecraft class net.minecraftforge.event.ServerChatEvent public void nl.sandersimon.clonedetection.minecraft.ForgeEventHandler.playerChat(net.minecraftforge.event.ServerChatEvent)
 java.lang.NoSuchMethodException: net.minecraftforge.event.ServerChatEvent.<init>()
 	at java.lang.Class.getConstructor0(Class.java:3082) ~[?:1.8.0_192]
 	at java.lang.Class.getConstructor(Class.java:1825) ~[?:1.8.0_192]

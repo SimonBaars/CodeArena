@@ -22,7 +22,7 @@ public class EditorTest2 {
 		}
 		while(CloneDetectionThread.getWorker().isAlive())
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
