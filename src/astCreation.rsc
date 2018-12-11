@@ -33,8 +33,8 @@ public tuple[map[int, list[loc]] locRegistries,map[str, list[int]] sortedDomains
 			l.uri = location.uri;
 			l.end.line = lineNumber;
 			l.begin.line = lineNumber;
-			//println("Line <lineNumber> of file <indexOf(sort(domain(fileLineAsts)), location)> has hash <makeHashOfLine(stuffOnLine)>");
-			//println(stuffOnLine);
+			println("Line <lineNumber> of file <indexOf(sort(domain(fileLineAsts)), location)> has hash <makeHashOfLine(stuffOnLine)>");
+			println(stuffOnLine);
 			registry = addTo(registry, makeHashOfLine(stuffOnLine), l);
 		}
 		sortedDomains[location.uri] = sort(domain(fileLines));
@@ -114,11 +114,16 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 		for(int lineNumber <- sortedDomain){
 			list[value] stuffOnLine = fileLines[lineNumber];
 			list[loc] dupLines = locsAtInt[makeHashOfLine(stuffOnLine)];
+			//iprintln(dupLines);
+			//println("WWW");
 			//iprintln("line <lineNumber>, file <location>, stuffFound = <dupLines>");
 			list[tuple[int lines, loc duplicate]] newPotentialDuplicates = [];
+			//iprintln(dupLines);
 			for(loc potDupNew <- dupLines){
 				if(potDupNew.uri notin parsedURIs && (potDupNew.uri != location.uri || potDupNew.begin.line > lineNumber)){
 					bool partOfChain = false;
+					//println("WW");
+					//iprintln(potDupNew);
 					for(tuple[int lines, loc duplicate] potDupOld <- potentialDuplicates){
 						if(potDupNew.uri == potDupOld.duplicate.uri && potDupOld.duplicate.end.line == sortedDomains[potDupNew.uri][indexOf(sortedDomains[potDupNew.uri], potDupNew.begin.line)-1]){
 							potDupNew.begin.line = potDupOld.duplicate.begin.line;
@@ -132,9 +137,10 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 						newPotentialDuplicates+=<1, potDupNew>;
 				}
 			}
+			//iprintln(newPotentialDuplicates);
 			dupList = populateBeforeRemoval(dupList, potentialDuplicates, newPotentialDuplicates, sortedDomain, location, lineNumber, lineNumber == last(sortedDomain));
 			potentialDuplicates = newPotentialDuplicates;
-			//println("line = <lineNumber>, newPotDup = <newPotentialDuplicates>");
+			//iprintln("line = <lineNumber>, newPotDup = <newPotentialDuplicates>");
 		}
 		parsedURIs += location.uri;
 	}
@@ -150,6 +156,8 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 			finalizedDups[potDup.lines] = [location];
 			newPotentialDuplicates+=<minAmountOfLines, location>;
 		}
+		//println("WW");
+		//iprintln(potDup);
 		finalizedDups[potDup.lines] += potDup.duplicate;
 	}
 	dupList += [*[<finDup, finalizedDups[finDup]>] | finDup <- finalizedDups, isLast || any(loc aDup <- finalizedDups[finDup], willBeRemoved(aDup, newPotentialDuplicates))];
@@ -281,19 +289,19 @@ list[value] getComparables(node n, int t){
 	   case \constructorCall(bool isSuper, Expression expr, list[Expression] arguments) : return [90, isSuper];
 	   case \constructorCall(bool isSuper, list[Expression] arguments) : return [91, isSuper];
     }
-    return [0];
+    return [127];
 }
 
 public list[value] extractType(Type t, int ty){
 	switch(t){
 		case arrayType(Type \type): return [109] + extractType(\type, ty);
 		case parameterizedType(Type \type): return [108] + extractType(\type, ty);
-    	// case qualifiedType(Type qualifier, Expression simpleName) return [107] + extractType(qualifier);
+    	case qualifiedType(Type qualifier, Expression simpleName): return [107] + extractType(qualifier, ty);
     	case simpleType(Expression name): return [106] + getComparables(name, ty);
-    	// case unionType(list[Type] types): return [105] + [extractType(ty), ty <- types];
+    	case unionType(list[Type] types): return [105] + [extractType(teip, ty) | teip <- types];
     	case wildcard(): return [104];
-    	// case upperbound(Type \type) return [103] + extractType(\type);
-    	// case lowerbound(Type \type) return [102] + extractType(\type);
+    	case upperbound(Type \type): return [103] + extractType(\type, ty);
+    	case lowerbound(Type \type): return [102] + extractType(\type, ty);
     	case \int(): return [101];
    		case short(): return [100];
     	case long(): return [99];
