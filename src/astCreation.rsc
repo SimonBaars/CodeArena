@@ -193,8 +193,13 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 		finalizedDups[potDup.lines] += potDup.duplicate;
 	}
 	//iprintln(finalizedDups);
-	
-	dupList += [*[<finDup, finalizedDups[finDup]>] | finDup <- finalizedDups, isLast || any(loc aDup <- finalizedDups[finDup], willBeRemoved(aDup, newPotentialDuplicates)), !(any(tuple[int, list[loc]] aDup <- dupList, finalizedDups[finDup] <= aDup[1]))];
+	list[tuple[int, list[loc]]] temp = [*[<finDup, finalizedDups[finDup]>] | finDup <- finalizedDups, isLast || any(loc aDup <- finalizedDups[finDup], willBeRemoved(aDup, newPotentialDuplicates)), !(any(tuple[int, list[loc]] aDup <- dupList, finalizedDups[finDup] <= aDup[1]))];
+	if(size(temp) > 0){
+		str buffer = toString(temp);
+		println(size(buffer));
+		println(buffer);
+		dupList += temp;
+	}
 	//println("size = <size(dupList)>, potDups = <potentialDuplicates>");
 	return dupList;
 }
