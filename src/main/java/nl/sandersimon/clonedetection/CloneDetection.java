@@ -8,7 +8,6 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.scoreboard.Score;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -17,6 +16,7 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import nl.sandersimon.clonedetection.challenge.CodeArena;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.ResourceCommons;
 import nl.sandersimon.clonedetection.model.CloneClass;
@@ -43,6 +43,8 @@ public class CloneDetection
 	private Score mostLinesCloneClass;
 	private Score mostOccurrentClone;
 	private Score biggestCloneClass;
+	
+	private CodeArena arena;
 	
 	public static int dialoge;
 
@@ -221,5 +223,13 @@ public class CloneDetection
 
 	public void setBiggestCloneClass(Score biggestCloneClass) {
 		this.biggestCloneClass = biggestCloneClass;
+	}
+
+	public CodeArena getArena() {
+		return arena;
+	}
+
+	public void setArena(CodeArena arena) {
+		this.arena = arena;
 	}
 }

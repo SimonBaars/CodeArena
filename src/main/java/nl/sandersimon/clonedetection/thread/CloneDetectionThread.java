@@ -6,6 +6,7 @@ import java.util.List;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import nl.sandersimon.clonedetection.CloneDetection;
+import nl.sandersimon.clonedetection.challenge.CodeArena;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.minecraft.structureloader.SchematicStructure;
@@ -63,9 +64,7 @@ public class CloneDetectionThread extends Thread {
 	public static void startWorker(MinecraftServer server, ICommandSender s, String project) {
 		//System.out.println("Spawn at pos "+s.getPosition());
 		//new StructureCreatorClient("arena", s.getPosition().getX()+95, s.getPosition().getY()-2, s.getPosition().getZ()+80	, false, 0);
-		SchematicStructure structure = new SchematicStructure("arena");
-		structure.readFromFile();
-		structure.process(s.getEntityWorld(), s.getPosition().getX()+32, s.getPosition().getY()-1, s.getPosition().getZ()+37);
+		CloneDetection.get().setArena(new CodeArena(s.getPosition().getX(), s.getPosition().getY(), s.getPosition().getZ()));
 		if(worker!=null && worker.isAlive()) {
 			s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.RED, "Sorry, but I'm still busy detecting clones! Please wait a little longer."));
 			return;
