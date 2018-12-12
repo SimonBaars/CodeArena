@@ -8,23 +8,26 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.translation.LanguageMap;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import nl.sandersimon.clonedetection.challenge.Challenges;
 import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.minecraft.structureloader.LightUpdateCheck;
 import nl.sandersimon.clonedetection.minecraft.structureloader.SchematicStructure;
 
 public class EventHandler {
-	public final ArrayList<SchematicStructure> postProcessors = new ArrayList<SchematicStructure>();
-	public final ArrayList<ICreatorBlock> creators = new ArrayList<ICreatorBlock>();
-	public final ArrayList<ICreatorBlock> serverCreators = new ArrayList<ICreatorBlock>();
-	public final ArrayList<String> delayedPrints = new ArrayList<String>();
+	public final List<SchematicStructure> postProcessors = new ArrayList<>();
+	public final List<ICreatorBlock> creators = new ArrayList<>();
+	public final List<ICreatorBlock> serverCreators = new ArrayList<>();
+	public final List<String> delayedPrints = new ArrayList<>();
 	public LightUpdateCheck lightUpdate;
 	public long previousTick = 0;
 	public boolean isLoaded=false;
+	public Challenges challenge=null;
 	
 	public EventHandler(){
 	}

@@ -2,9 +2,8 @@ package nl.sandersimon.clonedetection.challenge;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
-import modid.challenge.core.Challenge;
-import modid.challenge.core.ScoreThread;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -20,10 +19,11 @@ import net.minecraft.scoreboard.IScoreCriteria.EnumRenderType;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.GameType;
 import net.minecraft.world.World;
+import nl.sandersimon.clonedetection.CloneDetection;
+import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.minecraft.structureloader.BlockPlaceHandler;
 
 public abstract class Challenges {
@@ -31,9 +31,9 @@ public abstract class Challenges {
 	World serverWorld;
 	protected int x,y,z;
 	EntityPlayerMP[] players;
-	ArrayList<EntityPlayerMP> alivePlayers = new ArrayList<EntityPlayerMP>();
-	ArrayList<EntityPlayerMP> deadPlayers = new ArrayList<EntityPlayerMP>();
-	ArrayList<Item> items = new ArrayList<Item>();
+	List<EntityPlayerMP> alivePlayers = new ArrayList<>();
+	List<EntityPlayerMP> deadPlayers = new ArrayList<>();
+	List<Item> items = new ArrayList<>();
 	public long lastTickTime = 0;
 	GameType defGameType;
 	public int waitTime = 2000;
@@ -52,16 +52,16 @@ public abstract class Challenges {
 		this.y=y;
 		this.z=z;
 		this.defDifficulty=defDifficulty;
-		Challenge.eventHandler.challenge=this;
+		CloneDetection.eventHandler.challenge=this;
 		Minecraft.getMinecraft().getIntegratedServer().setDifficultyForAllWorlds(defDifficulty);
 		//Challenge.eventHandler.previousTick = System.currentTimeMillis();
 		this.worldIn=Minecraft.getMinecraft().world;
 		this.serverWorld=Minecraft.getMinecraft().getIntegratedServer().getEntityWorld();
-		for(int i = 0; i<Minecraft.getMinecraft().player.inventory.mainInventory.length; i++){
-			oldInventory.add(Minecraft.getMinecraft().player.inventory.mainInventory[i]);
+		for(int i = 0; i<Minecraft.getMinecraft().player.inventory.mainInventory.size(); i++){
+			oldInventory.add(Minecraft.getMinecraft().player.inventory.mainInventory.get(i));
 		}
-		for(int i = 0; i<Minecraft.getMinecraft().player.inventory.armorInventory.length; i++){
-			oldInventory.add(Minecraft.getMinecraft().player.inventory.armorInventory[i]);
+		for(int i = 0; i<Minecraft.getMinecraft().player.inventory.armorInventory.size(); i++){
+			oldInventory.add(Minecraft.getMinecraft().player.inventory.armorInventory.get(i));
 		}
 		for(int i = 0; i<Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().loadedEntityList.size(); i++){
 			if(Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().loadedEntityList.get(i) instanceof EntityCreature || Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().loadedEntityList.get(i) instanceof EntityItem){
@@ -70,7 +70,7 @@ public abstract class Challenges {
 			}
 		}
 		Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().getGameRules().setOrCreateGameRule("doMobSpawning", "false");
-		Minecraft.getMinecraft().player.addChatMessage(new TextComponentString("The challenge has started!"));
+		Minecraft.getMinecraft().player.sendChatMessage("The challenge has started!");
 		numberOfPlayers = Minecraft.getMinecraft().getIntegratedServer().getCurrentPlayerCount();
 		if(numberOfPlayers==0){
 			System.out.println("Something went wrong while initializing players...");
@@ -94,7 +94,6 @@ public abstract class Challenges {
 		displayScore.setScorePoints(0);
 		displayHighscore = scoreBoard.getScoreboard().getOrCreateScore("Current Highscore", scoreBoard);
 		//System.out.println(Challenge.highscores[getChallengeNum()-1]+", "+(getChallengeNum()-1));
-		displayHighscore.setScorePoints(Challenge.highscores[getChallengeNum()-1]);
 	}
 
 	public int getScore(){
@@ -103,18 +102,18 @@ public abstract class Challenges {
 
 	public boolean resetPlayer(){
 		if(y>150){
-			Minecraft.getMinecraft().player.addChatMessage(new TextComponentString("You cannot create this challenge this high..."));
+			Minecraft.getMinecraft().player.sendChatMessage("You cannot create this challenge this high...");
 			removeThisChallenge();
 			return true;
 		}
 		if(Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().getDifficulty()!=defDifficulty){
-			Minecraft.getMinecraft().player.addChatMessage(new TextComponentString("Please do not change the difficulty..."));
+			Minecraft.getMinecraft().player.sendChatMessage("Please do not change the difficulty...");
 			removeThisChallenge();
 			return true;
 		}
 		for(EntityPlayerMP player : players){
 			player.isAirBorne=false;
-			if(player.inventory.getCurrentItem()==null || player.inventory.getCurrentItem().getItem()!=Items.bow){
+			if(player.inventory.getCurrentItem()==null || player.inventory.getCurrentItem().getItem()!=Items.BOW){
 				player.inventory.clear();
 				for(Item item : items){
 					player.inventory.addItemStackToInventory(new ItemStack(item, item.getItemStackLimit()));
@@ -129,17 +128,17 @@ public abstract class Challenges {
 		}*/
 			player.getFoodStats().setFoodLevel(20);
 			if(alivePlayers.contains(player) && Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().getWorldInfo().getGameType()!=defGameType){
-				Minecraft.getMinecraft().player.addChatMessage(new TextComponentString("You cannot do this challenge in any other gamemode than survival..."));
+				Minecraft.getMinecraft().player.sendChatMessage("You cannot do this challenge in any other gamemode than survival...");
 				removeThisChallenge();
 				return true;
 			} 
 			if(deadPlayers.contains(player) && Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().getWorldInfo().getGameType()!=GameType.SPECTATOR){
-				Minecraft.getMinecraft().player.addChatMessage(new TextComponentString("You be in any other gamemode than SPECTATOR now..."));
+				Minecraft.getMinecraft().player.sendChatMessage("You cannot be in any other gamemode than SPECTATOR now...");
 				removeThisChallenge();
 				return true;
 			}
 			if(player.getActivePotionEffects().size()>0){
-				Minecraft.getMinecraft().player.addChatMessage(new TextComponentString("You cannot do this challenge when potion effects are active"));
+				Minecraft.getMinecraft().player.sendChatMessage("You cannot do this challenge when potion effects are active");
 				removeThisChallenge();
 				return true;
 			}
@@ -149,7 +148,7 @@ public abstract class Challenges {
 				return true;
 			}
 		}
-		if(Minecraft.getMinecraft().player.inventory.getCurrentItem()==null || Minecraft.getMinecraft().player.inventory.getCurrentItem().getItem()!=Items.bow){
+		if(Minecraft.getMinecraft().player.inventory.getCurrentItem()==null || Minecraft.getMinecraft().player.inventory.getCurrentItem().getItem()!=Items.BOW){
 			Minecraft.getMinecraft().player.inventory.clear();
 			for(Item item : items){
 				Minecraft.getMinecraft().player.inventory.addItemStackToInventory(new ItemStack(item, item.getItemStackLimit()));
@@ -157,7 +156,7 @@ public abstract class Challenges {
 			Minecraft.getMinecraft().player.inventoryContainer.detectAndSendChanges();
 		}
 		if(numberOfPlayers!=Minecraft.getMinecraft().getIntegratedServer().getCurrentPlayerCount()){
-			Minecraft.getMinecraft().player.addChatMessage(new TextComponentString("No players may leave or join the game while a challenge is running."));
+			Minecraft.getMinecraft().player.sendChatMessage("No players may leave or join the game while a challenge is running.");
 			removeThisChallenge();
 			return true;
 		}
@@ -198,7 +197,7 @@ public abstract class Challenges {
 				}
 			}
 			try{
-				new File("saves/"+Minecraft.getMinecraft().getIntegratedServer().getFolderName()+"/challenge.txt").delete();
+				new File(SavePaths.getSaveFolder()+Minecraft.getMinecraft().getIntegratedServer().getFolderName()+"/challenge.txt").delete();
 			} catch (Exception e){
 
 			}
@@ -207,7 +206,7 @@ public abstract class Challenges {
 			Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().getGameRules().setOrCreateGameRule("doMobSpawning", "true");
 			destroy();
 		}
-		Challenge.eventHandler.challenge=null;
+		CloneDetection.eventHandler.challenge=null;
 	}
 
 	abstract void destroy();
@@ -226,8 +225,8 @@ public abstract class Challenges {
 	public void endChallenge(EntityPlayer entityIn) {
 		EntityPlayerMP deadPlayer = (EntityPlayerMP)  Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().getPlayerEntityByName(entityIn.getName());
 		if(alivePlayers.contains(deadPlayer)){
-			Minecraft.getMinecraft().player.addChatMessage(new TextComponentString("It's Game Over for "+entityIn.getName()+"!"));
-			Minecraft.getMinecraft().player.addChatMessage(new TextComponentString(entityIn.getName()+" has ended with a score of "+getScore()));
+			Minecraft.getMinecraft().player.sendChatMessage("It's Game Over for "+entityIn.getName()+"!");
+			Minecraft.getMinecraft().player.sendChatMessage(entityIn.getName()+" has ended with a score of "+getScore());
 			alivePlayers.remove(deadPlayer);
 			deadPlayers.add(deadPlayer);
 		}

@@ -71,11 +71,7 @@ public class ChallengeFour extends Challenges {
 		sizex=structure.length;
 		sizey=structure.height;
 		sizez=structure.width;
-		structure.process(serverWorld, worldIn, x+32, y-1, z+37);
-		structure = new SchematicStructure("arenacheck");
-		structure.readFromFile();
-		structure.isLive=true;
-		this.checkStructure=structure;
+		structure.process(worldIn, x+32, y-1, z+37);
 	}
 	
 	void spawnMobs(int monsterId, int amount){
@@ -85,7 +81,7 @@ public class ChallengeFour extends Challenges {
 			monster.setLocationAndAngles(cornerx+((int)(Math.random()*(fieldx-2)))+1, y+2, cornerz+((int)(Math.random()*(fieldz-2)))+1, 0, 0);
 			monster.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(monster)), (IEntityLivingData)null);
 			//monster.spawnEntityInWorld(monster);
-			serverWorld.spawnEntityInWorld(monster);
+			serverWorld.spawnEntity(monster);
 			activeMonsters.add(monster);
 		}
 	}
@@ -114,7 +110,7 @@ public class ChallengeFour extends Challenges {
 	}
 
 	void destroy(){
-		placeBlocks(Blocks.air, x+32, y-1,z+38,sizex,sizey,sizez);
+		placeBlocks(Blocks.AIR, x+32, y-1,z+38,sizex,sizey,sizez);
 		for(int i = 0; i<activeMonsters.size(); i++){
 			activeMonsters.get(i).setDead();
 		}
@@ -134,35 +130,35 @@ public class ChallengeFour extends Challenges {
 		if(ticks==25 || !doReplaceStuff || activeMonsters.size()==0){
 			int realWave = wave%nWaves;
 			switch(realWave){
-			case 0: items.clear(); items.add(Items.wooden_sword); spawnMobs(16,2); break;
+			case 0: items.clear(); items.add(Items.WOODEN_SWORD); spawnMobs(16,2); break;
 			case 1: spawnMobs(12,2); break;
 			case 2: spawnMobs(13,4); break;
 			case 3: spawnMobs(11,10); break;
 			case 4: spawnMobs(15,5); break;
 			case 5: spawnMobs(0,20); break;
 			case 6: spawnMobs(4,5); break;
-			case 7: items.add(Items.stone_sword); spawnMobs(8, 2); break;
+			case 7: items.add(Items.STONE_SWORD); spawnMobs(8, 2); break;
 			case 8: spawnMobs(9, 10); break;
 			case 9: spawnMobs(2, 5); break;
 			case 10: spawnMobs(10,6); break;
 			case 11: spawnMobs(1,20); break;
 			case 12: spawnMobs(11,50); break;
-			case 13: items.add(Items.iron_sword); spawnMobs(6,100); break;
+			case 13: items.add(Items.IRON_SWORD); spawnMobs(6,100); break;
 			case 14: spawnMobs(9, 15); spawnMobs(13, 15); break;
 			case 15: spawnMobs(10,15); break;
-			case 16: items.add(Items.diamond_sword); spawnMobs(0,50); break;
+			case 16: items.add(Items.DIAMOND_SWORD); spawnMobs(0,50); break;
 			case 17: spawnMobs(16,60); break;
 			case 18: spawnMobs(12,20); break;
-			case 19: int[] finalRound = {0,1,2,4,6,9,10,11,12,13,15,16}; items.add(Items.flint_and_steel); for(int i = 0; i<finalRound.length; i++){ spawnMobs(finalRound[i],4); }
+			case 19: int[] finalRound = {0,1,2,4,6,9,10,11,12,13,15,16}; items.add(Items.FLINT_AND_STEEL); for(int i = 0; i<finalRound.length; i++){ spawnMobs(finalRound[i],4); }
 			} 
 			wave++;
 			doReplaceStuff=true;
 			ticks=0;
 		}
 		serverWorld.setWorldTime(14000);
-		if(Minecraft.getMinecraft().thePlayer!=null){
+		if(Minecraft.getMinecraft().player!=null){
 			if(doReplaceStuff){
-				checkStructure.process(serverWorld, worldIn, cornerx+fieldx, y-1, cornerz+fieldz);	
+				checkStructure.process(worldIn, cornerx+fieldx, y-1, cornerz+fieldz);	
 			}
 		if(resetPlayer()){
 			return true;
@@ -188,17 +184,17 @@ public class ChallengeFour extends Challenges {
 	private void removeWaterWorld() {
 		// TODO Auto-generated method stub
 		doReplaceStuff=true;
-		placeBlocks(Blocks.air, cornerx+fieldx-1, y+1,cornerz+fieldz,fieldx,2,fieldz);
+		placeBlocks(Blocks.AIR, cornerx+fieldx-1, y+1,cornerz+fieldz,fieldx,2,fieldz);
 	}
 
 	private void setWaterWorld() {
 		// TODO Auto-generated method stub
 		doReplaceStuff=false;
-		placeBlocks(Blocks.water, cornerx+fieldx-1, y+1,cornerz+fieldz,fieldx,2,fieldz);
+		placeBlocks(Blocks.WATER, cornerx+fieldx-1, y+1,cornerz+fieldz,fieldx,2,fieldz);
 		for(int i  = 0; i<fieldx; i+=3){
 			for(int j = 0; j<2; j++){
 				for(int k  = 0; k<fieldz; k+=3){
-					placeBlocks(Blocks.sand, cornerx+fieldx-1-i, y+1+j,cornerz+fieldz-k,1,2,1);
+					placeBlocks(Blocks.SAND, cornerx+fieldx-1-i, y+1+j,cornerz+fieldz-k,1,2,1);
 				}
 			}
 		}
