@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import nl.sandersimon.clonedetection.editor.CodeEditorMaker;
+
 public class CloneClass implements Comparable<CloneClass>{
 
 	int lines;
@@ -59,4 +61,8 @@ public class CloneClass implements Comparable<CloneClass>{
 		return lines * size();
 	}
 
+	public void open() {
+		CodeEditorMaker.create(this);
+	}
+	}
 }
