@@ -43,7 +43,6 @@ public abstract class Challenges {
 	EnumDifficulty defDifficulty;
 	ArrayList<ItemStack> oldInventory = new ArrayList<>();
 	Score displayScore;
-	Score displayHighscore;
 	ScoreObjective scoreBoard;
 
 	public Challenges(int x, int y, int z, GameType defGameType, EnumDifficulty defDifficulty){
@@ -87,12 +86,11 @@ public abstract class Challenges {
 		}
 		lastTickTime=System.currentTimeMillis();
 		//((EntityPlayerMP)Minecraft.getMinecraft().getIntegratedServer().worldServerForDimension(0).getPlayerEntityByName(Minecraft.getMinecraft().player.getName())).setGameType(GameType.ADVENTURE);
-		scoreBoard = Minecraft.getMinecraft().world.getScoreboard().addScoreObjective("Score", IScoreCriteria.DUMMY);
+		scoreBoard = Minecraft.getMinecraft().world.getScoreboard().addScoreObjective("Code Duplication", IScoreCriteria.DUMMY);
 		scoreBoard.setRenderType(EnumRenderType.INTEGER);
 		scoreBoard.getScoreboard().setObjectiveInDisplaySlot(Scoreboard.getObjectiveDisplaySlotNumber("sidebar"), scoreBoard);
 		displayScore = scoreBoard.getScoreboard().getOrCreateScore("Score", scoreBoard);
 		displayScore.setScorePoints(0);
-		displayHighscore = scoreBoard.getScoreboard().getOrCreateScore("Current Highscore", scoreBoard);
 		//System.out.println(Challenge.highscores[getChallengeNum()-1]+", "+(getChallengeNum()-1));
 	}
 
@@ -241,5 +239,13 @@ public abstract class Challenges {
 		for(int i = 0; i<players.length; i++){
 			endChallenge(players[i]);
 		}
+	}
+
+	public ScoreObjective getScoreBoard() {
+		return scoreBoard;
+	}
+
+	public void setScoreBoard(ScoreObjective scoreBoard) {
+		this.scoreBoard = scoreBoard;
 	}
 }

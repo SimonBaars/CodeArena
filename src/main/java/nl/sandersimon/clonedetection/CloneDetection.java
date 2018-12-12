@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.scoreboard.Score;
+import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -231,5 +232,23 @@ public class CloneDetection
 
 	public void setArena(CodeArena arena) {
 		this.arena = arena;
+	}
+
+	public void initScoreboards() {
+		ScoreObjective scoreBoard = arena.getScoreBoard();
+		totalAmountOfClonedLinesInProject = scoreBoard.getScoreboard().getOrCreateScore("Amount of cloned lines", scoreBoard);
+		totalAmountOfClonedLinesInProject.setScorePoints(0);
+		percentageOfProjectCloned = scoreBoard.getScoreboard().getOrCreateScore("Percentage of project cloned", scoreBoard);
+		percentageOfProjectCloned.setScorePoints(0);
+		totalNumberOfClones = scoreBoard.getScoreboard().getOrCreateScore("Total amount of clones", scoreBoard);
+		totalNumberOfClones.setScorePoints(0);
+		totalNumberOfCloneClasses = scoreBoard.getScoreboard().getOrCreateScore("Total number of clone classes", scoreBoard);
+		totalNumberOfCloneClasses.setScorePoints(0);
+		mostLinesCloneClass = scoreBoard.getScoreboard().getOrCreateScore("Biggest clone class (in lines)", scoreBoard);
+		mostLinesCloneClass.setScorePoints(0);
+		mostOccurrentClone = scoreBoard.getScoreboard().getOrCreateScore("Most occurring clone class", scoreBoard);
+		mostOccurrentClone.setScorePoints(0);
+		biggestCloneClass = scoreBoard.getScoreboard().getOrCreateScore("Biggest clone class (in volume)", scoreBoard);
+		biggestCloneClass.setScorePoints(0);
 	}
 }

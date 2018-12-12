@@ -64,5 +64,4 @@ public class CloneClass implements Comparable<CloneClass>{
 	public void open() {
 		CodeEditorMaker.create(this);
 	}
-	}
 }
