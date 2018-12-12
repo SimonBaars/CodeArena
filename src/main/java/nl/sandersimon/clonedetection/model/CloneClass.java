@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import net.minecraft.scoreboard.Score;
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.editor.CodeEditorMaker;
 
@@ -47,6 +48,15 @@ public class CloneClass implements Comparable<CloneClass>{
 		locations.add(construct);
 		c.getTotalNumberOfClones().incrementScore();
 		c.getTotalCloneVolume().increaseScore(lines);
+		Score mostLines = c.getMostLinesCloneClass();
+		if(lines > mostLines.getScorePoints())
+			mostLines.setScorePoints(lines);
+		Score mostOccurrent = c.getMostOccurrentClone();
+		if(size() > mostOccurrent.getScorePoints())
+			mostOccurrent.setScorePoints(size());
+		Score highestVolume = c.getBiggestCloneClass();
+		if(volume() > highestVolume.getScorePoints())
+			highestVolume.setScorePoints(volume());
 	}
 
 	public int size() {
