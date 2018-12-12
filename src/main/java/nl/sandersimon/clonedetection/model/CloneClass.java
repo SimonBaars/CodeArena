@@ -35,7 +35,7 @@ public class CloneClass implements Comparable<CloneClass>{
 
 	@Override
 	public int compareTo(CloneClass o) {
-		return Integer.compare(lines, o.lines);
+		return Integer.compare(cloneSize(), o.cloneSize());
 	}
 
 	public void add(Location construct) {
@@ -53,6 +53,10 @@ public class CloneClass implements Comparable<CloneClass>{
 	@Override
 	public String toString() {
 		return "CloneClass [lines=" + lines + ", locations=" + Arrays.toString(locations.toArray()) + "]";
+	}
+	
+	public int cloneSize() {
+		return lines * size();
 	}
 
 }

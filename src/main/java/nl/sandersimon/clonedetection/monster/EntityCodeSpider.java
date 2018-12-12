@@ -41,11 +41,11 @@ import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
 
-public class EntitySpider extends EntityMob
+public class EntityCodeSpider extends EntityMob
 {
-    private static final DataParameter<Byte> CLIMBING = EntityDataManager.<Byte>createKey(EntitySpider.class, DataSerializers.BYTE);
+    private static final DataParameter<Byte> CLIMBING = EntityDataManager.<Byte>createKey(EntityCodeSpider.class, DataSerializers.BYTE);
 
-    public EntitySpider(World worldIn, int cloneSize)
+    public EntityCodeSpider(World worldIn, int cloneSize)
     {
         super(worldIn);
         this.setSize(0.14F*(cloneSize/2), 0.09F*(cloneSize/2));
@@ -53,20 +53,20 @@ public class EntitySpider extends EntityMob
 
     public static void registerFixesSpider(DataFixer fixer)
     {
-        EntityLiving.registerFixesMob(fixer, EntitySpider.class);
+        EntityLiving.registerFixesMob(fixer, EntityCodeSpider.class);
     }
 
     protected void initEntityAI()
     {
         this.tasks.addTask(1, new EntityAISwimming(this));
         this.tasks.addTask(3, new EntityAILeapAtTarget(this, 0.4F));
-        this.tasks.addTask(4, new EntitySpider.AISpiderAttack(this));
+        this.tasks.addTask(4, new EntityCodeSpider.AISpiderAttack(this));
         this.tasks.addTask(5, new EntityAIWanderAvoidWater(this, 0.8D));
         this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(6, new EntityAILookIdle(this));
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false, new Class[0]));
-        this.targetTasks.addTask(2, new EntitySpider.AISpiderTarget(this, EntityPlayer.class));
-        this.targetTasks.addTask(3, new EntitySpider.AISpiderTarget(this, EntityIronGolem.class));
+        this.targetTasks.addTask(2, new EntityCodeSpider.AISpiderTarget(this, EntityPlayer.class));
+        this.targetTasks.addTask(3, new EntityCodeSpider.AISpiderTarget(this, EntityIronGolem.class));
     }
 
     /**
@@ -215,17 +215,17 @@ public class EntitySpider extends EntityMob
 
         if (livingdata == null)
         {
-            livingdata = new EntitySpider.GroupData();
+            livingdata = new EntityCodeSpider.GroupData();
 
             if (this.world.getDifficulty() == EnumDifficulty.HARD && this.world.rand.nextFloat() < 0.1F * difficulty.getClampedAdditionalDifficulty())
             {
-                ((EntitySpider.GroupData)livingdata).setRandomEffect(this.world.rand);
+                ((EntityCodeSpider.GroupData)livingdata).setRandomEffect(this.world.rand);
             }
         }
 
-        if (livingdata instanceof EntitySpider.GroupData)
+        if (livingdata instanceof EntityCodeSpider.GroupData)
         {
-            Potion potion = ((EntitySpider.GroupData)livingdata).effect;
+            Potion potion = ((EntityCodeSpider.GroupData)livingdata).effect;
 
             if (potion != null)
             {
@@ -243,7 +243,7 @@ public class EntitySpider extends EntityMob
 
     static class AISpiderAttack extends EntityAIAttackMelee
         {
-            public AISpiderAttack(EntitySpider spider)
+            public AISpiderAttack(EntityCodeSpider spider)
             {
                 super(spider, 1.0D, true);
             }
@@ -274,7 +274,7 @@ public class EntitySpider extends EntityMob
 
     static class AISpiderTarget<T extends EntityLivingBase> extends EntityAINearestAttackableTarget<T>
         {
-            public AISpiderTarget(EntitySpider spider, Class<T> classTarget)
+            public AISpiderTarget(EntityCodeSpider spider, Class<T> classTarget)
             {
                 super(spider, classTarget, true);
             }

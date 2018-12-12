@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -34,9 +35,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.GameType;
 import net.minecraft.world.World;
+import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.minecraft.structureloader.SchematicStructure;
+import nl.sandersimon.clonedetection.model.CloneClass;
+import nl.sandersimon.clonedetection.monster.EntityCodeSpider;
 
-public class ChallengeFour extends Challenges {
+public class CodeArena extends Challenges {
 	int sizex;
 	int sizey;
 	int sizez;
@@ -45,21 +49,21 @@ public class ChallengeFour extends Challenges {
 	final int fieldz = 40;
 	int cornerx;
 	int cornerz;
-	ArrayList<Entity> activeMonsters = new ArrayList<Entity>();
+	List<Entity> activeMonsters = new ArrayList<>();
 	int wave = 0;
 	final int nWaves = 20;
 	private SchematicStructure checkStructure;
 	private boolean doReplaceStuff = false;
 	int ticks = 0;
 	
-	public ChallengeFour(int x, int y, int z) {
-		super(x,y,z,GameType.ADVENTURE,EnumDifficulty.HARD);
+	public CodeArena(int x, int y, int z) {
+		super(x,y,z,GameType.CREATIVE,EnumDifficulty.NORMAL);
 		cornerx=x-15;
 		cornerz=z-20;
 		showScore();
 		initArena();
 		for(EntityPlayerMP player : players){
-			player.setPosition(x, y+2	,z);
+			player.setPosition(x, y+2,z);
 			player.setHealth(20);
 		}
 		resetPlayer();
@@ -84,6 +88,24 @@ public class ChallengeFour extends Challenges {
 			serverWorld.spawnEntity(monster);
 			activeMonsters.add(monster);
 		}
+	}
+	
+	public void create(CloneClass cloneClass, World world, int type) {
+		EntityLiving monster = getMonster(world, type, cloneClass.size());
+		monster.setLocationAndAngles(cornerx+((int)(Math.random()*(fieldx-2)))+1, y+2, cornerz+((int)(Math.random()*(fieldz-2)))+1, 0, 0);
+		monster.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(monster)), (IEntityLivingData)null);
+		//monster.spawnEntityInWorld(monster);
+		world.spawnEntity(monster);
+		CloneDetection.get().getActiveMonsters().add(monster);
+	}
+
+	private EntityLiving getMonster(World world, int type, int size) {
+		switch(type){
+		case 1: return new EntityCodeSpider(world, size);
+		//case 2: return new EntityBlaze(world);
+		//case 3: return new EntityCaveSpider(world);
+		}
+		return null;
 	}
 	
 	private EntityLiving getMonster(int monsterId, World world) {
