@@ -30,7 +30,7 @@ public class Structure
 	{
 		this.blockMode = "replace";
 		this.blockUpdate = true;
-		this.fileName = "/assets/imsm/structs/"+fileName;
+		this.fileName = "/assets/clonedetection/structs/"+fileName;
 		//System.out.println("Registered as "+this.fileName);
 		this.fileStream = Structure.class.getResourceAsStream(this.fileName);
 	}

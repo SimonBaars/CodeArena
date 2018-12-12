@@ -116,10 +116,10 @@ public class SchematicStructure extends Structure
 	
 	public boolean placeBlock(StructureCreator daddy)
 	{
-					//System.out.println("DATA=="+this.blocks[y][z][x]+blockPlacer+this.getCenterPos()+harvestPos);
+					//System.out.println("DATA=="+this.blocks[daddy.y][daddy.z][daddy.x]+blockPlacer+this.getCenterPos()+harvestPos);
 		if(this.blocks==null){
-			//System.out.println("Block array is NULL!");
-			return false;
+			System.out.println("Block array is NULL!");
+			return true;
 		}
 					if (this.blockMode.equals("overlay") && this.blocks[daddy.i][daddy.j][daddy.k] == Blocks.AIR){
 						
@@ -128,13 +128,13 @@ public class SchematicStructure extends Structure
 						if(CloneDetection.eventHandler.serverCreators.get(CloneDetection.eventHandler.serverCreators.size()-1) == daddy){
 							BlockPos translatedPosition = StructureUtils.getWorldPos(position, this.getCenterPos(), harvestPos);
 						}
-						//System.out.prinln(daddy.i+", "+daddy.j+", "+daddy.k+", "+height+", "+width+", "+length);
+						//System.out.println("PLACE BLOCK "+daddy.i+", "+daddy.j+", "+daddy.k+", "+height+", "+width+", "+length);
 					StructureUtils.setBlock(this.blockPlacer, this.blocks[daddy.i][daddy.j][daddy.k].getStateFromMeta(this.blockData[daddy.i][daddy.j][daddy.k]), position, this.getCenterPos(), this.harvestPos);
 					//BlockPlaceHandler.setBlock(serverWorld,  new BlockPos(daddy.x-daddy.k, daddy.y+daddy.i,daddy.z-daddy.j), this.blocks[daddy.i][daddy.j][daddy.k].getStateFromMeta(this.blockData[daddy.i][daddy.j][daddy.k]));
 						//BlockPlaceHandler.setBlock(world,  new BlockPos(daddy.x-daddy.k, daddy.y+daddy.i,daddy.z-daddy.j), this.blocks[daddy.i][daddy.j][daddy.k].getStateFromMeta(this.blockData[daddy.i][daddy.j][daddy.k]));
-					if(this.blocks[daddy.i][daddy.j][daddy.k] instanceof BlockChest){
-						System.out.println("Chest at "+StructureUtils.getWorldPos(position, this.getCenterPos(), this.harvestPos).toString());
-					}
+					//if(this.blocks[daddy.i][daddy.j][daddy.k] instanceof BlockChest){
+					//	System.out.println("Chest at "+StructureUtils.getWorldPos(position, this.getCenterPos(), this.harvestPos).toString());
+					//}
 					}
 					daddy.k++;
 					if(daddy.k>=this.length){
@@ -307,6 +307,8 @@ public class SchematicStructure extends Structure
 		this.length = nbtTagCompound.getShort("Width");
 		this.width = nbtTagCompound.getShort("Length");
 		this.height = nbtTagCompound.getShort("Height");
+		
+		System.out.println("SCHEMAGIC SIZE = "+this.length+", "+this.width+", "+this.height);
 
 		int size = this.length * this.width * this.height;
 		/*if (size > STRUCTURE_BLOCK_LIMIT)

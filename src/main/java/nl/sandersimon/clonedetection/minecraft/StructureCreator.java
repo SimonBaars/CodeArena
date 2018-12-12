@@ -8,6 +8,7 @@ import java.io.UnsupportedEncodingException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.World;
 import nl.sandersimon.clonedetection.CloneDetection;
+import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.minecraft.structureloader.SchematicStructure;
 
 public class StructureCreator extends CreatorBlocks implements ICreatorBlock {
@@ -56,7 +57,7 @@ public class StructureCreator extends CreatorBlocks implements ICreatorBlock {
 	@Override
 	public boolean run() {
 		for(int i = 0; i<speedUp; i++){
-			//System.out.println(i+", "+j+", "+k);
+			//System.out.println(i+", "+j+", "+k+", "+generatedBlocks);
 		if(struct.placeBlock(this)){
 			if(!world.isRemote){
 				CloneDetection.eventHandler.postProcessors.add(struct);
@@ -75,8 +76,8 @@ public class StructureCreator extends CreatorBlocks implements ICreatorBlock {
 		if(!world.isRemote){
 		PrintWriter writer;
 		try {
-			(new File("saves/"+Minecraft.getMinecraft().getIntegratedServer().getFolderName()+"/Structures")).mkdirs();
-			writer = new PrintWriter("saves/"+Minecraft.getMinecraft().getIntegratedServer().getFolderName()+"/Structures/"+at+".txt", "UTF-8");
+			(new File(SavePaths.getSaveFolder()+Minecraft.getMinecraft().getIntegratedServer().getFolderName()+"/Structures")).mkdirs();
+			writer = new PrintWriter(SavePaths.getSaveFolder()+Minecraft.getMinecraft().getIntegratedServer().getFolderName()+"/Structures/"+at+".txt", "UTF-8");
 		
 			writer.println(structureName);
 			writer.println(doReplaceAir);
@@ -107,9 +108,16 @@ public class StructureCreator extends CreatorBlocks implements ICreatorBlock {
 				((StructureCreator)CloneDetection.eventHandler.creators.get(i)).id--;
 			}}
 		}
-		new File("saves/"+Minecraft.getMinecraft().getIntegratedServer().getFolderName()+"/Structures/"+id+".txt").delete();
+		new File(SavePaths.getSaveFolder()+Minecraft.getMinecraft().getIntegratedServer().getFolderName()+"/Structures/"+id+".txt").delete();
 		System.out.println("Removed "+id);
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "StructureCreator [doReplaceAir=" + doReplaceAir + ", i=" + i + ", j=" + j + ", k=" + k + ", struct="
+				+ struct + ", speedUp=" + speedUp + ", structureName=" + structureName + ", id=" + id
+				+ ", generatedBlocks=" + generatedBlocks + ", boundTo=" + boundTo + "]";
 	}
 
 

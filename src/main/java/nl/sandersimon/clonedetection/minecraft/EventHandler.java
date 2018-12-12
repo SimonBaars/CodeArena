@@ -13,14 +13,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.translation.LanguageMap;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.minecraft.structureloader.LightUpdateCheck;
 import nl.sandersimon.clonedetection.minecraft.structureloader.SchematicStructure;
 
 public class EventHandler {
-	public ArrayList<SchematicStructure> postProcessors = new ArrayList<SchematicStructure>();
-	public ArrayList<ICreatorBlock> creators = new ArrayList<ICreatorBlock>();
-	public ArrayList<ICreatorBlock> serverCreators = new ArrayList<ICreatorBlock>();
-	public ArrayList<String> delayedPrints = new ArrayList<String>();
+	public final ArrayList<SchematicStructure> postProcessors = new ArrayList<SchematicStructure>();
+	public final ArrayList<ICreatorBlock> creators = new ArrayList<ICreatorBlock>();
+	public final ArrayList<ICreatorBlock> serverCreators = new ArrayList<ICreatorBlock>();
+	public final ArrayList<String> delayedPrints = new ArrayList<String>();
 	public LightUpdateCheck lightUpdate;
 	public long previousTick = 0;
 	public boolean isLoaded=false;
@@ -90,7 +91,6 @@ public class EventHandler {
 	
 	@SubscribeEvent
 	public void update(TickEvent.ServerTickEvent event){
-		
 		for(int i = 0; i<serverCreators.size(); i++){
 			if(serverCreators.get(i).run()){
 				serverCreators.remove(i);
@@ -130,7 +130,7 @@ public class EventHandler {
 			String[] array = new String[9];
 			BufferedReader in;
 			try {
-				in = new BufferedReader(new FileReader("saves/"+Minecraft.getMinecraft().getIntegratedServer().getFolderName()+"/Structures/"+i+".txt"));
+				in = new BufferedReader(new FileReader(SavePaths.getSaveFolder()+Minecraft.getMinecraft().getIntegratedServer().getFolderName()+"/Structures/"+i+".txt"));
 			
 
 			for(int j = 0; j<array.length; j++){
@@ -161,16 +161,9 @@ public class EventHandler {
 		}
 		
 	}
-	boolean fileExists(String path){
-		File f = new File("saves/"+Minecraft.getMinecraft().getIntegratedServer().getFolderName()+"/LiveStructures/"+path);
-		if(f.exists() && !f.isDirectory()) { 
-		    return true;
-		}
-		return false;
-	}
 	
 	boolean fileExists2(String path){
-		File f = new File("saves/"+Minecraft.getMinecraft().getIntegratedServer().getFolderName()+"/Structures/"+path);
+		File f = new File(SavePaths.getSaveFolder()+Minecraft.getMinecraft().getIntegratedServer().getFolderName()+"/Structures/"+path);
 		if(f.exists() && !f.isDirectory()) { 
 		    return true;
 		}
