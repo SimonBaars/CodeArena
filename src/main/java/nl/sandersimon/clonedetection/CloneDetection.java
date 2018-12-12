@@ -44,8 +44,6 @@ public class CloneDetection
 	private Score mostOccurrentClone;
 	private Score biggestCloneClass;
 	
-	private List<Entity> activeMonsters = new ArrayList<>();
-	
 	public static int dialoge;
 
 	@EventHandler
@@ -223,13 +221,5 @@ public class CloneDetection
 
 	public void setBiggestCloneClass(Score biggestCloneClass) {
 		this.biggestCloneClass = biggestCloneClass;
-	}
-
-	public List<Entity> getActiveMonsters() {
-		return activeMonsters;
-	}
-
-	public void setActiveMonsters(List<Entity> activeMonsters) {
-		this.activeMonsters = activeMonsters;
 	}
 }

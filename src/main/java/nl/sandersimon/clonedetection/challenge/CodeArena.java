@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.monster.EntityBlaze;
@@ -38,6 +37,7 @@ import net.minecraft.world.World;
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.minecraft.structureloader.SchematicStructure;
 import nl.sandersimon.clonedetection.model.CloneClass;
+import nl.sandersimon.clonedetection.monster.CodeEntity;
 import nl.sandersimon.clonedetection.monster.EntityCodeSpider;
 
 public class CodeArena extends Challenges {
@@ -49,7 +49,7 @@ public class CodeArena extends Challenges {
 	final int fieldz = 40;
 	int cornerx;
 	int cornerz;
-	List<Entity> activeMonsters = new ArrayList<>();
+	List<CodeEntity> activeMonsters = new ArrayList<>();
 	int wave = 0;
 	final int nWaves = 20;
 	private SchematicStructure checkStructure;
@@ -81,25 +81,25 @@ public class CodeArena extends Challenges {
 	void spawnMobs(int monsterId, int amount){
 		amount=(amount*((wave/nWaves)+1))*numberOfPlayers;
 		for(int i = 0; i<amount; i++){
-			EntityLiving monster = getMonster(monsterId, serverWorld);
-			monster.setLocationAndAngles(cornerx+((int)(Math.random()*(fieldx-2)))+1, y+2, cornerz+((int)(Math.random()*(fieldz-2)))+1, 0, 0);
-			monster.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(monster)), (IEntityLivingData)null);
+			//CodeEntity monster = getMonster(monsterId, serverWorld);
+			//monster.setLocationAndAngles(cornerx+((int)(Math.random()*(fieldx-2)))+1, y+2, cornerz+((int)(Math.random()*(fieldz-2)))+1, 0, 0);
+			//monster.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(monster)), (IEntityLivingData)null);
 			//monster.spawnEntityInWorld(monster);
-			serverWorld.spawnEntity(monster);
-			activeMonsters.add(monster);
+			//serverWorld.spawnEntity(monster);
+			//activeMonsters.add(monster);
 		}
 	}
 	
 	public void create(CloneClass cloneClass, World world, int type) {
-		EntityLiving monster = getMonster(world, type, cloneClass.size());
+		CodeEntity monster = getMonster(world, type, cloneClass.size());
 		monster.setLocationAndAngles(cornerx+((int)(Math.random()*(fieldx-2)))+1, y+2, cornerz+((int)(Math.random()*(fieldz-2)))+1, 0, 0);
 		monster.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(monster)), (IEntityLivingData)null);
 		//monster.spawnEntityInWorld(monster);
 		world.spawnEntity(monster);
-		CloneDetection.get().getActiveMonsters().add(monster);
+		activeMonsters.add(monster);
 	}
 
-	private EntityLiving getMonster(World world, int type, int size) {
+	private CodeEntity getMonster(World world, int type, int size) {
 		switch(type){
 		case 1: return new EntityCodeSpider(world, size);
 		//case 2: return new EntityBlaze(world);
@@ -146,7 +146,21 @@ public class CodeArena extends Challenges {
 		return (x>=0 && x<=fieldx+(2*howClose) && y>=0 && y<=fieldy+(2*howClose) && z>=0 && z<=fieldz+(2*howClose)+2);
 	}
 	
-	public boolean run(){
+	public boolean run() {
+		for(int i = 0; i<activeMonsters.size(); i++){
+			if(activeMonsters.get(i).isDead){
+				activeMonsters.remove(i);
+				increaseScore();
+				i--;
+			} else if(activeMonsters.get(i).posY>y+4){
+				activeMonsters.get(i).setDead();
+			}
+		}
+		showScore();
+		return true;
+	}
+	
+	public boolean runOld(){
 		waitTime=1000;
 		ticks++;
 		if(ticks==25 || !doReplaceStuff || activeMonsters.size()==0){

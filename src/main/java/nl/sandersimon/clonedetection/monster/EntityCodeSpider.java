@@ -41,7 +41,7 @@ import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
 
-public class EntityCodeSpider extends EntityMob
+public class EntityCodeSpider extends CodeEntity
 {
     private static final DataParameter<Byte> CLIMBING = EntityDataManager.<Byte>createKey(EntityCodeSpider.class, DataSerializers.BYTE);
 
