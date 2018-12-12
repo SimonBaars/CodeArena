@@ -35,7 +35,7 @@ public class CloneDetection
 	private BufferedWriter rascalOut;
 	private InputStreamReader rascalIn;
 	private static CloneDetection cloneDetection;
-	private List<CloneClass> clones;
+	private List<CloneClass> clones = new ArrayList<>();
 	
 	private Score totalAmountOfClonedLinesInProject;
 	private Score percentageOfProjectCloned;

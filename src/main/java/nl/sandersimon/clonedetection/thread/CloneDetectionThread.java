@@ -9,7 +9,6 @@ import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.challenge.CodeArena;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.SavePaths;
-import nl.sandersimon.clonedetection.minecraft.structureloader.SchematicStructure;
 import nl.sandersimon.clonedetection.model.CloneClass;
 import nl.sandersimon.clonedetection.model.Location;
 
@@ -34,18 +33,25 @@ public class CloneDetectionThread extends Thread {
 		String res = CloneDetection.get().readBuffer(bufferSize);
 		//System.out.println(res+", "+bufferSizeString);
 		CloneDetection.get().waitUntilExecuted();
-		CloneDetection.get().setClones(populateResult(res));
+		populateResult(res);
 	}
 	
-	public List<CloneClass> populateResult(String res){
-		List<CloneClass> locs = new ArrayList<>();
-		int listLoc = 1;
-		while (listLoc < res.length() && res.charAt(listLoc) == '<') {
-			CloneClass loc = new CloneClass();
-			listLoc = parseList(loc, res, listLoc+1)+2;
-			locs.add(loc);
+	public void populateResult(String res){
+		List<CloneClass> locs = CloneDetection.get().getClones();
+		while(true) {
+			String bufferSizeString = CloneDetection.get().waitUntilExecuted('\n').get(0);
+			int bufferSize = Integer.parseInt(bufferSizeString);
+			String res = CloneDetection.get().readBuffer(bufferSize);
+			//System.out.println(res+", "+bufferSizeString);
+			CloneDetection.get().waitUntilExecuted();
+			
+			int listLoc = 1;
+			while (listLoc < res.length() && res.charAt(listLoc) == '<') {
+				CloneClass loc = new CloneClass();
+				listLoc = parseList(loc, res, listLoc+1)+2;
+				locs.add(loc);
+			}
 		}
-		return locs;
 	}
 
 	private int parseList(CloneClass loc, String res, int elementLoc) {
