@@ -41,7 +41,7 @@ public abstract class Challenges {
 	int score=0;
 	GameType oldGameType;
 	EnumDifficulty defDifficulty;
-	ArrayList<ItemStack> oldInventory = new ArrayList<ItemStack>();
+	ArrayList<ItemStack> oldInventory = new ArrayList<>();
 	Score displayScore;
 	Score displayHighscore;
 	ScoreObjective scoreBoard;

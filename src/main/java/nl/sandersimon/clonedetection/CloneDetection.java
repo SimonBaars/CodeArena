@@ -8,6 +8,7 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.scoreboard.Score;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -19,7 +20,6 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.ResourceCommons;
 import nl.sandersimon.clonedetection.model.CloneClass;
-import nl.sandersimon.clonedetection.model.Location;
 
 @Mod(modid = CloneDetection.MODID, name = CloneDetection.NAME, version = CloneDetection.VERSION)
 public class CloneDetection
@@ -36,9 +36,16 @@ public class CloneDetection
 	private static CloneDetection cloneDetection;
 	private List<CloneClass> clones;
 	
-	private Score amountOfClonedLinesInCode;
+	private Score totalAmountOfClonedLinesInProject;
 	private Score percentageOfProjectCloned;
-
+	private Score totalNumberOfClones;
+	private Score totalNumberOfCloneClasses;
+	private Score mostLinesCloneClass;
+	private Score mostOccurrentClone;
+	private Score biggestCloneClass;
+	
+	private List<Entity> activeMonsters = new ArrayList<>();
+	
 	public static int dialoge;
 
 	@EventHandler
@@ -160,5 +167,69 @@ public class CloneDetection
 
 	public void setClones(List<CloneClass> clones) {
 		this.clones = clones;
+	}
+
+	public Score getTotalAmountOfClonedLinesInProject() {
+		return totalAmountOfClonedLinesInProject;
+	}
+
+	public void setTotalAmountOfClonedLinesInProject(Score totalAmountOfClonedLinesInProject) {
+		this.totalAmountOfClonedLinesInProject = totalAmountOfClonedLinesInProject;
+	}
+
+	public Score getPercentageOfProjectCloned() {
+		return percentageOfProjectCloned;
+	}
+
+	public void setPercentageOfProjectCloned(Score percentageOfProjectCloned) {
+		this.percentageOfProjectCloned = percentageOfProjectCloned;
+	}
+
+	public Score getTotalNumberOfClones() {
+		return totalNumberOfClones;
+	}
+
+	public void setTotalNumberOfClones(Score totalNumberOfClones) {
+		this.totalNumberOfClones = totalNumberOfClones;
+	}
+
+	public Score getTotalNumberOfCloneClasses() {
+		return totalNumberOfCloneClasses;
+	}
+
+	public void setTotalNumberOfCloneClasses(Score totalNumberOfCloneClasses) {
+		this.totalNumberOfCloneClasses = totalNumberOfCloneClasses;
+	}
+
+	public Score getMostLinesCloneClass() {
+		return mostLinesCloneClass;
+	}
+
+	public void setMostLinesCloneClass(Score mostLinesCloneClass) {
+		this.mostLinesCloneClass = mostLinesCloneClass;
+	}
+
+	public Score getMostOccurrentClone() {
+		return mostOccurrentClone;
+	}
+
+	public void setMostOccurrentClone(Score mostOccurrentClone) {
+		this.mostOccurrentClone = mostOccurrentClone;
+	}
+
+	public Score getBiggestCloneClass() {
+		return biggestCloneClass;
+	}
+
+	public void setBiggestCloneClass(Score biggestCloneClass) {
+		this.biggestCloneClass = biggestCloneClass;
+	}
+
+	public List<Entity> getActiveMonsters() {
+		return activeMonsters;
+	}
+
+	public void setActiveMonsters(List<Entity> activeMonsters) {
+		this.activeMonsters = activeMonsters;
 	}
 }
