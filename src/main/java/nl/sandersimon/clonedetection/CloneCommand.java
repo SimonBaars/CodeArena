@@ -48,7 +48,7 @@ public class CloneCommand implements ICommand {
 			CloneDetection.dialoge = 1;
 			return;
 		}
-		CloneDetectionThread.startWorker(sender, args[0]);
+		CloneDetectionThread.startWorker(server, sender, args[0]);
 	}
 
 	@Override

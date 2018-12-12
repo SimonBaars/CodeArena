@@ -28,7 +28,7 @@ public class CloneDetection
 	public static final String NAME = "Clone Detection";
 	public static final String VERSION = "1.0";
 	
-	public static nl.sandersimon.clonedetection.minecraft.EventHandler eventHandler;
+	public static final nl.sandersimon.clonedetection.minecraft.EventHandler eventHandler = new nl.sandersimon.clonedetection.minecraft.EventHandler();
 
 	private Process rascal;
 	private BufferedWriter rascalOut;
@@ -67,7 +67,6 @@ public class CloneDetection
 			throw new RuntimeException("Rascal could not be started!", e);
 		}
 		if(eventHandler!=null)	{
-			eventHandler = new nl.sandersimon.clonedetection.minecraft.EventHandler();
 			FMLCommonHandler.instance().bus().register(eventHandler);
 			MinecraftForge.EVENT_BUS.register(new nl.sandersimon.clonedetection.minecraft.ForgeEventHandler());
 		}

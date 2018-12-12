@@ -111,7 +111,20 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 		list[tuple[int lines, loc duplicate]] potentialDuplicates = [];
 		map[int, list[value]] fileLines = fileLineAsts[location];
 		list[int] sortedDomain = sortedDomains[location.uri];
-		for(int lineNumber <- sortedDomain){
+		int sortedDomainSize = size(sortedDomain);
+		int i = 0;
+		while(i < sortedDomainSize){
+			if(!(i+5>=sortedDomainSize)){
+				for(int j <- [0..5]){
+					if(size(locsAtInt[makeHashOfLine(fileLines[sortedDomain[i+j]])])<=1){
+						potentialDuplicates = [];
+						i+=j+1;
+						continue;
+					}
+				}
+			}
+			int lineNumber = sortedDomain[i];
+			//println(lineNumber);
 			list[value] stuffOnLine = fileLines[lineNumber];
 			list[loc] dupLines = locsAtInt[makeHashOfLine(stuffOnLine)];
 			//iprintln(dupLines);
@@ -119,6 +132,7 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 			//iprintln("line <lineNumber>, file <location>, stuffFound = <dupLines>");
 			list[tuple[int lines, loc duplicate]] newPotentialDuplicates = [];
 			//iprintln(dupLines);
+						
 			for(loc potDupNew <- dupLines){
 				if(potDupNew.uri notin parsedURIs && (potDupNew.uri != location.uri || potDupNew.begin.line > lineNumber)){
 					bool partOfChain = false;
@@ -140,6 +154,7 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 			dupList = populateBeforeRemoval(dupList, potentialDuplicates, newPotentialDuplicates, sortedDomain, location, lineNumber, lineNumber == last(sortedDomain));
 			potentialDuplicates = newPotentialDuplicates;
 			//iprintln("line = <lineNumber>, newPotDup = <newPotentialDuplicates>");
+			i+=1;
 		}
 		parsedURIs += location.uri;
 	}
