@@ -135,7 +135,11 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 			//iprintln("line <lineNumber>, file <location>, stuffFound = <dupLines>");
 			list[tuple[int lines, loc duplicate]] newPotentialDuplicates = [];
 			//iprintln(dupLines);
-			//Duplines is te groot -> we kunnen er dubbele map lookup van maken (van die list van tuples enzo)
+			map[str, tuple[int lines, loc duplicate]] reg1 = ();
+			
+			for(tuple[int lines, loc duplicate] potDupOld <- potentialDuplicates){
+				reg1["<potDupOld.duplicate.uri><potDupOld.duplicate.end.line>"] = potDupOld;
+			}
 			for(loc potDupNew <- dupLines){
 				//println(size(potentialDuplicates));
 				//println(potDupNew);
@@ -143,14 +147,13 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 					bool partOfChain = false;
 					//println("WW");
 					//iprintln(potDupNew);
-					for(tuple[int lines, loc duplicate] potDupOld <- potentialDuplicates){
-						if(potDupNew.uri == potDupOld.duplicate.uri && potDupOld.duplicate.end.line == sortedDomains[potDupNew.uri][indexOf(sortedDomains[potDupNew.uri], potDupNew.begin.line)-1]){
-							potDupNew.begin.line = potDupOld.duplicate.begin.line;
-							newPotentialDuplicates += <potDupOld.lines+1, potDupNew>;
-							//println("We upped thing to <potDupOld.lines+1>");
-							partOfChain = true;
-							break;
-						}
+					str searchKey = "<potDupNew.uri><sortedDomains[potDupNew.uri][indexOf(sortedDomains[potDupNew.uri], potDupNew.begin.line)-1]>";
+					if(searchKey in reg1){
+						tuple[int lines, loc duplicate] potDupOld = reg1[searchKey];
+						potDupNew.begin.line = potDupOld.duplicate.begin.line;
+						newPotentialDuplicates += <potDupOld.lines+1, potDupNew>;
+						//println("We upped thing to <potDupOld.lines+1>");
+						partOfChain = true;
 					}
 					if(!partOfChain)
 						newPotentialDuplicates+=<1, potDupNew>;
