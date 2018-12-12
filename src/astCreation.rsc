@@ -109,7 +109,7 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 	list[tuple[int, list[loc]]] dupList = [];
 	list[str] parsedURIs = [];
 	for(loc location <- fileLineAsts){
-		//println(location);
+		println(location);
 		list[tuple[int lines, loc duplicate]] potentialDuplicates = [];
 		//map[int lines, loc duplicate] potentialDuplicates = ();
 		map[int, list[value]] fileLines = fileLineAsts[location];
@@ -126,7 +126,7 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 				}
 			}
 			int lineNumber = sortedDomain[i];
-			//println(lineNumber);
+			println(lineNumber);
 			list[value] stuffOnLine = fileLines[lineNumber];
 			list[loc] dupLines = locsAtInt[makeHashOfLine(stuffOnLine)];
 			//iprintln(dupLines);
