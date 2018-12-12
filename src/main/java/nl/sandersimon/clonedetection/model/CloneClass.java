@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.editor.CodeEditorMaker;
 
 public class CloneClass implements Comparable<CloneClass>{
@@ -17,6 +18,7 @@ public class CloneClass implements Comparable<CloneClass>{
 		super();
 		this.lines = lines;
 		this.locations = locations;
+		CloneDetection.get().getTotalNumberOfCloneClasses().incrementScore();
 	}
 
 	public int getLines() {
@@ -37,11 +39,14 @@ public class CloneClass implements Comparable<CloneClass>{
 
 	@Override
 	public int compareTo(CloneClass o) {
-		return Integer.compare(cloneSize(), o.cloneSize());
+		return Integer.compare(volume(), o.volume());
 	}
 
 	public void add(Location construct) {
+		CloneDetection c = CloneDetection.get();
 		locations.add(construct);
+		c.getTotalNumberOfClones().incrementScore();
+		c.getTotalCloneVolume().increaseScore(lines);
 	}
 
 	public int size() {
@@ -57,7 +62,7 @@ public class CloneClass implements Comparable<CloneClass>{
 		return "CloneClass [lines=" + lines + ", locations=" + Arrays.toString(locations.toArray()) + "]";
 	}
 	
-	public int cloneSize() {
+	public int volume() {
 		return lines * size();
 	}
 

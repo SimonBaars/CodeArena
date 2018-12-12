@@ -44,6 +44,7 @@ public class CloneDetection
 	private Score mostLinesCloneClass;
 	private Score mostOccurrentClone;
 	private Score biggestCloneClass;
+	private Score totalCloneVolume;
 	
 	private CodeArena arena;
 	
@@ -234,6 +235,14 @@ public class CloneDetection
 		this.arena = arena;
 	}
 
+	public Score getTotalCloneVolume() {
+		return totalCloneVolume;
+	}
+
+	public void setTotalCloneVolume(Score totalCloneVolume) {
+		this.totalCloneVolume = totalCloneVolume;
+	}
+
 	public void initScoreboards() {
 		ScoreObjective scoreBoard = arena.getScoreBoard();
 		totalAmountOfClonedLinesInProject = scoreBoard.getScoreboard().getOrCreateScore("Amount of cloned lines", scoreBoard);
@@ -244,6 +253,8 @@ public class CloneDetection
 		totalNumberOfClones.setScorePoints(0);
 		totalNumberOfCloneClasses = scoreBoard.getScoreboard().getOrCreateScore("Total number of clone classes", scoreBoard);
 		totalNumberOfCloneClasses.setScorePoints(0);
+		totalCloneVolume = scoreBoard.getScoreboard().getOrCreateScore("Total clone volume", scoreBoard);
+		totalCloneVolume.setScorePoints(0);
 		mostLinesCloneClass = scoreBoard.getScoreboard().getOrCreateScore("Biggest clone class (in lines)", scoreBoard);
 		mostLinesCloneClass.setScorePoints(0);
 		mostOccurrentClone = scoreBoard.getScoreboard().getOrCreateScore("Most occurring clone class", scoreBoard);
