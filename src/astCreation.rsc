@@ -114,13 +114,12 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 		int sortedDomainSize = size(sortedDomain);
 		int i = 0;
 		while(i < sortedDomainSize){
-			if(!(i+5>=sortedDomainSize)){
-				for(int j <- [0..5]){
-					if(size(locsAtInt[makeHashOfLine(fileLines[sortedDomain[i+j]])])<=1){
-						potentialDuplicates = [];
-						i+=j+1;
-						continue;
-					}
+			if(i+5<sortedDomainSize && size(potentialDuplicates) == 0){
+				int futureRes = inspectFutureDups(i, locsAtInt, sortedDomain, fileLines);
+				if(futureRes != -1){
+					potentialDuplicates = [];
+					i+=futureRes+1;
+					continue;
 				}
 			}
 			int lineNumber = sortedDomain[i];
@@ -162,6 +161,15 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 		parsedURIs += location.uri;
 	}
 	return dupList;
+}
+
+public int inspectFutureDups(int i, map[int, list[loc]] locsAtInt, list[int] sortedDomain, map[int, list[value]] fileLines){
+	for(int j <- [0..minAmountOfLines]){
+		if(size(locsAtInt[makeHashOfLine(fileLines[sortedDomain[i+j]])])<=1){
+			return j;
+		}
+	}
+	return -1;
 }
 
 public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[loc]]] dupList, list[tuple[int lines, loc duplicate]] potentialDuplicates, list[tuple[int lines, loc duplicate]] newPotentialDuplicates, list[int] sortedDomain, loc location, int lineNumber, bool isLast){
