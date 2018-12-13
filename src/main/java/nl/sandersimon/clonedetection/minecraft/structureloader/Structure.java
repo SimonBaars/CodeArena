@@ -58,7 +58,7 @@ public class Structure
 		blockMode="overlay";
 	}
 
-	public void process(World world, int posX, int posY, int posZ)
+	public void process(World serverWorld, World world, int posX, int posY, int posZ)
 	{
 
 	}

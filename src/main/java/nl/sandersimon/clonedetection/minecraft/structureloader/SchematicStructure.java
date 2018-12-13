@@ -70,7 +70,7 @@ public class SchematicStructure extends Structure
 		posX-=length/2-1;
 		posZ-=width/2-1;
 		Vec3d harvestPos = new Vec3d(posX + 0.5, posY, posZ + 0.5);
-		BlockPlacer blockPlacer = new BlockPlacer(world,isLive);
+		BlockPlacer blockPlacer = new BlockPlacer(serverWorld,isLive);
 		this.blockPlacer=blockPlacer;
 		this.harvestPos=harvestPos;
 
@@ -92,8 +92,8 @@ public class SchematicStructure extends Structure
 		}
 	}
 
-	public void initSingleBlockPlacer(World world, int posX, int posY, int posZ){
-		this.world=world;this.posX=posX;this.posY=posY;this.posZ=posZ;
+	public void initSingleBlockPlacer(World serverWorld, World world, int posX, int posY, int posZ){
+		this.serverWorld=serverWorld;this.world=world;this.posX=posX;this.posY=posY;this.posZ=posZ;
 		//Minecraft.getMinecraft().thePlayer.sendChatMessage("Please be patient, I'm just creating "+(height*width*length)+" blocks for the structure...");
 		Block blk = Blocks.AIR;
 
@@ -102,6 +102,7 @@ public class SchematicStructure extends Structure
 		// Get the default state(basically metadata 0)
 		IBlockState state0=blk.getDefaultState();
 		// set the block
+		this.serverWorld.setBlockState(pos0, state0);
 		this.world.setBlockState(pos0, state0);
 
 		blocksAdded=0;
@@ -112,7 +113,7 @@ public class SchematicStructure extends Structure
 
 		this.harvestPos = new Vec3d(this.posX + 0.5, this.posY, this.posZ + 0.5);
 
-		this.blockPlacer = new BlockPlacer(world,isLive);
+		this.blockPlacer = new BlockPlacer(serverWorld,isLive);
 	}
 
 	public boolean placeBlock(StructureCreator daddy)

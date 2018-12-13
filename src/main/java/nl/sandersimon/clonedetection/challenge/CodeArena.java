@@ -75,7 +75,7 @@ public class CodeArena extends Challenges {
 		sizex=structure.length;
 		sizey=structure.height;
 		sizez=structure.width;
-		structure.process(worldIn, x+32, y-1, z+37);
+		structure.process(serverWorld, worldIn, x+32, y-1, z+37);
 	}
 	
 	void spawnMobs(int monsterId, int amount){
@@ -194,7 +194,7 @@ public class CodeArena extends Challenges {
 		serverWorld.setWorldTime(14000);
 		if(Minecraft.getMinecraft().player!=null){
 			if(doReplaceStuff){
-				checkStructure.process(worldIn, cornerx+fieldx, y-1, cornerz+fieldz);	
+				checkStructure.process(serverWorld, worldIn, cornerx+fieldx, y-1, cornerz+fieldz);	
 			}
 		if(resetPlayer()){
 			return true;
