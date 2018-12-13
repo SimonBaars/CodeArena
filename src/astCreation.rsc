@@ -210,11 +210,11 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 		}
 		finalizedDups[potDup.lines] += potDup.duplicate;
 	}
-	iprintln(finalizedDups);
+	//iprintln(finalizedDups);
 	
 	list[tuple[int, list[loc]]] temp = [];
 	for(int amount <- sort(domain(finalizedDups), bool(int a, int b){ return a > b; })){
-		if((isLast || any(loc aDup <- finalizedDups[amount], willBeRemoved(aDup, newPotentialDuplicates))) && !(any(tuple[int, list[loc]] aDup <- dupList, finalizedDups[amount] <= aDup[1])) && !isSubElement(finalizedDups[amount], temp)){
+		if((isLast || any(loc aDup <- finalizedDups[amount], willBeRemoved(aDup, newPotentialDuplicates))) && !(any(tuple[int, list[loc]] aDup <- dupList, finalizedDups[amount] <= aDup[1])) && !isSubElement(finalizedDups[amount], temp+dupList)){
 			tuple[int, list[loc]] entry = <amount, finalizedDups[amount]>;
 			temp+=entry;
 			dupList+=entry;
