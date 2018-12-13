@@ -38,6 +38,7 @@ public class CloneDetection
 	private List<CloneClass> clones = new ArrayList<>();
 	
 	private Score totalAmountOfClonedLinesInProject;
+	private Score totalAmountOfLinesInProject;
 	private Score percentageOfProjectCloned;
 	private Score totalNumberOfClones;
 	private Score totalNumberOfCloneClasses;

@@ -17,9 +17,6 @@ void calculateCodeDuplication(loc location){
 		astsMap[m[0]] = ast;
 		asts += ast;
 	}
-	
-	list[tuple[int, list[loc]]] result = getDuplication(1, asts);
-	str buffer = toString(result);
-	println(size(buffer));
-	println(result);
+	getDuplication(1, asts);
+	println("EOF");
 }

@@ -11,15 +11,18 @@ import lang::java::m3::AST;
 import util::Math;
 
 int minAmountOfLines = 6;
-//Class met map van regelnummers, en wat er op elke line staat
+
 alias LineRegistry = map[loc, map[int, list[value]]];
+// = map[fileloc, map[regelnummer, wat er aan ast op de regel staat]]
 
 public list[tuple[int, list[loc]]] getDuplication(int t, list[Declaration] asts) {
     LineRegistry fileLineAsts = fileLineMapGeneration(t, asts);
-    tuple[map[int, list[loc]] locRegistries,map[str, list[int]] sortedDomains] nodeRegs = calculateLocationsOfNodeTypes(fileLineAsts);
-    map[int, list[loc]] locsAtInt = nodeRegs.locRegistries;
+    tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomains] nodeRegs = calculateLocationsOfNodeTypes(fileLineAsts);
+    map[int, list[loc]] locsAtHash = nodeRegs.locRegistries;
+    // alle locs die bij een hash horen 
     map[str, list[int]] sortedDomains = nodeRegs.sortedDomains;
-    return getDupList(fileLineAsts, locsAtInt, sortedDomains);
+    // loc met alle regels op volgorde
+    return getDupList(fileLineAsts, locsAtHash, sortedDomains);
 }
 
 public tuple[map[int, list[loc]] locRegistries,map[str, list[int]] sortedDomains] calculateLocationsOfNodeTypes(LineRegistry fileLineAsts){
@@ -104,48 +107,49 @@ public map[int, list[value]] addToMap(map[int, list[value]] astMap, int line, li
 	return astMap;
 }
 
-public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int, list[loc]] locsAtInt, map[str, list[int]] sortedDomains){
+public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int, list[loc]] locsAtHash, map[str, list[int]] sortedDomains){
 	list[tuple[int, list[loc]]] dupList = [];
 	list[str] parsedURIs = [];
+	int totalLines = 0;
 	for(loc location <- fileLineAsts){
-		list[tuple[int lines, loc duplicate]] potentialDuplicates = [];
+		println("Currently working on: <location>");
+		list[tuple[int lines, loc duplicate]] potentialDuplicates = []; // list[<aantal regels, regel die duplicate hash heeft>]
 		map[int, list[value]] fileLines = fileLineAsts[location];
+		//fileLineAsts = map[fileloc, map[regelnummer, wat er aan ast op de regel staat]]
+		//fileLines = map[regelnummer, wat er aan ast op de regel staat]]
 		list[int] sortedDomain = sortedDomains[location.uri];
 		int sortedDomainSize = size(sortedDomain);
+		totalLines += sortedDomainSize;
 		int i = 0;
 		while(i < sortedDomainSize){
-			if(!(i+5>=sortedDomainSize)){
-				for(int j <- [0..5]){
-					if(size(locsAtInt[makeHashOfLine(fileLines[sortedDomain[i+j]])])<=1){
-						potentialDuplicates = [];
-						i+=j+1;
-						continue;
-					}
+			if(i+5<sortedDomainSize && size(potentialDuplicates) == 0){
+				int futureRes = inspectFutureDups(i, locsAtHash, sortedDomain, fileLines);
+				if(futureRes != -1){
+					potentialDuplicates = [];
+					i+=futureRes+1;
+					continue;
 				}
 			}
 			int lineNumber = sortedDomain[i];
-			//println(lineNumber);
 			list[value] stuffOnLine = fileLines[lineNumber];
-			list[loc] dupLines = locsAtInt[makeHashOfLine(stuffOnLine)];
-			//iprintln(dupLines);
-			//println("WWW");
+			list[loc] dupLines = locsAtHash[makeHashOfLine(stuffOnLine)];
 			//iprintln("line <lineNumber>, file <location>, stuffFound = <dupLines>");
 			list[tuple[int lines, loc duplicate]] newPotentialDuplicates = [];
-			//iprintln(dupLines);
-						
+			map[str, tuple[int lines, loc duplicate]] reg1 = ();
+			
+			for(tuple[int lines, loc duplicate] potDupOld <- potentialDuplicates){
+				reg1["<potDupOld.duplicate.uri><potDupOld.duplicate.end.line>"] = potDupOld;
+			}
 			for(loc potDupNew <- dupLines){
 				if(potDupNew.uri notin parsedURIs && (potDupNew.uri != location.uri || potDupNew.begin.line > lineNumber)){
 					bool partOfChain = false;
-					//println("WW");
-					//iprintln(potDupNew);
-					for(tuple[int lines, loc duplicate] potDupOld <- potentialDuplicates){
-						if(potDupNew.uri == potDupOld.duplicate.uri && potDupOld.duplicate.end.line == sortedDomains[potDupNew.uri][indexOf(sortedDomains[potDupNew.uri], potDupNew.begin.line)-1]){
-							potDupNew.begin.line = potDupOld.duplicate.begin.line;
-							newPotentialDuplicates += <potDupOld.lines+1, potDupNew>;
-							//println("We upped thing to <potDupOld.lines+1>");
-							partOfChain = true;
-							break;
-						}
+					str searchKey = "<potDupNew.uri><sortedDomains[potDupNew.uri][indexOf(sortedDomains[potDupNew.uri], potDupNew.begin.line)-1]>";
+					if(searchKey in reg1){
+						tuple[int lines, loc duplicate] potDupOld = reg1[searchKey];
+						potDupNew.begin.line = potDupOld.duplicate.begin.line;
+						newPotentialDuplicates += <potDupOld.lines+1, potDupNew>;
+						//println("We upped thing to <potDupOld.lines+1>");
+						partOfChain = true;
 					}
 					if(!partOfChain)
 						newPotentialDuplicates+=<1, potDupNew>;
@@ -158,7 +162,22 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 		}
 		parsedURIs += location.uri;
 	}
+	//- totaal aantal lines printen?
+	//- % duplicated lines dan ook printen? --> Ja graag :)
+	println(0); //Please keep this in ;-), so I know how to separate buffer sizes from line data
+	println(totalLines);
+	println(20); //This has to be replaced by the percentage of lines duplicate (as an integer value, floats do not go well with Minecraft)
+	println(123); // This has to be replaced by the number of duplicate lines.
 	return dupList;
+}
+
+public int inspectFutureDups(int i, map[int, list[loc]] locsAtHash, list[int] sortedDomain, map[int, list[value]] fileLines){
+	for(int j <- [0..minAmountOfLines]){
+		if(size(locsAtHash[makeHashOfLine(fileLines[sortedDomain[i+j]])])<=1){
+			return j;
+		}
+	}
+	return -1;
 }
 
 public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[loc]]] dupList, list[tuple[int lines, loc duplicate]] potentialDuplicates, list[tuple[int lines, loc duplicate]] newPotentialDuplicates, list[int] sortedDomain, loc location, int lineNumber, bool isLast){
@@ -172,13 +191,16 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 			finalizedDups[potDup.lines] = [l];
 			newPotentialDuplicates+=<minAmountOfLines, l>;
 		}
-		//println("WW");
-		//iprintln(potDup);
 		finalizedDups[potDup.lines] += potDup.duplicate;
 	}
 	//iprintln(finalizedDups);
-	
-	dupList += [*[<finDup, finalizedDups[finDup]>] | finDup <- finalizedDups, isLast || any(loc aDup <- finalizedDups[finDup], willBeRemoved(aDup, newPotentialDuplicates)), !(any(tuple[int, list[loc]] aDup <- dupList, finalizedDups[finDup] <= aDup[1]))];
+	list[tuple[int, list[loc]]] temp = [*[<finDup, finalizedDups[finDup]>] | finDup <- finalizedDups, isLast || any(loc aDup <- finalizedDups[finDup], willBeRemoved(aDup, newPotentialDuplicates)), !(any(tuple[int, list[loc]] aDup <- dupList, finalizedDups[finDup] <= aDup[1]))];
+	if(size(temp) > 0){
+		str buffer = toString(temp);
+		println(size(buffer));
+		println(buffer);
+		dupList += temp;
+	}
 	//println("size = <size(dupList)>, potDups = <potentialDuplicates>");
 	return dupList;
 }

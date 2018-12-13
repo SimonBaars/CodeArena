@@ -29,6 +29,8 @@ public class CloneDetectionThread extends Thread {
 	public void run() {
 		CloneDetection.get().executeTill("calculateCodeDuplication(|file://"+SavePaths.getProjectFolder()+project+"/|)", '\n');
 		populateResult();
+		String projectSize = CloneDetection.get().waitUntilExecuted('\n').get(0);
+		Integer.parseInt(bufferSizeString);
 	}
 	
 	public void populateResult(){
