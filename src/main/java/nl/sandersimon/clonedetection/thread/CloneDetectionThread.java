@@ -46,14 +46,16 @@ public class CloneDetectionThread extends Thread {
 			c.getTotalAmountOfLinesInProject().increaseScore(unitSize);
 			c.calculateClonePercentage();
 			while(true) {
-				String dupLinesString = c.waitUntilExecuted('\n').get(0);
-				int dupLines = Integer.parseInt(dupLinesString);
-				if(dupLines == 0)
-					break;
-				c.getTotalAmountOfClonedLinesInProject().increaseScore(dupLines);
-				
 				String bufferSizeString = c.waitUntilExecuted('\n').get(0);
 				int bufferSize = Integer.parseInt(bufferSizeString);
+				if(bufferSize == 0)
+					break;
+				
+				String dupLinesString = c.waitUntilExecuted('\n').get(0);
+				int dupLines = Integer.parseInt(dupLinesString);
+				c.getTotalAmountOfClonedLinesInProject().increaseScore(dupLines);
+				
+				
 				String res = c.readBuffer(bufferSize);
 				//System.out.println(res+", "+bufferSizeString);
 				c.waitUntilExecuted('\n');

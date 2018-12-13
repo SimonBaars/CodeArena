@@ -111,7 +111,6 @@ public map[int, list[value]] addToMap(map[int, list[value]] astMap, int line, li
 public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int, list[loc]] locsAtHash, map[str, list[int]] sortedDomains){
 	list[tuple[int, list[loc]]] dupList = [];
 	list[str] parsedURIs = [];
-	int totalLines = 0;
 	for(loc location <- fileLineAsts){
 		list[tuple[int lines, loc duplicate]] potentialDuplicates = []; // list[<aantal regels, regel die duplicate hash heeft>]
 		map[int, list[value]] fileLines = fileLineAsts[location];
@@ -119,7 +118,8 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 		//fileLines = map[regelnummer, wat er aan ast op de regel staat]]
 		list[int] sortedDomain = sortedDomains[location.uri];
 		int sortedDomainSize = size(sortedDomain);
-		totalLines += sortedDomainSize;
+		if(sortedDomainSize!=0)
+			println(sortedDomainSize);
 		int i = 0;
 		while(i < sortedDomainSize){
 			if(i+5<sortedDomainSize && size(potentialDuplicates) == 0){
@@ -176,12 +176,9 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 			i+=1;
 		}
 		parsedURIs += location.uri;
-		//println(0);
+		println(0); //End of loc
 	}
-	//println(0);
-	//- totaal aantal lines printen?
-	//- % duplicated lines dan ook printen?
-	println(totalLines);
+	println(0); //EOF
 	return dupList;
 }
 
@@ -234,10 +231,10 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 				}
 			}
 		}
-		println(duplicateLines);
-		iprintln(temp);
+		
 		str buffer = toString(temp);
 		println(size(buffer));
+		println(duplicateLines);
 		println(buffer);
 	}
 	//println("size = <size(dupList)>, potDups = <potentialDuplicates>");
