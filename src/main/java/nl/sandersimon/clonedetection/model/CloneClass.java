@@ -2,6 +2,7 @@ package nl.sandersimon.clonedetection.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +14,7 @@ public class CloneClass implements Comparable<CloneClass>{
 
 	int lines;
 	List<Location> locations = new ArrayList<>();
-	private static Map<String, List<Integer>> countedLines = new HashMap<>;
+	private static Map<String, List<Integer>> countedLines = new HashMap<>();
 	
 	public CloneClass() {}
 
@@ -74,10 +75,11 @@ public class CloneClass implements Comparable<CloneClass>{
 			if(!value.contains(i)) {
 				value.add(i);
 				c.getTotalAmountOfClonedLinesInProject().incrementScore();
+				c.calculateClonePercentage();
 			}
 		}
 	}
-
+	
 	public int size() {
 		return locations.size();
 	}

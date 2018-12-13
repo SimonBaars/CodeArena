@@ -273,4 +273,12 @@ public class CloneDetection
 		biggestCloneClass = scoreBoard.getScoreboard().getOrCreateScore("Biggest clone class (in volume)", scoreBoard);
 		biggestCloneClass.setScorePoints(0);
 	}
+
+	public void calculateClonePercentage() {
+		getPercentageOfProjectCloned().setScorePoints(perc(getTotalAmountOfLinesInProject().getScorePoints(), getTotalAmountOfClonedLinesInProject().getScorePoints()));
+	}
+	
+	private int perc(int total, int partOfTotal) {
+		return (int)(((double)partOfTotal / (double)total) * 100.0);
+	}
 }
