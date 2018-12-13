@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.util.zip.GZIPInputStream;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockChest;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityList;
@@ -20,8 +19,6 @@ import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import nl.sandersimon.clonedetection.CloneDetection;
-import nl.sandersimon.clonedetection.minecraft.StructureCreator;
 
 public class SchematicStructure extends Structure
 {
@@ -115,44 +112,6 @@ public class SchematicStructure extends Structure
 
 		this.blockPlacer = new BlockPlacer(serverWorld,isLive);
 	}
-
-	public boolean placeBlock(StructureCreator daddy)
-	{
-		//System.out.println("DATA=="+this.blocks[daddy.y][daddy.z][daddy.x]+blockPlacer+this.getCenterPos()+harvestPos);
-		if(this.blocks==null){
-			System.out.println("Block array is NULL!");
-			return true;
-		}
-		if (this.blockMode.equals("overlay") && this.blocks[daddy.i][daddy.j][daddy.k] == Blocks.AIR){
-
-		} else {
-			BlockPos position = new BlockPos(daddy.k, daddy.i,daddy.j);
-			if(CloneDetection.eventHandler.serverCreators.get(CloneDetection.eventHandler.serverCreators.size()-1) == daddy){
-				BlockPos translatedPosition = StructureUtils.getWorldPos(position, this.getCenterPos(), harvestPos);
-			}
-			//System.out.println("PLACE BLOCK "+daddy.i+", "+daddy.j+", "+daddy.k+", "+height+", "+width+", "+length);
-			StructureUtils.setBlock(this.blockPlacer, this.blocks[daddy.i][daddy.j][daddy.k].getStateFromMeta(this.blockData[daddy.i][daddy.j][daddy.k]), position, this.getCenterPos(), this.harvestPos);
-			//BlockPlaceHandler.setBlock(serverWorld,  new BlockPos(daddy.x-daddy.k, daddy.y+daddy.i,daddy.z-daddy.j), this.blocks[daddy.i][daddy.j][daddy.k].getStateFromMeta(this.blockData[daddy.i][daddy.j][daddy.k]));
-			//BlockPlaceHandler.setBlock(world,  new BlockPos(daddy.x-daddy.k, daddy.y+daddy.i,daddy.z-daddy.j), this.blocks[daddy.i][daddy.j][daddy.k].getStateFromMeta(this.blockData[daddy.i][daddy.j][daddy.k]));
-			//if(this.blocks[daddy.i][daddy.j][daddy.k] instanceof BlockChest){
-			//	System.out.println("Chest at "+StructureUtils.getWorldPos(position, this.getCenterPos(), this.harvestPos).toString());
-			//}
-		}
-		daddy.k++;
-		if(daddy.k>=this.length){
-			daddy.k=0;
-			//System.out.println("WUTTT "+daddy.i);
-			daddy.j++;
-			if(daddy.j>=this.width){
-				daddy.j=0;
-				daddy.i++;
-				if(daddy.i>=this.height){
-					return true;
-				}
-			}
-		}
-		return false;
-	}	
 
 	public void postProcess(){
 		//System.out.println("Structure Postprocessed!");
