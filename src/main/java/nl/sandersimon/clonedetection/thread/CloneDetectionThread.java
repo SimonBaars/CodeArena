@@ -29,26 +29,33 @@ public class CloneDetectionThread extends Thread {
 	public void run() {
 		CloneDetection.get().executeTill("calculateCodeDuplication(|file://"+SavePaths.getProjectFolder()+project+"/|)", '\n');
 		populateResult();
-		String projectSize = CloneDetection.get().waitUntilExecuted('\n').get(0);
-		Integer.parseInt(bufferSizeString);
+		CloneDetection.get().waitUntilExecuted();
+		System.out.println("Result parsed!");
 	}
 	
 	public void populateResult(){
 		List<CloneClass> locs = CloneDetection.get().getClones();
 		while(true) {
-			String bufferSizeString = CloneDetection.get().waitUntilExecuted('\n').get(0);
-			int bufferSize = Integer.parseInt(bufferSizeString);
-			if(bufferSize == 0)
-				return;
-			String res = CloneDetection.get().readBuffer(bufferSize);
-			//System.out.println(res+", "+bufferSizeString);
-			CloneDetection.get().waitUntilExecuted('\n');
-			
-			int listLoc = 1;
-			while (listLoc < res.length() && res.charAt(listLoc) == '<') {
-				CloneClass loc = new CloneClass();
-				listLoc = parseList(loc, res, listLoc+1)+2;
-				locs.add(loc);
+			String unitSizeString = CloneDetection.get().waitUntilExecuted('\n').get(0);
+			int unitSize = Integer.parseInt(unitSizeString);
+			if(unitSize == 0)
+				break;
+			CloneDetection.get().getTotalAmountOfLinesInProject().increaseScore(unitSize);
+			while(true) {
+				String bufferSizeString = CloneDetection.get().waitUntilExecuted('\n').get(0);
+				int bufferSize = Integer.parseInt(bufferSizeString);
+				if(bufferSize == 0)
+					break;
+				String res = CloneDetection.get().readBuffer(bufferSize);
+				//System.out.println(res+", "+bufferSizeString);
+				CloneDetection.get().waitUntilExecuted('\n');
+				
+				int listLoc = 1;
+				while (listLoc < res.length() && res.charAt(listLoc) == '<') {
+					CloneClass loc = new CloneClass();
+					listLoc = parseList(loc, res, listLoc+1)+2;
+					locs.add(loc);
+				}
 			}
 		}
 	}

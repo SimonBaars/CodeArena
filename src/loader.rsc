@@ -18,5 +18,4 @@ void calculateCodeDuplication(loc location){
 		asts += ast;
 	}
 	getDuplication(1, asts);
-	println("EOF");
 }

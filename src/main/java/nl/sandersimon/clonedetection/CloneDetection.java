@@ -244,15 +244,25 @@ public class CloneDetection
 		this.totalCloneVolume = totalCloneVolume;
 	}
 
+	public Score getTotalAmountOfLinesInProject() {
+		return totalAmountOfLinesInProject;
+	}
+
+	public void setTotalAmountOfLinesInProject(Score totalAmountOfLinesInProject) {
+		this.totalAmountOfLinesInProject = totalAmountOfLinesInProject;
+	}
+
 	public void initScoreboards() {
 		ScoreObjective scoreBoard = arena.getScoreBoard();
+		totalAmountOfLinesInProject = scoreBoard.getScoreboard().getOrCreateScore("Amount of lines in project", scoreBoard);
+		totalAmountOfLinesInProject.setScorePoints(0);
 		totalAmountOfClonedLinesInProject = scoreBoard.getScoreboard().getOrCreateScore("Amount of cloned lines", scoreBoard);
 		totalAmountOfClonedLinesInProject.setScorePoints(0);
 		percentageOfProjectCloned = scoreBoard.getScoreboard().getOrCreateScore("Percentage of project cloned", scoreBoard);
 		percentageOfProjectCloned.setScorePoints(0);
-		totalNumberOfClones = scoreBoard.getScoreboard().getOrCreateScore("Total amount of clones", scoreBoard);
+		totalNumberOfClones = scoreBoard.getScoreboard().getOrCreateScore("Amount of clones", scoreBoard);
 		totalNumberOfClones.setScorePoints(0);
-		totalNumberOfCloneClasses = scoreBoard.getScoreboard().getOrCreateScore("Total number of clone classes", scoreBoard);
+		totalNumberOfCloneClasses = scoreBoard.getScoreboard().getOrCreateScore("Number of clone classes", scoreBoard);
 		totalNumberOfCloneClasses.setScorePoints(0);
 		totalCloneVolume = scoreBoard.getScoreboard().getOrCreateScore("Total clone volume", scoreBoard);
 		totalCloneVolume.setScorePoints(0);
