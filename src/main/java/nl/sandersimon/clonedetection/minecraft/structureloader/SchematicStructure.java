@@ -36,7 +36,7 @@ public class SchematicStructure extends Structure
 	
 	public SchematicStructure(String fileName)
 	{
-		super(fileName,true);
+		super(fileName);
 		this.isLive=false;
 
 	}
