@@ -34,21 +34,22 @@ public class CloneDetectionThread extends Thread {
 	}
 	
 	public void populateResult(){
-		List<CloneClass> locs = CloneDetection.get().getClones();
+		CloneDetection cloneDetection = CloneDetection.get();
+		List<CloneClass> locs = cloneDetection.getClones();
 		while(true) {
-			String unitSizeString = CloneDetection.get().waitUntilExecuted('\n').get(0);
+			String unitSizeString = cloneDetection.waitUntilExecuted('\n').get(0);
 			int unitSize = Integer.parseInt(unitSizeString);
 			if(unitSize == 0)
 				break;
-			CloneDetection.get().getTotalAmountOfLinesInProject().increaseScore(unitSize);
+			cloneDetection.getTotalAmountOfLinesInProject().increaseScore(unitSize);
 			while(true) {
-				String bufferSizeString = CloneDetection.get().waitUntilExecuted('\n').get(0);
+				String bufferSizeString = cloneDetection.waitUntilExecuted('\n').get(0);
 				int bufferSize = Integer.parseInt(bufferSizeString);
 				if(bufferSize == 0)
 					break;
-				String res = CloneDetection.get().readBuffer(bufferSize);
+				String res = cloneDetection.readBuffer(bufferSize);
 				//System.out.println(res+", "+bufferSizeString);
-				CloneDetection.get().waitUntilExecuted('\n');
+				cloneDetection.waitUntilExecuted('\n');
 				
 				int listLoc = 1;
 				while (listLoc < res.length() && res.charAt(listLoc) == '<') {
