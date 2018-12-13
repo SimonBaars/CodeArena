@@ -20,5 +20,5 @@ void calculateCodeDuplication(loc location){
 		astsMap[m[0]] = ast;
 		asts += ast;
 	}
-	getDuplication(2, asts);
+	getDuplication(1, asts);
 }
