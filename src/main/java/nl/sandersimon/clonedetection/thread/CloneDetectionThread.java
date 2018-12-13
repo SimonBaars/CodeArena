@@ -28,22 +28,19 @@ public class CloneDetectionThread extends Thread {
 
 	public void run() {
 		CloneDetection.get().executeTill("calculateCodeDuplication(|file://"+SavePaths.getProjectFolder()+project+"/|)", '\n');
-		String bufferSizeString = CloneDetection.get().waitUntilExecuted('\n').get(0);
-		int bufferSize = Integer.parseInt(bufferSizeString);
-		String res = CloneDetection.get().readBuffer(bufferSize);
-		//System.out.println(res+", "+bufferSizeString);
-		CloneDetection.get().waitUntilExecuted();
-		populateResult(res);
+		populateResult();
 	}
 	
-	public void populateResult(String res){
+	public void populateResult(){
 		List<CloneClass> locs = CloneDetection.get().getClones();
 		while(true) {
 			String bufferSizeString = CloneDetection.get().waitUntilExecuted('\n').get(0);
 			int bufferSize = Integer.parseInt(bufferSizeString);
+			if(bufferSize == 0)
+				return;
 			String res = CloneDetection.get().readBuffer(bufferSize);
 			//System.out.println(res+", "+bufferSizeString);
-			CloneDetection.get().waitUntilExecuted();
+			CloneDetection.get().waitUntilExecuted('\n');
 			
 			int listLoc = 1;
 			while (listLoc < res.length() && res.charAt(listLoc) == '<') {
