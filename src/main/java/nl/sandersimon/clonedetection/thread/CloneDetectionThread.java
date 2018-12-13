@@ -3,6 +3,7 @@ package nl.sandersimon.clonedetection.thread;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import nl.sandersimon.clonedetection.CloneDetection;
@@ -29,8 +30,9 @@ public class CloneDetectionThread extends Thread {
 	public void run() {
 		CloneDetection.get().executeTill("calculateCodeDuplication(|file://"+SavePaths.getProjectFolder()+project+"/|)", '\n');
 		populateResult();
+		CloneDetection.get().writeAllMetricsToFile();
 		CloneDetection.get().waitUntilExecuted();
-		System.out.println("Result parsed!");
+		Minecraft.getMinecraft().player.sendChatMessage("All clones have been successfully parsed!");
 	}
 	
 	public void populateResult(){

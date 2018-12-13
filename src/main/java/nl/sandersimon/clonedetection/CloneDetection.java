@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
@@ -20,6 +21,8 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import nl.sandersimon.clonedetection.challenge.CodeArena;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.ResourceCommons;
+import nl.sandersimon.clonedetection.common.SavePaths;
+import nl.sandersimon.clonedetection.common.TestingCommons;
 import nl.sandersimon.clonedetection.model.CloneClass;
 
 @Mod(modid = CloneDetection.MODID, name = CloneDetection.NAME, version = CloneDetection.VERSION)
@@ -46,6 +49,8 @@ public class CloneDetection
 	private Score mostOccurrentClone;
 	private Score biggestCloneClass;
 	private Score totalCloneVolume;
+	
+	List<Score> scores = new ArrayList<Score>();
 	
 	private CodeArena arena;
 	
@@ -254,24 +259,33 @@ public class CloneDetection
 
 	public void initScoreboards() {
 		ScoreObjective scoreBoard = arena.getScoreBoard();
-		totalAmountOfLinesInProject = scoreBoard.getScoreboard().getOrCreateScore("Amount of lines in project", scoreBoard);
-		totalAmountOfLinesInProject.setScorePoints(0);
-		totalAmountOfClonedLinesInProject = scoreBoard.getScoreboard().getOrCreateScore("Amount of cloned lines", scoreBoard);
-		totalAmountOfClonedLinesInProject.setScorePoints(0);
-		percentageOfProjectCloned = scoreBoard.getScoreboard().getOrCreateScore("Percentage of project cloned", scoreBoard);
-		percentageOfProjectCloned.setScorePoints(0);
-		totalNumberOfClones = scoreBoard.getScoreboard().getOrCreateScore("Amount of clones", scoreBoard);
-		totalNumberOfClones.setScorePoints(0);
-		totalNumberOfCloneClasses = scoreBoard.getScoreboard().getOrCreateScore("Number of clone classes", scoreBoard);
-		totalNumberOfCloneClasses.setScorePoints(0);
-		totalCloneVolume = scoreBoard.getScoreboard().getOrCreateScore("Total clone volume", scoreBoard);
-		totalCloneVolume.setScorePoints(0);
-		mostLinesCloneClass = scoreBoard.getScoreboard().getOrCreateScore("Biggest clone class (in lines)", scoreBoard);
-		mostLinesCloneClass.setScorePoints(0);
-		mostOccurrentClone = scoreBoard.getScoreboard().getOrCreateScore("Most occurring clone class", scoreBoard);
-		mostOccurrentClone.setScorePoints(0);
-		biggestCloneClass = scoreBoard.getScoreboard().getOrCreateScore("Biggest clone class (in volume)", scoreBoard);
-		biggestCloneClass.setScorePoints(0);
+		createScoreBoard(scoreBoard, this::setTotalAmountOfLinesInProject, "Amount of lines in project");
+		createScoreBoard(scoreBoard, this::setTotalAmountOfClonedLinesInProject, "Amount of cloned lines");
+		createScoreBoard(scoreBoard, this::setPercentageOfProjectCloned, "Percentage of project cloned");
+		createScoreBoard(scoreBoard, this::setTotalNumberOfClones, "Amount of clones");
+		createScoreBoard(scoreBoard, this::setTotalNumberOfCloneClasses, "Number of clone classes");
+		createScoreBoard(scoreBoard, this::setTotalCloneVolume, "Total clone volume");
+		createScoreBoard(scoreBoard, this::setMostLinesCloneClass, "Biggest clone class (in lines)");
+		createScoreBoard(scoreBoard, this::setMostOccurrentClone, "Most occurring clone class");
+		createScoreBoard(scoreBoard, this::setBiggestCloneClass, "Biggest clone class (in volume)");
+	}
+
+	private void createScoreBoard(ScoreObjective scoreBoard, Consumer<Score> setter, String text) {
+		Score display = scoreBoard.getScoreboard().getOrCreateScore(text, scoreBoard);
+		display.setScorePoints(0);
+		scores.add(display);
+		setter.accept(display);
+	}
+	
+	public void writeAllMetricsToFile() {
+		StringBuilder builder = new StringBuilder();
+		for(Score score : scores)
+			builder.append(score.getPlayerName()+": "+score.getScorePoints()+System.lineSeparator());
+		try {
+			TestingCommons.writeStringToFile(new File(SavePaths.getResourceFolder()), "clone_metrics.txt");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void calculateClonePercentage() {
