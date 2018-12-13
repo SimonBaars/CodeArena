@@ -2,9 +2,7 @@ package nl.sandersimon.clonedetection.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import net.minecraft.scoreboard.Score;
 import nl.sandersimon.clonedetection.CloneDetection;
@@ -14,7 +12,6 @@ public class CloneClass implements Comparable<CloneClass>{
 
 	int lines;
 	List<Location> locations = new ArrayList<>();
-	private static Map<String, List<Integer>> countedLines = new HashMap<>();
 	
 	public CloneClass() {}
 
@@ -60,24 +57,6 @@ public class CloneClass implements Comparable<CloneClass>{
 		Score highestVolume = c.getBiggestCloneClass();
 		if(volume() > highestVolume.getScorePoints())
 			highestVolume.setScorePoints(volume());
-		
-		if(countedLines.containsKey(construct.getFile())) {
-			countClonedLines(construct, c, countedLines.get(construct.getFile()));
-		} else {
-			List<Integer> value = new ArrayList<>();
-			countedLines.put(construct.getFile(), value);
-			countClonedLines(construct, c, value);
-		}
-	}
-
-	private void countClonedLines(Location construct, CloneDetection c, List<Integer> value) {
-		for(int i = construct.beginLine; i<=construct.endLine; i++) {
-			if(!value.contains(i)) {
-				value.add(i);
-				c.getTotalAmountOfClonedLinesInProject().incrementScore();
-				c.calculateClonePercentage();
-			}
-		}
 	}
 	
 	public int size() {
