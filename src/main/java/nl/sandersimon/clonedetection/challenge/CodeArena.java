@@ -80,14 +80,14 @@ public class CodeArena extends Challenges {
 	
 	void spawnMobs(int monsterId, int amount){
 		amount=(amount*((wave/nWaves)+1))*numberOfPlayers;
-		for(int i = 0; i<amount; i++){
+		//for(int i = 0; i<amount; i++){
 			//CodeEntity monster = getMonster(monsterId, serverWorld);
 			//monster.setLocationAndAngles(cornerx+((int)(Math.random()*(fieldx-2)))+1, y+2, cornerz+((int)(Math.random()*(fieldz-2)))+1, 0, 0);
 			//monster.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(monster)), (IEntityLivingData)null);
 			//monster.spawnEntityInWorld(monster);
 			//serverWorld.spawnEntity(monster);
 			//activeMonsters.add(monster);
-		}
+		//}
 	}
 	
 	public void create(CloneClass cloneClass, int type) {
