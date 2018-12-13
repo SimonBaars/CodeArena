@@ -9,7 +9,7 @@ import astCreation;
 import String;
 
 test bool duplicateTestNoDuplicates(){
-	M3 model = createM3FromDirectory(|file:///home/sander/.clone/projects/ProjectWithoutDuplicate|);
+	M3 model = createM3FromDirectory(|file:///home/sander/.clone/projects/tests/ProjectWithoutDuplicate|);
 	map[loc, Declaration] astsMap = ();
 	list[Declaration] asts = [];
 	for (m <- model.containment, m[0].scheme == "java+compilationUnit"){
@@ -21,7 +21,7 @@ test bool duplicateTestNoDuplicates(){
 }
 
 test bool duplicateTestDuplicatesWithinFile(){
-	M3 model = createM3FromDirectory(|file:///home/sander/.clone/projects/ProjectWithDuplicateWithinOneFile|);
+	M3 model = createM3FromDirectory(|file:///home/sander/.clone/projects/tests/ProjectWithDuplicateWithinOneFile|);
 	map[loc, Declaration] astsMap = ();
 	list[Declaration] asts = [];
 	for (m <- model.containment, m[0].scheme == "java+compilationUnit"){
@@ -33,7 +33,7 @@ test bool duplicateTestDuplicatesWithinFile(){
 }
 
 test bool duplicateTestThreeDuplicatesBetweenFiles(){
-	M3 model = createM3FromDirectory(|file:///home/sander/.clone/projects/ProjectWithThreeDuplicatesBetweenFiles|);
+	M3 model = createM3FromDirectory(|file:///home/sander/.clone/projects/tests/ProjectWithThreeDuplicatesBetweenFiles|);
 	map[loc, Declaration] astsMap = ();
 	list[Declaration] asts = [];
 	for (m <- model.containment, m[0].scheme == "java+compilationUnit"){
@@ -45,7 +45,7 @@ test bool duplicateTestThreeDuplicatesBetweenFiles(){
 }
 
 test bool duplicateTestDuplicatesBetweenFiles(){
-	M3 model = createM3FromDirectory(|file:///home/sander/.clone/projects/ProjectWithDuplicateBetweenFiles|);
+	M3 model = createM3FromDirectory(|file:///home/sander/.clone/projects/tests/ProjectWithDuplicateBetweenFiles|);
 	map[loc, Declaration] astsMap = ();
 	list[Declaration] asts = [];
 	for (m <- model.containment, m[0].scheme == "java+compilationUnit"){
