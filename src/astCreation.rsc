@@ -163,8 +163,11 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 		parsedURIs += location.uri;
 	}
 	//- totaal aantal lines printen?
-	//- % duplicated lines dan ook printen?
+	//- % duplicated lines dan ook printen? --> Ja graag :)
+	println(0); //Please keep this in ;-), so I know how to separate buffer sizes from line data
 	println(totalLines);
+	println(20); //This has to be replaced by the percentage of lines duplicate (as an integer value, floats do not go well with Minecraft)
+	println(123); // This has to be replaced by the number of duplicate lines.
 	return dupList;
 }
 
