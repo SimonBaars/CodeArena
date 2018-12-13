@@ -30,7 +30,7 @@ public class Structure
 	{
 		this.blockMode = "replace";
 		this.blockUpdate = true;
-		this.fileName = "/assets/clonedetection/structs/"+fileName;
+		this.fileName = "/structures/"+fileName+".structure";
 		//System.out.println("Registered as "+this.fileName);
 		this.fileStream = Structure.class.getResourceAsStream(this.fileName);
 	}
@@ -40,7 +40,7 @@ public class Structure
 	{
 		this.blockMode = "replace";
 		this.blockUpdate = true;
-		this.fileName = "structures/"+fileName;
+		this.fileName = "structures/"+fileName+".structure";
 		//System.out.println("Registered as "+this.fileName);
 		try {
 			this.fileStream = new FileInputStream(new File(this.fileName)+".structure");
@@ -58,7 +58,7 @@ public class Structure
 		blockMode="overlay";
 	}
 
-	public void process(World world, int posX, int posY, int posZ)
+	public void process(World serverWorld, World world, int posX, int posY, int posZ)
 	{
 
 	}

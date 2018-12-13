@@ -75,23 +75,23 @@ public class CodeArena extends Challenges {
 		sizex=structure.length;
 		sizey=structure.height;
 		sizez=structure.width;
-		structure.process(worldIn, x+32, y-1, z+37);
+		structure.process(serverWorld, worldIn, x+32, y-1, z+37);
 	}
 	
 	void spawnMobs(int monsterId, int amount){
 		amount=(amount*((wave/nWaves)+1))*numberOfPlayers;
-		for(int i = 0; i<amount; i++){
+		//for(int i = 0; i<amount; i++){
 			//CodeEntity monster = getMonster(monsterId, serverWorld);
 			//monster.setLocationAndAngles(cornerx+((int)(Math.random()*(fieldx-2)))+1, y+2, cornerz+((int)(Math.random()*(fieldz-2)))+1, 0, 0);
 			//monster.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(monster)), (IEntityLivingData)null);
 			//monster.spawnEntityInWorld(monster);
 			//serverWorld.spawnEntity(monster);
 			//activeMonsters.add(monster);
-		}
+		//}
 	}
 	
 	public void create(CloneClass cloneClass, int type) {
-		CodeEntity monster = getMonster(worldIn, type, cloneClass.size());
+		CodeEntity monster = getMonster(worldIn, cloneClass, type, cloneClass.size());
 		monster.setLocationAndAngles(cornerx+((int)(Math.random()*(fieldx-2)))+1, y+2, cornerz+((int)(Math.random()*(fieldz-2)))+1, 0, 0);
 		monster.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(monster)), (IEntityLivingData)null);
 		//monster.spawnEntityInWorld(monster);
@@ -99,9 +99,9 @@ public class CodeArena extends Challenges {
 		activeMonsters.add(monster);
 	}
 
-	private CodeEntity getMonster(World world, int type, int size) {
+	private CodeEntity getMonster(World world, CloneClass cloneClass, int type, int size) {
 		switch(type){
-		case 1: return new EntityCodeSpider(world, size);
+		case 1: return new EntityCodeSpider(world, cloneClass, size);
 		//case 2: return new EntityBlaze(world);
 		//case 3: return new EntityCaveSpider(world);
 		}
@@ -194,7 +194,7 @@ public class CodeArena extends Challenges {
 		serverWorld.setWorldTime(14000);
 		if(Minecraft.getMinecraft().player!=null){
 			if(doReplaceStuff){
-				checkStructure.process(worldIn, cornerx+fieldx, y-1, cornerz+fieldz);	
+				checkStructure.process(serverWorld, worldIn, cornerx+fieldx, y-1, cornerz+fieldz);	
 			}
 		if(resetPlayer()){
 			return true;

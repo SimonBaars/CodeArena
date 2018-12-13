@@ -12,18 +12,27 @@ import java.util.function.Consumer;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.EntityEntry;
+import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import nl.sandersimon.clonedetection.challenge.CodeArena;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.ResourceCommons;
 import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.common.TestingCommons;
 import nl.sandersimon.clonedetection.model.CloneClass;
+import nl.sandersimon.clonedetection.monster.CodeSpiderFactory;
+import nl.sandersimon.clonedetection.monster.EntityCodeSpider;
 
 @Mod(modid = CloneDetection.MODID, name = CloneDetection.NAME, version = CloneDetection.VERSION)
 public class CloneDetection
@@ -50,7 +59,7 @@ public class CloneDetection
 	private Score biggestCloneClass;
 	private Score totalCloneVolume;
 	
-	List<Score> scores = new ArrayList<Score>();
+	List<Score> scores = new ArrayList<>();
 	
 	private CodeArena arena;
 	
@@ -60,6 +69,7 @@ public class CloneDetection
 	public void preInit(FMLPreInitializationEvent event){
 		cloneDetection = this;
 		ResourceCommons.extractResources();
+		RenderingRegistry.registerEntityRenderingHandler(EntityCodeSpider.class, new CodeSpiderFactory());
 	}
 
 	@EventHandler
@@ -69,6 +79,17 @@ public class CloneDetection
 
 	public static CloneDetection get() {
 		return cloneDetection;
+	}
+	
+	@SubscribeEvent
+	public static void registerCodeBeasts(RegistryEvent.Register<EntityEntry> e) {
+		EntityEntry entry = EntityEntryBuilder.create()
+			    .entity(EntityCodeSpider.class)
+			    .name("Code Spider")
+			    .egg(0xFFFFFF, 0xAAAAAA)
+			    .tracker(64, 20, false)
+			    .build();
+		e.getRegistry().register(entry);
 	}
 
 	@EventHandler

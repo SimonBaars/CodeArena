@@ -13,13 +13,15 @@ public class CloneClass implements Comparable<CloneClass>{
 	int lines;
 	List<Location> locations = new ArrayList<>();
 	
-	public CloneClass() {}
+	public CloneClass() {
+		super();
+		CloneDetection.get().getTotalNumberOfCloneClasses().incrementScore();
+	}
 
 	public CloneClass(int lines, List<Location> locations) {
-		super();
+		this();
 		this.lines = lines;
 		this.locations = locations;
-		CloneDetection.get().getTotalNumberOfCloneClasses().incrementScore();
 	}
 
 	public int getLines() {

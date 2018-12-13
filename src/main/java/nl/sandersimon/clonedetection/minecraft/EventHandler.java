@@ -1,11 +1,7 @@
 package nl.sandersimon.clonedetection.minecraft;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +30,6 @@ public class EventHandler {
 	
 		
 	public void load(){		
-			loadStructures();
 			lightUpdate= new LightUpdateCheck(Minecraft.getMinecraft().world, Minecraft.getMinecraft().getIntegratedServer().getEntityWorld());
 			isLoaded=true;
 	}
@@ -125,46 +120,7 @@ public class EventHandler {
 			//System.out.println("IMSM took "+(System.currentTimeMillis()-tickTime));
 	}
 	
-	private void loadStructures() {
-		creators.clear();
-		int i = 0;
-		while(fileExists2(i+".txt")){
-			//System.out.println("Loop 5");
-			String[] array = new String[9];
-			BufferedReader in;
-			try {
-				in = new BufferedReader(new FileReader(SavePaths.getSaveFolder()+Minecraft.getMinecraft().getIntegratedServer().getFolderName()+"/Structures/"+i+".txt"));
-			
-
-			for(int j = 0; j<array.length; j++){
-				//System.out.println("Loop 6");
-				try {
-					array[j]=in.readLine();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			try {
-				in.close();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			creators.add(new StructureCreatorClient(array[0], Integer.parseInt(array[2]),Integer.parseInt(array[3]),Integer.parseInt(array[4]), array[1].equals("true"),i));
-			((StructureCreator)creators.get(creators.size()-1)).i=Integer.parseInt(array[5]);
-			((StructureCreator)creators.get(creators.size()-1)).j=Integer.parseInt(array[6]);
-			((StructureCreator)creators.get(creators.size()-1)).k=Integer.parseInt(array[7]);
-			((StructureCreator)creators.get(creators.size()-1)).speedUp=Integer.parseInt(array[8]);
-			}catch (FileNotFoundException e1) {
-				e1.printStackTrace();
-			
-			}
-			i++;
-		}
 		
-	}
-	
 	boolean fileExists2(String path){
 		File f = new File(SavePaths.getSaveFolder()+Minecraft.getMinecraft().getIntegratedServer().getFolderName()+"/Structures/"+path);
 		if(f.exists() && !f.isDirectory()) { 

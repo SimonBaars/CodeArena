@@ -10,8 +10,9 @@ public abstract class CodeEntity extends EntityMob {
 	
 	CloneClass represents;
 
-	public CodeEntity(World worldIn, int cloneSize) {
+	public CodeEntity(World worldIn, CloneClass cloneClass, int cloneSize) {
 		super(worldIn);
+		this.represents = cloneClass;
 		this.setSize(0.14F*(cloneSize/2), 0.09F*(cloneSize/2));
 	}
 	
