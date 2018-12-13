@@ -18,8 +18,6 @@ import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
-import net.minecraft.entity.monster.EntityIronGolem;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
@@ -40,14 +38,15 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
+import nl.sandersimon.clonedetection.model.CloneClass;
 
 public class EntityCodeSpider extends CodeEntity
 {
     private static final DataParameter<Byte> CLIMBING = EntityDataManager.<Byte>createKey(EntityCodeSpider.class, DataSerializers.BYTE);
 
-    public EntityCodeSpider(World worldIn, int cloneSize)
+    public EntityCodeSpider(World worldIn, CloneClass cloneClass, int cloneSize)
     {
-        super(worldIn, cloneSize);
+        super(worldIn, cloneClass, cloneSize);
     }
 
     public static void registerFixesSpider(DataFixer fixer)
