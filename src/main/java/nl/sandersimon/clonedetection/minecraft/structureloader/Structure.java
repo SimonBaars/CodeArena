@@ -43,7 +43,7 @@ public class Structure
 		this.fileName = "structures/"+fileName;
 		//System.out.println("Registered as "+this.fileName);
 		try {
-			this.fileStream = new FileInputStream(new File(this.fileName));
+			this.fileStream = new FileInputStream(new File(this.fileName)+".structure");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
