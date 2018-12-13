@@ -112,7 +112,6 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 	list[tuple[int, list[loc]]] dupList = [];
 	list[str] parsedURIs = [];
 	for(loc location <- fileLineAsts){
-		println("Currently working on: <location>");
 		list[tuple[int lines, loc duplicate]] potentialDuplicates = []; // list[<aantal regels, regel die duplicate hash heeft>]
 		map[int, list[value]] fileLines = fileLineAsts[location];
 		//fileLineAsts = map[fileloc, map[regelnummer, wat er aan ast op de regel staat]]
