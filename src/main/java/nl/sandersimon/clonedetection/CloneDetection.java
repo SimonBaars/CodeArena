@@ -23,13 +23,12 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import nl.sandersimon.clonedetection.challenge.CodeArena;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.ResourceCommons;
 import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.common.TestingCommons;
+import nl.sandersimon.clonedetection.minecraft.CDEventHandler;
 import nl.sandersimon.clonedetection.model.CloneClass;
 import nl.sandersimon.clonedetection.monster.CodeSpiderFactory;
 import nl.sandersimon.clonedetection.monster.EntityCodeSpider;
@@ -41,7 +40,7 @@ public class CloneDetection
 	public static final String NAME = "Clone Detection";
 	public static final String VERSION = "1.0";
 	
-	public static final nl.sandersimon.clonedetection.minecraft.EventHandler eventHandler = new nl.sandersimon.clonedetection.minecraft.EventHandler();
+	public static final CDEventHandler eventHandler = new CDEventHandler();
 
 	private Process rascal;
 	private BufferedWriter rascalOut;

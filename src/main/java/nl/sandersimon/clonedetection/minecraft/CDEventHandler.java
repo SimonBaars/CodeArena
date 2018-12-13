@@ -15,7 +15,7 @@ import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.minecraft.structureloader.LightUpdateCheck;
 import nl.sandersimon.clonedetection.minecraft.structureloader.SchematicStructure;
 
-public class EventHandler {
+public class CDEventHandler {
 	public final List<SchematicStructure> postProcessors = new ArrayList<>();
 	public final List<ICreatorBlock> creators = new ArrayList<>();
 	public final List<ICreatorBlock> serverCreators = new ArrayList<>();
@@ -25,7 +25,7 @@ public class EventHandler {
 	public boolean isLoaded=false;
 	public Challenges challenge=null;
 	
-	public EventHandler(){
+	public CDEventHandler(){
 	}
 	
 		
