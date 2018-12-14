@@ -13,9 +13,11 @@ import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
@@ -29,6 +31,8 @@ import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.common.TestingCommons;
 import nl.sandersimon.clonedetection.minecraft.CDEventHandler;
 import nl.sandersimon.clonedetection.model.CloneClass;
+import nl.sandersimon.clonedetection.monster.CommonProxy;
+import nl.sandersimon.clonedetection.monster.codespider.CodeSpiderFactory;
 import nl.sandersimon.clonedetection.monster.codespider.EntityCodeSpider;
 
 @Mod(modid = CloneDetection.MODID, name = CloneDetection.NAME, version = CloneDetection.VERSION)
@@ -43,6 +47,9 @@ public class CloneDetection
 	private Process rascal;
 	private BufferedWriter rascalOut;
 	private InputStreamReader rascalIn;
+	
+    @SidedProxy(clientSide = "nl.sandersimon.clonedetection.monster.ClientProxy", serverSide = "nl.sandersimon.clonedetection.monster.ServerProxy")
+    public static CommonProxy proxy;
 
     @Mod.Instance
 	private static CloneDetection cloneDetection;
@@ -68,6 +75,7 @@ public class CloneDetection
 	public void preInit(FMLPreInitializationEvent event){
 		cloneDetection = this;
 		ResourceCommons.extractResources();
+		proxy.preInit(event);
 	}
 
 	@EventHandler
