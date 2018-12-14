@@ -205,4 +205,8 @@ public class Location {
 	public File file() {
 		return new File(getFile());
 	}
+
+	public String getName() {
+		return file().getName();
+	}
 }

@@ -110,7 +110,7 @@ public class CodeEditor extends JFrame implements SearchListener {
 			contentPane.add(statusBar, BorderLayout.SOUTH);
 
 			setTitle("SanSim Code Editor");
-			setDefaultCloseOperation(EXIT_ON_CLOSE);
+			//setDefaultCloseOperation(EXIT_ON_CLOSE);
 			pack();
 			setLocationRelativeTo(null);
 

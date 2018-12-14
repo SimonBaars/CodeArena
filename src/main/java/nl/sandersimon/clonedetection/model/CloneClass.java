@@ -81,4 +81,10 @@ public class CloneClass implements Comparable<CloneClass>{
 	public void open() {
 		CodeEditorMaker.create(this);
 	}
+
+	public String getName() {
+		if(size() == 0)
+			return "error";
+		return get(0).getName();
+	}
 }
