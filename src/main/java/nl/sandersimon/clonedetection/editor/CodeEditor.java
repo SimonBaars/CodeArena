@@ -2,8 +2,10 @@ package nl.sandersimon.clonedetection.editor;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -29,6 +31,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultCaret;
 import javax.swing.text.JTextComponent;
 
 import org.fife.rsta.ui.CollapsibleSectionPanel;
@@ -106,12 +109,20 @@ public class CodeEditor extends JFrame implements SearchListener {
 					e.printStackTrace();
 				}
 			}
-			
+			DefaultCaret caret = (DefaultCaret)textArea.getCaret();
+			caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 			int index = getLineStartIndex(textArea, markedRangeStart);
 			if (index != -1) { 
 				textArea.setCaretPosition(index);
 			}
-			centerLineInScrollPane(textArea);
+			index = getLineStartIndex(textArea, markedRangeEnd);
+			if (index != -1) { 
+				textArea.setCaretPosition(index);
+			}
+			//Point pt = textArea.getCaret().getMagicCaretPosition();
+			//Rectangle rect = new Rectangle(pt, new Dimension(1, 10));
+			//textArea.scrollRectToVisible(rect);
+
 
 			ErrorStrip errorStrip = new ErrorStrip(textArea);
 			contentPane.add(errorStrip, BorderLayout.LINE_END);

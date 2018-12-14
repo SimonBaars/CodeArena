@@ -25,10 +25,10 @@ public abstract class CodeEntity extends EntityMob {
 	
 	@Override
 	public boolean attackEntityFrom(DamageSource source, float amount){
-		if(represents != null && source.getTrueSource() instanceof EntityPlayer) {
+		if(represents != null && source.getTrueSource() instanceof EntityPlayer) //{
 			represents.open();
-			setDead();
-		}
+			//setDead();
+		//}
         return super.attackEntityFrom(source, amount);
     }
 
