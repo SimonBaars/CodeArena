@@ -60,7 +60,6 @@ public class CodeArena extends Challenges {
 		super(x,y,z,GameType.CREATIVE,EnumDifficulty.NORMAL);
 		cornerx=x-15;
 		cornerz=z-20;
-		showScore();
 		initArena();
 		for(EntityPlayerMP player : players){
 			player.setPosition(x, y+2,z);
@@ -102,7 +101,7 @@ public class CodeArena extends Challenges {
 
 	private CodeEntity getMonster(World world, CloneClass cloneClass, int type, int size) {
 		switch(type){
-		case 1: return new EntityCodeSpider(world, cloneClass, size);
+			case 1: return new EntityCodeSpider(world, cloneClass, size);
 		//case 2: return new EntityBlaze(world);
 		//case 3: return new EntityCaveSpider(world);
 		}
@@ -149,73 +148,16 @@ public class CodeArena extends Challenges {
 	
 	public boolean run() {
 		for(int i = 0; i<activeMonsters.size(); i++){
+			System.out.println(activeMonsters.get(i).getRepresents()+", "+activeMonsters.get(i).getHealth());
 			if(activeMonsters.get(i).isDead){
+				displayScore.increaseScore(activeMonsters.get(i).getRepresents().volume());
 				activeMonsters.remove(i);
-				increaseScore();
 				i--;
 			} else if(activeMonsters.get(i).posY>y+4){
 				activeMonsters.get(i).setDead();
 			}
 		}
-		showScore();
 		return true;
-	}
-	
-	public boolean runOld(){
-		waitTime=1000;
-		ticks++;
-		if(ticks==25 || !doReplaceStuff || activeMonsters.size()==0){
-			int realWave = wave%nWaves;
-			switch(realWave){
-			case 0: items.clear(); items.add(Items.WOODEN_SWORD); spawnMobs(16,2); break;
-			case 1: spawnMobs(12,2); break;
-			case 2: spawnMobs(13,4); break;
-			case 3: spawnMobs(11,10); break;
-			case 4: spawnMobs(15,5); break;
-			case 5: spawnMobs(0,20); break;
-			case 6: spawnMobs(4,5); break;
-			case 7: items.add(Items.STONE_SWORD); spawnMobs(8, 2); break;
-			case 8: spawnMobs(9, 10); break;
-			case 9: spawnMobs(2, 5); break;
-			case 10: spawnMobs(10,6); break;
-			case 11: spawnMobs(1,20); break;
-			case 12: spawnMobs(11,50); break;
-			case 13: items.add(Items.IRON_SWORD); spawnMobs(6,100); break;
-			case 14: spawnMobs(9, 15); spawnMobs(13, 15); break;
-			case 15: spawnMobs(10,15); break;
-			case 16: items.add(Items.DIAMOND_SWORD); spawnMobs(0,50); break;
-			case 17: spawnMobs(16,60); break;
-			case 18: spawnMobs(12,20); break;
-			case 19: int[] finalRound = {0,1,2,4,6,9,10,11,12,13,15,16}; items.add(Items.FLINT_AND_STEEL); for(int i = 0; i<finalRound.length; i++){ spawnMobs(finalRound[i],4); }
-			} 
-			wave++;
-			doReplaceStuff=true;
-			ticks=0;
-		}
-		serverWorld.setWorldTime(14000);
-		if(Minecraft.getMinecraft().player!=null){
-			if(doReplaceStuff){
-				checkStructure.process(serverWorld, worldIn, cornerx+fieldx, y-1, cornerz+fieldz);	
-			}
-		if(resetPlayer()){
-			return true;
-		}
-			for(int i = 0; i<activeMonsters.size(); i++){
-				if(activeMonsters.get(i).isDead){
-					activeMonsters.remove(i);
-					increaseScore();
-					i--;
-				} else if(activeMonsters.get(i).posY>y+4){
-					activeMonsters.get(i).setDead();
-				}
-			}
-		showScore();
-		waitTime--;
-		
-		
-		register();
-		}
-		return false;
 	}
 	
 	private void removeWaterWorld() {
