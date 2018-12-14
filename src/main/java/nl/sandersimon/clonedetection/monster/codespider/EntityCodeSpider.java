@@ -50,6 +50,11 @@ public class EntityCodeSpider extends CodeEntity
     {
         super(worldIn, cloneClass, cloneSize);
     }
+    
+    public EntityCodeSpider(World worldIn)
+    {
+        super(worldIn);
+    }
 
     public static void registerFixesSpider(DataFixer fixer)
     {
