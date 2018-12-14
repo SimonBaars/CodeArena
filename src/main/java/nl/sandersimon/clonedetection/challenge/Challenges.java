@@ -165,10 +165,6 @@ public abstract class Challenges {
 		return false;
 	}
 
-	void increaseScore(){
-		score-=10;
-	}
-
 	boolean withinGameRoom(int x, int y, int z){
 		return closeToGameRoom(0,x,y,z);
 	}
