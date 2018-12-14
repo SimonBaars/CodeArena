@@ -21,7 +21,7 @@ test bool duplicateTestNoDuplicates(){
 }
 
 test bool duplicateTestDuplicatesWithinFile(){
-	M3 model = createM3FromDirectory(|file:///home/sander/.clone/projects/tests/ProjectWithDuplicateWithinOneFile|);
+	M3 model = createM3FromDirectory(|file:///home/sander/.clone/projects/tests/ProjectWithT2DuplicateWithinOneFile|);
 	map[loc, Declaration] astsMap = ();
 	list[Declaration] asts = [];
 	for (m <- model.containment, m[0].scheme == "java+compilationUnit"){
@@ -29,7 +29,7 @@ test bool duplicateTestDuplicatesWithinFile(){
 		astsMap[m[0]] = ast;
 		asts += ast;
 	}
-	return(size(getDuplication(1, asts)[0][1]) == 2);
+	return(size(getDuplication(2, asts)[0][1]) == 2);
 }
 
 test bool duplicateTestThreeDuplicatesBetweenFiles(){
@@ -45,7 +45,7 @@ test bool duplicateTestThreeDuplicatesBetweenFiles(){
 }
 
 test bool duplicateTestDuplicatesBetweenFiles(){
-	M3 model = createM3FromDirectory(|file:///home/sander/.clone/projects/tests/ProjectWithDuplicateBetweenFiles|);
+	M3 model = createM3FromDirectory(|file:///home/sander/.clone/projects/tests/ProjectWithT2DuplicateBetweenFiles|);
 	map[loc, Declaration] astsMap = ();
 	list[Declaration] asts = [];
 	for (m <- model.containment, m[0].scheme == "java+compilationUnit"){
