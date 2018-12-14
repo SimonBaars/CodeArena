@@ -91,7 +91,7 @@ public class CodeArena extends Challenges {
 	
 	public void create(CloneClass cloneClass, int type) {
 		CodeEntity monster = getMonster(serverWorld, cloneClass, type, cloneClass.size());
-		System.out.println("Created "+monster.getRepresents());
+		//System.out.println("Created "+monster.getRepresents());
 		monster.setLocationAndAngles(cornerx+((int)(Math.random()*(fieldx-2)))+1, y+2, cornerz+((int)(Math.random()*(fieldz-2)))+1, 0, 0);
 		monster.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(monster)), (IEntityLivingData)null);
 		//monster.spawnEntityInWorld(monster);

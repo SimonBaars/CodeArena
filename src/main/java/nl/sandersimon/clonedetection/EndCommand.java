@@ -26,31 +26,28 @@ public class EndCommand implements ICommand {
 
 	@Override
 	public String getName() {
-		return "codeclones";
+		return "end";
 	}
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return "/codeclones <project_name>";
+		return "/end>";
 	}
 
 	@Override
 	public List<String> getAliases() {
 		List<String> aliases = Lists.<String>newArrayList();
-		aliases.add("/codeclones");
+		aliases.add("/end");
 		return aliases;
 	}
 
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-		if(args.length==0) {
-			sender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.BLUE, "Please enter the number of the project you'd like to search for code clones:"));
-			String[] projects = new File(SavePaths.getProjectFolder()).list();
-			IntStream.range(0, projects.length).forEach(i -> sender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.WHITE, "["+(i+1)+"] "+projects[i])));
-			CloneDetection.dialoge = 1;
-			return;
-		}
-		CloneDetectionThread.startWorker(server, sender, args[0]);
+		CloneDetection c = CloneDetection.get();
+		if(c.getArena() != null)
+			sender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.RED, "There is no Code Arena running"));
+		c.getArena().endChallengeForAllPlayers();
+		
 	}
 
 	@Override
@@ -61,7 +58,7 @@ public class EndCommand implements ICommand {
 	@Override
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args,
 			BlockPos targetPos) {
-		return Arrays.asList(new File(SavePaths.getProjectFolder()).list());
+		return new ArrayList<>();
 	}
 
 	@Override
