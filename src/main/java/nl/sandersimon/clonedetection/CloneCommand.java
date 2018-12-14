@@ -1,6 +1,7 @@
 package nl.sandersimon.clonedetection;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -14,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.thread.CloneDetectionThread;
+import scala.actors.threadpool.Arrays;
 
 public class CloneCommand implements ICommand {
 
@@ -44,7 +46,7 @@ public class CloneCommand implements ICommand {
 		if(args.length==0) {
 			sender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.BLUE, "Please enter the number of the project you'd like to search for code clones:"));
 			String[] projects = new File(SavePaths.getProjectFolder()).list();
-			IntStream.range(0, projects.length).forEach(i -> Commons.format(net.minecraft.util.text.TextFormatting.WHITE, "["+(i+1)+"] "+projects[i]));
+			IntStream.range(0, projects.length).forEach(i -> sender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.WHITE, "["+(i+1)+"] "+projects[i])));
 			CloneDetection.dialoge = 1;
 			return;
 		}
@@ -59,7 +61,7 @@ public class CloneCommand implements ICommand {
 	@Override
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args,
 			BlockPos targetPos) {
-		return null;
+		return Arrays.asList(new File(SavePaths.getProjectFolder()).list());
 	}
 
 	@Override

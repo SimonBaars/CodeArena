@@ -38,7 +38,7 @@ import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.minecraft.structureloader.SchematicStructure;
 import nl.sandersimon.clonedetection.model.CloneClass;
 import nl.sandersimon.clonedetection.monster.CodeEntity;
-import nl.sandersimon.clonedetection.monster.EntityCodeSpider;
+import nl.sandersimon.clonedetection.monster.codespider.EntityCodeSpider;
 
 public class CodeArena extends Challenges {
 	int sizex;

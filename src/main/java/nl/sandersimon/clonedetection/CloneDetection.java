@@ -30,8 +30,8 @@ import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.common.TestingCommons;
 import nl.sandersimon.clonedetection.minecraft.CDEventHandler;
 import nl.sandersimon.clonedetection.model.CloneClass;
-import nl.sandersimon.clonedetection.monster.CodeSpiderFactory;
-import nl.sandersimon.clonedetection.monster.EntityCodeSpider;
+import nl.sandersimon.clonedetection.monster.codespider.CodeSpiderFactory;
+import nl.sandersimon.clonedetection.monster.codespider.EntityCodeSpider;
 
 @Mod(modid = CloneDetection.MODID, name = CloneDetection.NAME, version = CloneDetection.VERSION)
 public class CloneDetection
@@ -86,7 +86,7 @@ public class CloneDetection
 			    .entity(EntityCodeSpider.class)
 			    .name("Code Spider")
 			    .egg(0xFFFFFF, 0xAAAAAA)
-			    .tracker(64, 20, false)
+			    .tracker(500, 20, true)
 			    .build();
 		e.getRegistry().register(entry);
 	}
@@ -302,7 +302,7 @@ public class CloneDetection
 		for(Score score : scores)
 			builder.append(score.getPlayerName()+": "+score.getScorePoints()+System.lineSeparator());
 		try {
-			TestingCommons.writeStringToFile(new File(SavePaths.getResourceFolder()), "clone_metrics.txt");
+			TestingCommons.writeStringToFile(new File(SavePaths.getResourceFolder()+"clone_metrics.txt"), builder.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
