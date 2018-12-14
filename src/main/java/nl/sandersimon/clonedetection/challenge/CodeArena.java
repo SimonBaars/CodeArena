@@ -147,8 +147,9 @@ public class CodeArena extends Challenges {
 	}
 	
 	public boolean run() {
+		if(activeMonsters == null)
+			return false;
 		for(int i = 0; i<activeMonsters.size(); i++){
-			System.out.println(activeMonsters.get(i).getRepresents()+", "+activeMonsters.get(i).getHealth());
 			if(activeMonsters.get(i).isDead){
 				displayScore.increaseScore(activeMonsters.get(i).getRepresents().volume());
 				activeMonsters.remove(i);

@@ -14,6 +14,7 @@ public abstract class CodeEntity extends EntityMob {
 		super(worldIn);
 		this.represents = cloneClass;
 		this.setSize(0.14F*(cloneSize/2), 0.09F*(cloneSize/2));
+		this.setHealth(Float.MAX_VALUE);
 	}
 	
 	public CodeEntity(World worldIn) {
@@ -22,7 +23,7 @@ public abstract class CodeEntity extends EntityMob {
 	
 	@Override
 	public boolean attackEntityFrom(DamageSource source, float amount){
-		if(source.getTrueSource() instanceof EntityPlayer)
+		if(represents != null && source.getTrueSource() instanceof EntityPlayer)
 			represents.open();
         return super.attackEntityFrom(source, amount);
     }
