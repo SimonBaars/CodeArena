@@ -315,7 +315,7 @@ list[value] getComparables(node n, int t){
 	   case \arrayInitializer(list[Expression] elements) : return [27];
 	   case \assignment(Expression lhs, str operator, Expression rhs) : return [28, operator];
 	   case \cast(Type \type, Expression expression) : return [29] + extractType(\type, t);
-	   case \characterLiteral(str charValue) : return [30, charValue];
+	   case \characterLiteral(str charValue) : return (t == 1 ? [30, charValue] : []);
 	   case \newObject(Expression expr, Type \type, list[Expression] args, Declaration class) : return [31] + extractType(\type, t);
  	   case \newObject(Expression expr, Type \type, list[Expression] args) : return [32] + extractType(\type, t);
 	   case \newObject(Type \type, list[Expression] args, Declaration class) : return [33] + extractType(\type, t);
@@ -329,8 +329,8 @@ list[value] getComparables(node n, int t){
 	   case \methodCall(bool isSuper, Expression receiver, str name, list[Expression] arguments) : return [41, isSuper] + (t == 1 ? [name] : []);
 	   //case \null() : return [42];
 	   case \number(str numberValue) : return [43, numberValue];
-	   case \booleanLiteral(bool boolValue) : return  [44, boolValue];
-	   case \stringLiteral(str stringValue) : return [45, stringValue];
+	   case \booleanLiteral(bool boolValue) : return (t == 1 ? [44, boolValue] : []);
+	   case \stringLiteral(str stringValue) : return (t == 1 ? [45, stringValue] : []);
 	   case \type(Type \type) : return [46] + extractType(\type, t);
 	   case \variable(str name, int extraDimensions) : return [47, extraDimensions] + (t == 1 ? [name] : []);
 	   case \variable(str name, int extraDimensions, Expression \initializer) : return [48, extraDimensions] + (t == 1 ? [name] : []);
