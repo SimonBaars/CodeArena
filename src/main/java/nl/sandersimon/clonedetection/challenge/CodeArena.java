@@ -37,8 +37,8 @@ import net.minecraft.world.World;
 import nl.sandersimon.clonedetection.minecraft.structureloader.SchematicStructure;
 import nl.sandersimon.clonedetection.model.CloneClass;
 import nl.sandersimon.clonedetection.monster.CodeEntity;
-import nl.sandersimon.clonedetection.monster.CodeEntity2;
-import nl.sandersimon.clonedetection.monster.codespider.EntityCodeSpider2;
+import nl.sandersimon.clonedetection.monster.CodeEntity;
+import nl.sandersimon.clonedetection.monster.codespider.EntityCodeSpider;
 
 public class CodeArena extends Challenges {
 	int sizex;
@@ -49,7 +49,7 @@ public class CodeArena extends Challenges {
 	final int fieldz = 40;
 	int cornerx;
 	int cornerz;
-	List<CodeEntity2> activeMonsters = new ArrayList<>();
+	List<CodeEntity> activeMonsters = new ArrayList<>();
 	int wave = 0;
 	final int nWaves = 20;
 	private SchematicStructure checkStructure;
@@ -91,17 +91,17 @@ public class CodeArena extends Challenges {
 	}
 	
 	public void create(CloneClass cloneClass, int type) {
-		CodeEntity2 monster = getMonster(worldIn, cloneClass, type, cloneClass.size());
+		CodeEntity monster = getMonster(serverWorld, cloneClass, type, cloneClass.size());
 		monster.getMob().setLocationAndAngles(cornerx+((int)(Math.random()*(fieldx-2)))+1, y+2, cornerz+((int)(Math.random()*(fieldz-2)))+1, 0, 0);
 		monster.getMob().onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(monster.getMob())), (IEntityLivingData)null);
 		//monster.spawnEntityInWorld(monster);
-		worldIn.spawnEntity(monster.getMob());
+		serverWorld.spawnEntity(monster.getMob());
 		activeMonsters.add(monster);
 	}
 
-	private CodeEntity2 getMonster(World world, CloneClass cloneClass, int type, int size) {
+	private CodeEntity getMonster(World world, CloneClass cloneClass, int type, int size) {
 		switch(type){
-		case 1: return new EntityCodeSpider2(world, cloneClass, size);
+		case 1: return new EntityCodeSpider(world, cloneClass, size);
 		//case 2: return new EntityBlaze(world);
 		//case 3: return new EntityCaveSpider(world);
 		}
