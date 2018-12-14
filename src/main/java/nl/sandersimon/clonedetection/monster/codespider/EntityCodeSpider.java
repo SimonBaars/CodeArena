@@ -1,4 +1,4 @@
-package nl.sandersimon.clonedetection.monster;
+package nl.sandersimon.clonedetection.monster.codespider;
 
 import java.util.Random;
 
@@ -18,6 +18,7 @@ import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
+import net.minecraft.entity.monster.EntityIronGolem;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
@@ -39,6 +40,7 @@ import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
 import nl.sandersimon.clonedetection.model.CloneClass;
+import nl.sandersimon.clonedetection.monster.CodeEntity;
 
 public class EntityCodeSpider extends CodeEntity
 {
@@ -47,6 +49,11 @@ public class EntityCodeSpider extends CodeEntity
     public EntityCodeSpider(World worldIn, CloneClass cloneClass, int cloneSize)
     {
         super(worldIn, cloneClass, cloneSize);
+    }
+    
+    public EntityCodeSpider(World worldIn)
+    {
+        super(worldIn);
     }
 
     public static void registerFixesSpider(DataFixer fixer)
@@ -58,13 +65,12 @@ public class EntityCodeSpider extends CodeEntity
     {
         this.tasks.addTask(1, new EntityAISwimming(this));
         this.tasks.addTask(3, new EntityAILeapAtTarget(this, 0.4F));
-        this.tasks.addTask(4, new EntityCodeSpider.AISpiderAttack(this));
+        this.tasks.addTask(4, new EntityCodeSpider.AICodeSpiderAttack(this));
         this.tasks.addTask(5, new EntityAIWanderAvoidWater(this, 0.8D));
         this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(6, new EntityAILookIdle(this));
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false, new Class[0]));
-        //this.targetTasks.addTask(2, new EntityCodeSpider.AISpiderTarget(this, EntityPlayer.class));
-        //this.targetTasks.addTask(3, new EntityCodeSpider.AISpiderTarget(this, EntityIronGolem.class));
+        this.targetTasks.addTask(2, new EntityCodeSpider.AICodeSpiderTarget(this, EntityPlayer.class));
     }
 
     /**
@@ -95,11 +101,6 @@ public class EntityCodeSpider extends CodeEntity
     public void onUpdate()
     {
         super.onUpdate();
-
-        if (!this.world.isRemote)
-        {
-            this.setBesideClimbableBlock(this.collidedHorizontally);
-        }
     }
 
     protected void applyEntityAttributes()
@@ -136,15 +137,6 @@ public class EntityCodeSpider extends CodeEntity
     }
 
     /**
-     * Returns true if this entity should move as if it were on a ladder (either because it's actually on a ladder, or
-     * for AI reasons)
-     */
-    public boolean isOnLadder()
-    {
-        return this.isBesideClimbableBlock();
-    }
-
-    /**
      * Sets the Entity inside a web block.
      */
     public void setInWeb()
@@ -165,35 +157,6 @@ public class EntityCodeSpider extends CodeEntity
     }
 
     /**
-     * Returns true if the WatchableObject (Byte) is 0x01 otherwise returns false. The WatchableObject is updated using
-     * setBesideClimableBlock.
-     */
-    public boolean isBesideClimbableBlock()
-    {
-        return (((Byte)this.dataManager.get(CLIMBING)).byteValue() & 1) != 0;
-    }
-
-    /**
-     * Updates the WatchableObject (Byte) created in entityInit(), setting it to 0x01 if par1 is true or 0x00 if it is
-     * false.
-     */
-    public void setBesideClimbableBlock(boolean climbing)
-    {
-        byte b0 = ((Byte)this.dataManager.get(CLIMBING)).byteValue();
-
-        if (climbing)
-        {
-            b0 = (byte)(b0 | 1);
-        }
-        else
-        {
-            b0 = (byte)(b0 & -2);
-        }
-
-        this.dataManager.set(CLIMBING, Byte.valueOf(b0));
-    }
-
-    /**
      * Called only once on an entity when first time spawned, via egg, mob spawner, natural spawning etc, but not called
      * when entity is reloaded from nbt. Mainly used for initializing attributes and inventory
      */
@@ -201,15 +164,6 @@ public class EntityCodeSpider extends CodeEntity
     public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
     {
         livingdata = super.onInitialSpawn(difficulty, livingdata);
-
-        if (this.world.rand.nextInt(100) == 0)
-        {
-            EntitySkeleton entityskeleton = new EntitySkeleton(this.world);
-            entityskeleton.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0F);
-            entityskeleton.onInitialSpawn(difficulty, (IEntityLivingData)null);
-            this.world.spawnEntity(entityskeleton);
-            entityskeleton.startRiding(this);
-        }
 
         if (livingdata == null)
         {
@@ -239,9 +193,9 @@ public class EntityCodeSpider extends CodeEntity
         return 0.65F;
     }
 
-    static class AISpiderAttack extends EntityAIAttackMelee
+    static class AICodeSpiderAttack extends EntityAIAttackMelee
         {
-            public AISpiderAttack(EntityCodeSpider spider)
+            public AICodeSpiderAttack(EntityCodeSpider spider)
             {
                 super(spider, 1.0D, true);
             }
@@ -270,9 +224,9 @@ public class EntityCodeSpider extends CodeEntity
             }
         }
 
-    static class AISpiderTarget<T extends EntityLivingBase> extends EntityAINearestAttackableTarget<T>
+    static class AICodeSpiderTarget<T extends EntityLivingBase> extends EntityAINearestAttackableTarget<T>
         {
-            public AISpiderTarget(EntityCodeSpider spider, Class<T> classTarget)
+            public AICodeSpiderTarget(EntityCodeSpider spider, Class<T> classTarget)
             {
                 super(spider, classTarget, true);
             }

@@ -48,7 +48,7 @@ public class CDEventHandler {
 	}
 	@SubscribeEvent
 	public void update(TickEvent.ClientTickEvent event){
-		
+		if(challenge!= null) challenge.run();
 		/*for(int i = 0; i<liveCreators.size(); i++){
 			if(System.currentTimeMillis()>liveCreators.get(i).lastTickTime+liveCreators.get(i).waitTime){
 				if(liveCreators.get(i).run() && liveCreators.get(i).boundTo.run()){

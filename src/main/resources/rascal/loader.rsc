@@ -7,6 +7,9 @@ import lang::java::m3::Core;
 import lang::java::m3::AST;
 import astCreation;
 import String;
+import tests::typeOne;
+import tests::typeTwo;
+import tests::typeThree;
 
 void calculateCodeDuplication(loc location){
 	M3 model = createM3FromDirectory(location);

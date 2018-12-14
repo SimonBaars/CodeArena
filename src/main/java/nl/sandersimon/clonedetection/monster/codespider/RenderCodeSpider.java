@@ -1,4 +1,4 @@
-package nl.sandersimon.clonedetection.monster;
+package nl.sandersimon.clonedetection.monster.codespider;
 
 import net.minecraft.client.model.ModelSpider;
 import net.minecraft.client.renderer.entity.RenderLiving;

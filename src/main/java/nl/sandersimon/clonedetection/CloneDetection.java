@@ -12,28 +12,27 @@ import java.util.function.Consumer;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.EntityEntry;
-import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import nl.sandersimon.clonedetection.challenge.CodeArena;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.ResourceCommons;
 import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.common.TestingCommons;
 import nl.sandersimon.clonedetection.minecraft.CDEventHandler;
+import nl.sandersimon.clonedetection.minecraft.proxy.CommonProxy;
 import nl.sandersimon.clonedetection.model.CloneClass;
-import nl.sandersimon.clonedetection.monster.CodeSpiderFactory;
-import nl.sandersimon.clonedetection.monster.EntityCodeSpider;
+import nl.sandersimon.clonedetection.monster.codespider.CodeSpiderFactory;
+import nl.sandersimon.clonedetection.monster.codespider.EntityCodeSpider;
 
-@Mod(modid = CloneDetection.MODID, name = CloneDetection.NAME, version = CloneDetection.VERSION)
+@Mod(modid = CloneDetection.MODID, name = CloneDetection.NAME, version = CloneDetection.VERSION, dependencies = "required-after:forge@[13.19.0.2129,)", useMetadata = true)
 public class CloneDetection
 {
 	public static final String MODID = "clonedetection";
@@ -45,6 +44,7 @@ public class CloneDetection
 	private Process rascal;
 	private BufferedWriter rascalOut;
 	private InputStreamReader rascalIn;
+	@Mod.Instance
 	private static CloneDetection cloneDetection;
 	private List<CloneClass> clones = new ArrayList<>();
 	
@@ -58,6 +58,9 @@ public class CloneDetection
 	private Score biggestCloneClass;
 	private Score totalCloneVolume;
 	
+	 @SidedProxy(clientSide = "nl.sandersimon.clonedetection.minecraft.proxy.ClientProxy", serverSide = "nl.sandersimon.clonedetection.minecraft.proxy.ServerProxy")
+	    public static CommonProxy proxy;
+	
 	List<Score> scores = new ArrayList<>();
 	
 	private CodeArena arena;
@@ -66,9 +69,10 @@ public class CloneDetection
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){
+		proxy.preInit(event);
 		cloneDetection = this;
 		ResourceCommons.extractResources();
-		RenderingRegistry.registerEntityRenderingHandler(EntityCodeSpider.class, new CodeSpiderFactory());
+		//RenderingRegistry.registerEntityRenderingHandler(EntityCodeSpider.class, new CodeSpiderFactory());
 	}
 
 	@EventHandler
@@ -79,20 +83,10 @@ public class CloneDetection
 	public static CloneDetection get() {
 		return cloneDetection;
 	}
-	
-	@SubscribeEvent
-	public static void registerCodeBeasts(RegistryEvent.Register<EntityEntry> e) {
-		EntityEntry entry = EntityEntryBuilder.create()
-			    .entity(EntityCodeSpider.class)
-			    .name("Code Spider")
-			    .egg(0xFFFFFF, 0xAAAAAA)
-			    .tracker(64, 20, false)
-			    .build();
-		e.getRegistry().register(entry);
-	}
 
 	@EventHandler
 	public void init(FMLInitializationEvent event){
+		proxy.init(event);
 		try {
 			System.out.println("Starting Rascal..");
 			rascal = getProcess("java -jar "+ResourceCommons.getResource("Rascal.jar").getAbsolutePath(), ResourceCommons.getResource("rascal"));
@@ -106,6 +100,11 @@ public class CloneDetection
 			MinecraftForge.EVENT_BUS.register(new nl.sandersimon.clonedetection.minecraft.ForgeEventHandler());
 		}
 	}
+	
+	@Mod.EventHandler
+    public void postInit(FMLPostInitializationEvent e) {
+        proxy.postInit(e);
+    }
 
 	private Process getProcess(String command, File dir) throws IOException {
 		String[] com;
@@ -302,7 +301,7 @@ public class CloneDetection
 		for(Score score : scores)
 			builder.append(score.getPlayerName()+": "+score.getScorePoints()+System.lineSeparator());
 		try {
-			TestingCommons.writeStringToFile(new File(SavePaths.getResourceFolder()), "clone_metrics.txt");
+			TestingCommons.writeStringToFile(new File(SavePaths.getResourceFolder()+"clone_metrics.txt"), builder.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

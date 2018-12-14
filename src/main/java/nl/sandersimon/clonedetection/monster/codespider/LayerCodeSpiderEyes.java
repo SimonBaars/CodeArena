@@ -1,4 +1,4 @@
-package nl.sandersimon.clonedetection.monster;
+package nl.sandersimon.clonedetection.monster.codespider;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;

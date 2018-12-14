@@ -2,11 +2,16 @@ package nl.sandersimon.clonedetection.minecraft;
 
 import java.io.File;
 
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.EntityEntry;
+import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.common.SavePaths;
+import nl.sandersimon.clonedetection.monster.codespider.EntityCodeSpider;
 import nl.sandersimon.clonedetection.thread.CloneDetectionThread;
 
 public class ForgeEventHandler {

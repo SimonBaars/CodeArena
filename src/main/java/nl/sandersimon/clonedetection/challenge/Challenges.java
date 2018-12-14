@@ -38,7 +38,6 @@ public abstract class Challenges {
 	GameType defGameType;
 	public int waitTime = 2000;
 	public int numberOfPlayers;
-	int score=0;
 	GameType oldGameType;
 	EnumDifficulty defDifficulty;
 	ArrayList<ItemStack> oldInventory = new ArrayList<>();
@@ -92,10 +91,6 @@ public abstract class Challenges {
 		displayScore = scoreBoard.getScoreboard().getOrCreateScore("Score", scoreBoard);
 		displayScore.setScorePoints(0);
 		//System.out.println(Challenge.highscores[getChallengeNum()-1]+", "+(getChallengeNum()-1));
-	}
-
-	public int getScore(){
-		return -(score/10);
 	}
 
 	public boolean resetPlayer(){
@@ -165,21 +160,11 @@ public abstract class Challenges {
 		return false;
 	}
 
-	void increaseScore(){
-		score-=10;
-	}
-
 	boolean withinGameRoom(int x, int y, int z){
 		return closeToGameRoom(0,x,y,z);
 	}
 
 	abstract boolean closeToGameRoom(int howClose, int x, int y, int z);
-
-	void showScore(){
-		//Minecraft.getMinecraft().ingameGUI.getChatGUI().clearChatMessages();
-		//Minecraft.getMinecraft().player.addChatMessage(new TextComponentString("Score = "+getScore()));
-		displayScore.setScorePoints(getScore());
-	}
 
 	public void removeThisChallenge(){
 		if(Minecraft.getMinecraft().player!=null){
@@ -224,7 +209,7 @@ public abstract class Challenges {
 		EntityPlayerMP deadPlayer = (EntityPlayerMP)  Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().getPlayerEntityByName(entityIn.getName());
 		if(alivePlayers.contains(deadPlayer)){
 			Minecraft.getMinecraft().player.sendChatMessage("It's Game Over for "+entityIn.getName()+"!");
-			Minecraft.getMinecraft().player.sendChatMessage(entityIn.getName()+" has ended with a score of "+getScore());
+			Minecraft.getMinecraft().player.sendChatMessage(entityIn.getName()+" has ended with a score of "+displayScore.getScorePoints());
 			alivePlayers.remove(deadPlayer);
 			deadPlayers.add(deadPlayer);
 		}
