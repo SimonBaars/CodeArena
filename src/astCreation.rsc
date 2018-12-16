@@ -37,19 +37,19 @@ public tuple[map[int, list[loc]] locRegistries,map[str, list[int]] sortedDomains
 	map[int, int] hashStartIndex = ();
 	for(location <- fileLineAsts){
 		map[int, list[value]] fileLines = fileLineAsts[location];
-		for(lineNumber <- fileLines){
+		sortedDomains[location.uri] = sort(domain(fileLines));
+		for(i <- [0..size(fileLines)]){
 			list[value] stuffOnLine = fileLines[lineNumber];
 			loc l = |unknown:///|(0,0,<0,0>,<0,0>);
 			l.uri = location.uri;
-			l.end.line = lineNumber;
-			l.begin.line = lineNumber;
+			l.end.line = i;
+			l.begin.line = i;
 			//println("Line <lineNumber> of file <indexOf(sort(domain(fileLineAsts)), location)> has hash <makeHashOfLine(stuffOnLine)>");
 			//println(stuffOnLine);
 			int hash = makeHashOfLine(stuffOnLine);
 			registry = addTo(registry, hash, l);
 			hashStartIndex[hash] = 0;
 		}
-		sortedDomains[location.uri] = sort(domain(fileLines));
 	}
 	return <registry, sortedDomains, hashStartIndex>;
 }
@@ -164,7 +164,8 @@ public list[tuple[int, list[loc]]] getDupList(LineRegistry fileLineAsts, map[int
 				loc potDupNew = dupLines[j];
 				//if(potDupNew.uri notin parsedURIs && (potDupNew.uri != location.uri || potDupNew.begin.line > lineNumber)){
 					bool partOfChain = false;
-					str searchKey = "<potDupNew.uri><sortedDomains[potDupNew.uri][indexOf(sortedDomains[potDupNew.uri], potDupNew.begin.line)-1]>";
+					list[int] thisDomain = sortedDomains[potDupNew.uri];
+					str searchKey = "<potDupNew.uri><thisDomain[potDupNew.begin.line-1]>";
 					if(searchKey in reg1){
 						list[tuple[int lines, loc duplicate]] potDupOldList = reg1[searchKey];
 						for(potDupOld <- potDupOldList) {
