@@ -37,7 +37,7 @@ public tuple[map[int, list[loc]] locRegistries,map[str, list[int]] sortedDomains
 	map[str, list[int]] sortedDomains = ();
 	map[int, int] hashStartIndex = ();
 	map[str, map[int, int]] hashMap = ();
-	for(location <- fileLineAsts){
+	for(loc location <- fileLineAsts){
 		map[int, list[value]] fileLines = fileLineAsts[location];
 		sortedDomains[location.uri] = sort(domain(fileLines));
 		hashMap[location.uri] = ();
@@ -230,12 +230,12 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 	for(int amount <- sort(domain(finalizedDups), bool(int a, int b){ return a > b; })){
 		list[loc] dupGroup = finalizedDups[amount];
 		if((isLast || any(loc aDup <- dupGroup, willBeRemoved(aDup, newPotentialDuplicates))) && !(any(tuple[int, list[loc]] aDup <- dupList, dupGroup <= aDup[1])) && !isSubElement(dupGroup, temp+dupList)){
-			for(j <- finalizedDups[amount]){
+			for(int j <- [0..size(finalizedDups[amount])]){
 				loc thisLoc = dupGroup[j];
 				loc l = |unknown:///|(0,0,<0,0>,<0,0>);
 				l.uri = thisLoc.uri;
-				l.end.line = sortedDomains[thisLoc.end.line];
-				l.begin.line = sortedDomains[thisLoc.begin.line];
+				l.end.line = sortedDomains[thisLoc.uri][thisLoc.end.line];
+				l.begin.line = sortedDomains[thisLoc.uri][thisLoc.begin.line];
 				dupGroup[j] = l;
 			}
 			tuple[int, list[loc]] entry = <amount, dupGroup>;
