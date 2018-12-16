@@ -46,9 +46,9 @@ public class EntityCodeSpider extends CodeEntity
 {
     private static final DataParameter<Byte> CLIMBING = EntityDataManager.<Byte>createKey(EntityCodeSpider.class, DataSerializers.BYTE);
 
-    public EntityCodeSpider(World worldIn, CloneClass cloneClass, int cloneSize)
+    public EntityCodeSpider(World worldIn, CloneClass cloneClass)
     {
-        super(worldIn, cloneClass, cloneSize);
+        super(worldIn, cloneClass);
     }
     
     public EntityCodeSpider(World worldIn)
@@ -267,4 +267,12 @@ public class EntityCodeSpider extends CodeEntity
                 }
             }
         }
+    
+    public float getScaleFactor() {
+    	if(getRepresents() == null)//{
+    	//	setDead();
+    		return 1.00F;
+    	//}
+    	return 0.05F*getRepresents().volume();
+    }
 }

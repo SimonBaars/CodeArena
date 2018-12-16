@@ -1,7 +1,11 @@
 package nl.sandersimon.clonedetection.editor;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -20,11 +24,15 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JTextArea;
+import javax.swing.JViewport;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultCaret;
+import javax.swing.text.JTextComponent;
 
 import org.fife.rsta.ui.CollapsibleSectionPanel;
 //import org.fife.rsta.ui.DocumentMap;
@@ -43,7 +51,6 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 import org.fife.ui.rtextarea.SearchContext;
 import org.fife.ui.rtextarea.SearchEngine;
 import org.fife.ui.rtextarea.SearchResult;
-import org.lwjgl.util.Rectangle;
 
 import nl.sandersimon.clonedetection.common.TestingCommons;
 
@@ -95,11 +102,27 @@ public class CodeEditor extends JFrame implements SearchListener {
 			for(int line = markedRangeStart; line<=markedRangeEnd && line>0; line++) {
 				try {
 					textArea.addLineHighlight(line-1, Color.CYAN);
-					//sp.scrollRectToVisible(new Rectangle(0, textArea.getLineStartOffset(line-1),0,0));
+
+					//sp.getVerticalScrollBar().set.scrollRectToVisible(new java.awt.Rectangle(0, textArea.getLineStartOffset(line-1),0,textArea.getLineStartOffset(line-1)));
+					//sp.scrollRectToVisible(new java.awt.Rectangle(0, textArea.getLineStartOffset(line-1),0,0));
 				} catch (BadLocationException e) {
 					e.printStackTrace();
 				}
 			}
+			DefaultCaret caret = (DefaultCaret)textArea.getCaret();
+			caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+			int index = getLineStartIndex(textArea, markedRangeStart);
+			if (index != -1) { 
+				textArea.setCaretPosition(index);
+			}
+			index = getLineStartIndex(textArea, markedRangeEnd);
+			if (index != -1) { 
+				textArea.setCaretPosition(index);
+			}
+			//Point pt = textArea.getCaret().getMagicCaretPosition();
+			//Rectangle rect = new Rectangle(pt, new Dimension(1, 10));
+			//textArea.scrollRectToVisible(rect);
+
 
 			ErrorStrip errorStrip = new ErrorStrip(textArea);
 			contentPane.add(errorStrip, BorderLayout.LINE_END);
@@ -110,7 +133,7 @@ public class CodeEditor extends JFrame implements SearchListener {
 			contentPane.add(statusBar, BorderLayout.SOUTH);
 
 			setTitle("SanSim Code Editor");
-			setDefaultCloseOperation(EXIT_ON_CLOSE);
+			//setDefaultCloseOperation(EXIT_ON_CLOSE);
 			pack();
 			setLocationRelativeTo(null);
 
@@ -139,6 +162,47 @@ public class CodeEditor extends JFrame implements SearchListener {
 		}
 
 	}
+	
+	public int getLineStartIndex(JTextComponent textComp, int lineNumber) {
+	    if (lineNumber == 0) { return 0; }
+
+	    // Gets the current line number start index value for 
+	    // the supplied text line.
+	    try {
+	        JTextArea jta = (JTextArea) textComp;
+	        return jta.getLineStartOffset(lineNumber-1);
+	    } catch (BadLocationException ex) { return -1; }
+	}
+
+	
+	public static void centerLineInScrollPane(JTextComponent component)
+	{
+	    Container container = SwingUtilities.getAncestorOfClass(JViewport.class, component);
+
+	    if (container == null) return;
+
+	    try
+	    {
+	        java.awt.Rectangle r = component.modelToView(component.getCaretPosition());
+	        JViewport viewport = (JViewport)container;
+
+	        int extentWidth = viewport.getExtentSize().width;
+	        int viewWidth = viewport.getViewSize().width;
+
+	        int x = Math.max(0, r.x - (extentWidth / 2));
+	        x = Math.min(x, viewWidth - extentWidth);
+
+	        int extentHeight = viewport.getExtentSize().height;
+	        int viewHeight = viewport.getViewSize().height;
+
+	        int y = Math.max(0, r.y - (extentHeight / 2));
+	        y = Math.min(y, viewHeight - extentHeight);
+
+	        viewport.setViewPosition(new Point(x, y));
+	    }
+	    catch(BadLocationException ble) {}
+	}
+
 
 	public CodeEditor(File file, int markedRangeStart, int markedRangeEnd) {
 		this(file, markedRangeStart, markedRangeEnd, 0, 1);

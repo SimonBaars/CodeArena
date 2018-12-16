@@ -78,6 +78,7 @@ public class CloneDetection
 	@EventHandler
 	public void serverLoad(FMLServerStartingEvent event){
 		event.registerServerCommand(new CloneCommand());
+		event.registerServerCommand(new EndCommand());
 	}
 
 	public static CloneDetection get() {

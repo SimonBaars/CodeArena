@@ -10,10 +10,13 @@ public abstract class CodeEntity extends EntityMob {
 	
 	CloneClass represents;
 
-	public CodeEntity(World worldIn, CloneClass cloneClass, int cloneSize) {
+	public CodeEntity(World worldIn, CloneClass cloneClass) {
 		super(worldIn);
 		this.represents = cloneClass;
-		this.setSize(0.14F*(cloneSize/2), 0.09F*(cloneSize/2));
+		//this.setSize(0.07F*(cloneSize/2), 0.05F*(cloneSize/2));
+		this.setHealth(Float.MAX_VALUE);
+		this.setAlwaysRenderNameTag(true);
+		this.setCustomNameTag(cloneClass.getName());
 	}
 	
 	public CodeEntity(World worldIn) {
@@ -22,8 +25,10 @@ public abstract class CodeEntity extends EntityMob {
 	
 	@Override
 	public boolean attackEntityFrom(DamageSource source, float amount){
-		if(source.getTrueSource() instanceof EntityPlayer)
+		if(represents != null && source.getTrueSource() instanceof EntityPlayer) //{
 			represents.open();
+			//setDead();
+		//}
         return super.attackEntityFrom(source, amount);
     }
 

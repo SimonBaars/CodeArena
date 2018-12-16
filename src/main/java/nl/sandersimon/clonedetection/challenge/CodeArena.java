@@ -90,8 +90,8 @@ public class CodeArena extends Challenges {
 	}
 	
 	public void create(CloneClass cloneClass, int type) {
-		CodeEntity monster = getMonster(serverWorld, cloneClass, type, cloneClass.size());
-		System.out.println("Created "+monster.getRepresents());
+		CodeEntity monster = getMonster(serverWorld, cloneClass, type);
+		//System.out.println("Created "+monster.getRepresents());
 		monster.setLocationAndAngles(cornerx+((int)(Math.random()*(fieldx-2)))+1, y+2, cornerz+((int)(Math.random()*(fieldz-2)))+1, 0, 0);
 		monster.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(monster)), (IEntityLivingData)null);
 		//monster.spawnEntityInWorld(monster);
@@ -99,9 +99,9 @@ public class CodeArena extends Challenges {
 		activeMonsters.add(monster);
 	}
 
-	private CodeEntity getMonster(World world, CloneClass cloneClass, int type, int size) {
+	private CodeEntity getMonster(World world, CloneClass cloneClass, int type) {
 		switch(type){
-			case 1: return new EntityCodeSpider(world, cloneClass, size);
+			case 1: return new EntityCodeSpider(world, cloneClass);
 		//case 2: return new EntityBlaze(world);
 		//case 3: return new EntityCaveSpider(world);
 		}
@@ -132,6 +132,7 @@ public class CodeArena extends Challenges {
 	}
 
 	void destroy(){
+		CloneDetection.get().setArena(null);
 		placeBlocks(Blocks.AIR, x+32, y-1,z+38,sizex,sizey,sizez);
 		for(int i = 0; i<activeMonsters.size(); i++){
 			activeMonsters.get(i).setDead();
@@ -147,8 +148,9 @@ public class CodeArena extends Challenges {
 	}
 	
 	public boolean run() {
+		if(activeMonsters == null)
+			return false;
 		for(int i = 0; i<activeMonsters.size(); i++){
-			System.out.println(activeMonsters.get(i).getRepresents()+", "+activeMonsters.get(i).getHealth());
 			if(activeMonsters.get(i).isDead){
 				displayScore.increaseScore(activeMonsters.get(i).getRepresents().volume());
 				activeMonsters.remove(i);

@@ -1,6 +1,9 @@
 package nl.sandersimon.clonedetection.monster.codespider;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.model.ModelSpider;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;
@@ -23,6 +26,12 @@ public class RenderCodeSpider<T extends EntityCodeSpider> extends RenderLiving<T
         return 180.0F;
     }
 
+    @Override
+    public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks){
+    	GlStateManager.scale(entity.getScaleFactor(), entity.getScaleFactor(), entity.getScaleFactor());
+        super.doRender(entity, x, y, z, entityYaw, partialTicks);
+    }
+    
     /**
      * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.
      */
