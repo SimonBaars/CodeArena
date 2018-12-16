@@ -125,7 +125,7 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 	list[tuple[int, list[loc]]] dupList = [];
 	//list[str] parsedURIs = [];
 	for(str location <- filesOrder){
-		println("beforeloc <now()>");
+		//println("beforeloc <now()>");
 		map[int,int] curFilesHashes = hashMap[location];
 		list[tuple[int lines, loc duplicate]] potentialDuplicates = []; // list[<aantal regels, regel die duplicate hash heeft>]
 		//fileLineAsts = map[fileloc, map[regelnummer, wat er aan ast op de regel staat]]
@@ -200,7 +200,7 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 		}
 		//parsedURIs += location.uri;
 		println(0); //End of loc
-		println("afterloc <now()>");
+		//println("afterloc <now()>");
 	}
 	println(0); //EOF
 	return dupList;
