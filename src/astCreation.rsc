@@ -122,7 +122,7 @@ public map[int, list[value]] addToMap(map[int, list[value]] astMap, int line, li
 
 public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, map[int, list[loc]] locsAtHash, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex){
 	list[tuple[int, list[loc]]] dupList = [];
-	list[str] parsedURIs = [];
+	//list[str] parsedURIs = [];
 	for(str location <- hashMap){
 		println("beforeloc <now()>");
 		map[int,int] curFilesHashes = hashMap[location];
@@ -150,14 +150,14 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 			
 			//iprintln("line <lineNumber>, file <location>, stuffFound = <dupLines>");
 			list[tuple[int lines, loc duplicate]] newPotentialDuplicates = [];
-			map[str, list[tuple[int lines, loc duplicate]]] reg1 = ();
+			map[str, list[tuple[int lines, loc duplicate]]] potentialDuplicateRegistry = ();
 			
 			for(tuple[int lines, loc duplicate] potDupOld <- potentialDuplicates){
 				str key = "<potDupOld.duplicate.uri><potDupOld.duplicate.end.line>";
-				if(key in reg1){
-					reg1[key]+=potDupOld;
+				if(key in potentialDuplicateRegistry){
+					potentialDuplicateRegistry[key]+=potDupOld;
 				} else {
-					reg1[key] = [potDupOld];
+					potentialDuplicateRegistry[key] = [potDupOld];
 				}
 				
 			}
@@ -168,12 +168,12 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 				//if(potDupNew.uri notin parsedURIs && (potDupNew.uri != location.uri || potDupNew.begin.line > lineNumber)){
 					bool partOfChain = false;
 					list[int] thisDomain = sortedDomains[potDupNew.uri];
-					str searchKey = "<potDupNew.uri><thisDomain[potDupNew.begin.line-1]>";
-					if(searchKey in reg1){
-						list[tuple[int lines, loc duplicate]] potDupOldList = reg1[searchKey];
+					str searchKey = "<potDupNew.uri><potDupNew.begin.line-1>";
+					if(searchKey in potentialDuplicateRegistry){
+						list[tuple[int lines, loc duplicate]] potDupOldList = potentialDuplicateRegistry[searchKey];
 						for(potDupOld <- potDupOldList) {
 							loc l = |unknown:///|(0,0,<0,0>,<0,0>);
-							
+							//println("endLine <potDupNew.end.line> beginLine <potDupOld.duplicate.begin.line>");
 							l.uri = potDupNew.uri;
 							l.end.line = potDupNew.end.line;
 							l.begin.line = potDupOld.duplicate.begin.line;
@@ -194,7 +194,7 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 			//iprintln(newPotentialDuplicates);
 			i+=1;
 		}
-		parsedURIs += location.uri;
+		//parsedURIs += location.uri;
 		println(0); //End of loc
 		println("afterloc <now()>");
 	}
