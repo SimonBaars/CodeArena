@@ -303,6 +303,12 @@ public loc getSrc(value ast) {
 	}
 }
 
+public real calculateSimilarity(list[value] line1, list[value] line2){
+	int differentElements = size(line1 - line2) + size(line2 - line1);
+	int combinedSize = size(line1) + size(line2);
+	return toReal(differentElements)/toReal(combinedSize) * 100;
+}
+
 list[value] getComparables(node n, int t){
 	if(t == 3){
 		switch(n){
