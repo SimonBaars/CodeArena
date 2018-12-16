@@ -42,7 +42,7 @@ public tuple[map[int, list[loc]] locRegistries,map[str, list[int]] sortedDomains
 		sortedDomains[location.uri] = sort(domain(fileLines));
 		hashMap[location.uri] = ();
 		for(i <- [0..size(fileLines)]){
-			list[value] stuffOnLine = sortedDomains[location.uri][i];
+			list[value] stuffOnLine = fileLines[i];
 			loc l = |unknown:///|(0,0,<0,0>,<0,0>);
 			l.uri = location.uri;
 			l.end.line = i;
