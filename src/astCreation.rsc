@@ -13,13 +13,14 @@ import DateTime;
 
 int minAmountOfLines = 6;
 
-alias LineRegistry = map[loc, map[int, list[value]]];
+alias LineRegistry = map[str, map[int, list[value]]];
 map[str, list[int]] countedLines = ();
 // = map[fileloc, map[regelnummer, wat er aan ast op de regel staat]]
 
 public list[tuple[int, list[loc]]] getDuplication(int t, set[Declaration] asts) {
     LineRegistry fileLineAsts = fileLineMapGeneration(t, asts);
-    tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] nodeRegs = calculateLocationsOfNodeTypes(fileLineAsts);
+    set[str] filesOrder = domain(fileLineAsts);
+    tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] nodeRegs = calculateLocationsOfNodeTypes(fileLineAsts, filesOrder);
     map[int, list[loc]] locsAtHash = nodeRegs.locRegistries;
     // alle locs die bij een hash horen 
     map[str, list[int]] sortedDomains = nodeRegs.sortedDomains;
@@ -29,22 +30,22 @@ public list[tuple[int, list[loc]]] getDuplication(int t, set[Declaration] asts) 
     //list[tuple[int, list[loc]]] testDupList = getDupList(fileLineAsts, locsAtHash, sortedDomains);
     //println("TESTDUPLIST:::");
     //iprintln(testDupList);
-    return getDupList(hashMap, locsAtHash, sortedDomains, hashStartIndex);
+    return getDupList(hashMap, locsAtHash, sortedDomains, hashStartIndex, filesOrder);
 }
 
-public tuple[map[int, list[loc]] locRegistries,map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] calculateLocationsOfNodeTypes(LineRegistry fileLineAsts){
+public tuple[map[int, list[loc]] locRegistries,map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] calculateLocationsOfNodeTypes(LineRegistry fileLineAsts, set[str] filesOrder){
 	map[int, list[loc]] registry = ();
 	map[str, list[int]] sortedDomains = ();
 	map[int, int] hashStartIndex = ();
 	map[str, map[int, int]] hashMap = ();
-	for(loc location <- fileLineAsts){
+	for(str location <- filesOrder){
 		map[int, list[value]] fileLines = fileLineAsts[location];
-		sortedDomains[location.uri] = sort(domain(fileLines));
-		hashMap[location.uri] = ();
+		sortedDomains[location] = sort(domain(fileLines));
+		hashMap[location] = ();
 		for(int i <- [0..size(fileLines)]){
-			list[value] stuffOnLine = fileLines[sortedDomains[location.uri][i]];
+			list[value] stuffOnLine = fileLines[sortedDomains[location][i]];
 			loc l = |unknown:///|(0,0,<0,0>,<0,0>);
-			l.uri = location.uri;
+			l.uri = location;
 			l.end.line = i;
 			l.begin.line = i;
 			//println("Line <lineNumber> of file <indexOf(sort(domain(fileLineAsts)), location)> has hash <makeHashOfLine(stuffOnLine)>");
@@ -86,7 +87,7 @@ public map[int, list[loc]] addTo(map[int, list[loc]] numberMap, int codeNumber, 
 public LineRegistry fileLineMapGeneration(int t, set[Declaration] asts) {
 	LineRegistry fileLineAsts = ();
 	for (m <- asts)
-		fileLineAsts[m.src] = getLocLineAst(t, m);
+		fileLineAsts[m.src.uri] = getLocLineAst(t, m);
 	return fileLineAsts;
 }
 
@@ -120,10 +121,10 @@ public map[int, list[value]] addToMap(map[int, list[value]] astMap, int line, li
 	return astMap;
 }
 
-public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, map[int, list[loc]] locsAtHash, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex){
+public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, map[int, list[loc]] locsAtHash, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, set[str] filesOrder){
 	list[tuple[int, list[loc]]] dupList = [];
 	//list[str] parsedURIs = [];
-	for(str location <- hashMap){
+	for(str location <- filesOrder){
 		println("beforeloc <now()>");
 		map[int,int] curFilesHashes = hashMap[location];
 		list[tuple[int lines, loc duplicate]] potentialDuplicates = []; // list[<aantal regels, regel die duplicate hash heeft>]
@@ -135,6 +136,9 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 			println(sortedDomainSize);
 		int i = 0;
 		while(i < sortedDomainSize){
+			int hash = hashMap[location][i];
+			hashStartIndex[hash] = hashStartIndex[hash] + 1;
+			
 			if(i+5<sortedDomainSize && size(potentialDuplicates) == 0){
 				int futureRes = inspectFutureDups(i, locsAtHash, curFilesHashes);
 				if(futureRes != -1){
@@ -144,9 +148,9 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 				}
 			}
 			int lineNumber = sortedDomain[i];
-			int hash = hashMap[location][i];
+			
 			list[loc] dupLines = locsAtHash[hash];
-			hashStartIndex[hash] = hashStartIndex[hash] + 1;
+			
 			
 			//iprintln("line <lineNumber>, file <location>, stuffFound = <dupLines>");
 			list[tuple[int lines, loc duplicate]] newPotentialDuplicates = [];
