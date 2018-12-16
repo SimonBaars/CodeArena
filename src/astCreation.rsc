@@ -16,7 +16,7 @@ alias LineRegistry = map[loc, map[int, list[value]]];
 map[str, list[int]] countedLines = ();
 // = map[fileloc, map[regelnummer, wat er aan ast op de regel staat]]
 
-public list[tuple[int, list[loc]]] getDuplication(int t, list[Declaration] asts) {
+public list[tuple[int, list[loc]]] getDuplication(int t, set[Declaration] asts) {
     LineRegistry fileLineAsts = fileLineMapGeneration(t, asts);
     tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomains] nodeRegs = calculateLocationsOfNodeTypes(fileLineAsts);
     map[int, list[loc]] locsAtHash = nodeRegs.locRegistries;
@@ -74,7 +74,7 @@ public map[int, list[loc]] addTo(map[int, list[loc]] numberMap, int codeNumber, 
 	return numberMap;
 }
 
-public LineRegistry fileLineMapGeneration(int t, list[Declaration] asts) {
+public LineRegistry fileLineMapGeneration(int t, set[Declaration] asts) {
 	LineRegistry fileLineAsts = ();
 	for (m <- asts)
 		fileLineAsts[m.src] = getLocLineAst(t, m);
