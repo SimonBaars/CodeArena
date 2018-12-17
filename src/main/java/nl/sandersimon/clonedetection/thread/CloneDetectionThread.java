@@ -81,7 +81,7 @@ public class CloneDetectionThread extends Thread {
 					CloneClass loc = new CloneClass();
 					listLoc = parseList(loc, res, listLoc+1)+2;
 					locs.add(loc);
-					c.getArena().create(loc, 1);
+					c.eventHandler.nextTickActions.add(() -> c.getArena().create(loc, 1));
 				}
 			}
 		}

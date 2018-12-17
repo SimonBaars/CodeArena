@@ -20,6 +20,7 @@ public class CDEventHandler {
 	public final List<ICreatorBlock> creators = new ArrayList<>();
 	public final List<ICreatorBlock> serverCreators = new ArrayList<>();
 	public final List<String> delayedPrints = new ArrayList<>();
+	public final List<Runnable> nextTickActions = new ArrayList<>();
 	public LightUpdateCheck lightUpdate;
 	public long previousTick = 0;
 	public boolean isLoaded=false;
@@ -48,6 +49,10 @@ public class CDEventHandler {
 	}
 	@SubscribeEvent
 	public void update(TickEvent.ClientTickEvent event){
+		while(nextTickActions.size()!=0) {
+			nextTickActions.get(0).run();
+			nextTickActions.remove(0);
+		}
 		if(challenge!= null) challenge.run();
 		/*for(int i = 0; i<liveCreators.size(); i++){
 			if(System.currentTimeMillis()>liveCreators.get(i).lastTickTime+liveCreators.get(i).waitTime){
