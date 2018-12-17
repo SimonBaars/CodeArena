@@ -73,8 +73,8 @@ public tuple[map[int, list[loc]] registry, map[int, int] hashStartIndex, map[str
 			if(l == location && i == j)
 				return <registry, hashStartIndex, hashMap>;
 			list[value] stuffOnLine = fileLines[sortedDomains[location][i]];
-			int similarity = calculateSimilarity(curLineContent, stuffOnLine);
-			if(similarity<=similarityPercentage && similarityPercentage != 0){
+			real similarity = calculateSimilarity(curLineContent, stuffOnLine);
+			if(similarity<=similarityPercentage && similarityPercentage != 0.00){
 				int hash = makeHashOfLine(stuffOnLine);
 				registry = addTo(registry, hash, thisLoc);
 				hashStartIndex[hash] = 0;

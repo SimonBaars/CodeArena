@@ -22,5 +22,5 @@ void calculateCodeDuplication(loc location){
 }
 
 void calculateCodeDuplication(loc location, int cloneType){
-	calculateCodeDuplication(location, cloneType);
+	calculateCodeDuplication(location, cloneType, 0.00);
 }
