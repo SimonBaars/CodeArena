@@ -72,8 +72,9 @@ public tuple[map[int, list[loc]] registry, map[int, int] hashStartIndex, map[str
 		for(int j <- [0..size(fileLines)]){
 			if(l == location && i == j)
 				return <registry, hashStartIndex, hashMap>;
-			list[value] stuffOnLine = fileLines[sortedDomains[location][i]];
+			list[value] stuffOnLine = fileLines[sortedDomains[l][j]];
 			real similarity = calculateSimilarity(curLineContent, stuffOnLine);
+			//println(similarity);
 			if(similarity<=similarityPercentage && similarityPercentage != 0.00){
 				int hash = makeHashOfLine(stuffOnLine);
 				registry = addTo(registry, hash, thisLoc);
@@ -82,6 +83,7 @@ public tuple[map[int, list[loc]] registry, map[int, int] hashStartIndex, map[str
 			}
 		}
 	}
+	return <registry, hashStartIndex, hashMap>;
 }
 
 public int makeHashOfLine(list[value] lines){
@@ -331,6 +333,7 @@ public loc getSrc(value ast) {
 public real calculateSimilarity(list[value] line1, list[value] line2){
 	int differentElements = size(line1 - line2) + size(line2 - line1);
 	int combinedSize = size(line1) + size(line2);
+	//println("differentElements <differentElements> combinedSize <combinedSize> line1 <line1> line2 <line2>");
 	return toReal(differentElements)/toReal(combinedSize) * 100;
 }
 
