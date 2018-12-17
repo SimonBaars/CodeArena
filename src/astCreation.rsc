@@ -52,12 +52,8 @@ public tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomain
 			//println("Line <lineNumber> of file <indexOf(sort(domain(fileLineAsts)), location)> has hash <makeHashOfLine(stuffOnLine)>");
 			//println(stuffOnLine);
 			int hash = makeHashOfLine(stuffOnLine);
-			if(t == 3){
-				tuple[map[int, list[loc]] registry, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] typeThreeHash = calculateType3Hash(l, location, i, fileLineAsts, hashMap, filesOrder, sortedDomains, similarityPercentage, stuffOnLine, registry, hashStartIndex);
-				registry = typeThreeHash.registry;
-				hashStartIndex = typeThreeHash.hashStartIndex;
-				hashMap = typeThreeHash.hashMap;
-			}
+			if(t == 3)
+				registry = calculateType3Hash(l, location, i, fileLineAsts, hashMap, filesOrder, sortedDomains, similarityPercentage, stuffOnLine, registry);
 			registry = addTo(registry, hash, l);
 			hashStartIndex[hash] = 0;
 			hashMap[location][i] = hash;
@@ -66,24 +62,23 @@ public tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomain
 	return <registry, sortedDomains, hashStartIndex, hashMap>;
 }
 
-public tuple[map[int, list[loc]] registry, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] calculateType3Hash(loc thisLoc, str location, int i, LineRegistry fileLineAsts, map[str, map[int, int]] hashMap, set[str] filesOrder, map[str, list[int]] sortedDomains, real similarityPercentage, list[value] curLineContent, map[int, list[loc]] registry, map[int, int] hashStartIndex){
+public map[int, list[loc]] calculateType3Hash(loc thisLoc, str location, int i, LineRegistry fileLineAsts, map[str, map[int, int]] hashMap, set[str] filesOrder, map[str, list[int]] sortedDomains, real similarityPercentage, list[value] curLineContent, map[int, list[loc]] registry){
 	for(str l <- filesOrder){
-		map[int, list[value]] fileLines = fileLineAsts[location];
+		map[int, list[value]] fileLines = fileLineAsts[l];
 		for(int j <- [0..size(fileLines)]){
 			if(l == location && i == j)
-				return <registry, hashStartIndex, hashMap>;
+				return registry;
+			//println("l <l> j <j>");
 			list[value] stuffOnLine = fileLines[sortedDomains[l][j]];
 			real similarity = calculateSimilarity(curLineContent, stuffOnLine);
 			//println(similarity);
 			if(similarity<=similarityPercentage && similarityPercentage != 0.00){
-				int hash = makeHashOfLine(stuffOnLine);
+				int hash = hashMap[l][j];
 				registry = addTo(registry, hash, thisLoc);
-				hashStartIndex[hash] = 0;
-				hashMap[l][j] = hash;
 			}
 		}
 	}
-	return <registry, hashStartIndex, hashMap>;
+	return registry;
 }
 
 public int makeHashOfLine(list[value] lines){
@@ -260,7 +255,9 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 	list[tuple[int, list[loc]]] temp = [];
 	for(int amount <- sort(domain(finalizedDups), bool(int a, int b){ return a > b; })){
 		list[loc] dupGroup = finalizedDups[amount];
-		if((isLast || any(loc aDup <- dupGroup, willBeRemoved(aDup, newPotentialDuplicates))) && !(any(tuple[int, list[loc]] aDup <- dupList, dupGroup <= aDup[1])) && !isSubElement(dupGroup, temp+dupList)){
+		//println("dupList <dupList> dupGroup <dupGroup>");
+		if((isLast || any(loc aDup <- dupGroup, willBeRemoved(aDup, newPotentialDuplicates))) && !any(tuple[int amount, list[loc] locList] aDup <- dupList, dupGroup <= aDup.locList) && !isSubElement(dupGroup, temp+dupList) && !all(loc aDup <- temp+dupList, isOutsideOfRange(aDup.locList, dupGroup))){
+			dupList+=<amount, dupGroup>;
 			for(int j <- [0..size(finalizedDups[amount])]){
 				loc thisLoc = dupGroup[j];
 				loc l = |unknown:///|(0,0,<0,0>,<0,0>);
@@ -269,9 +266,7 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 				l.begin.line = sortedDomains[thisLoc.uri][thisLoc.begin.line];
 				dupGroup[j] = l;
 			}
-			tuple[int, list[loc]] entry = <amount, dupGroup>;
-			temp+=entry;
-			dupList+=entry;
+			temp+=<amount, dupGroup>;
 		}
 	}
 	//iprintln(temp);
@@ -282,11 +277,9 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 				if(l.uri notin countedLines) countedLines[l.uri] = [];
 				for(i <- [l.begin.line .. l.end.line]){
 					list[int] domain = sortedDomains[l.uri];
-					if(i in domain){
-						if(i notin countedLines[l.uri]){
-							countedLines[l.uri] += i;
-							duplicateLines+=1;
-						}
+					if(i in domain && i notin countedLines[l.uri]){
+						countedLines[l.uri] += i;
+						duplicateLines+=1;
 					}
 				}
 			}
@@ -299,6 +292,15 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 	}
 	//println("size = <size(dupList)>, potDups = <potentialDuplicates>");
 	return dupList;
+}
+
+public bool isOutsideOfRange(list[loc] locList, list[loc] dupGroup){
+	for(loc l <- dupGroup){
+		if(!all(loc aDup <- locList, l.uri == aDup.uri && l.begin.line>=aDup.begin.line && l.end.line<=aDup.end.line)){
+			return true;
+		}
+	}
+	return false;
 }
 
 public bool isSubElement(list[loc] locList, list[tuple[int, list[loc]]] collectedDups){
