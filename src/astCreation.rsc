@@ -28,9 +28,12 @@ public list[tuple[int, list[loc]]] getDuplication(int t, set[Declaration] asts, 
     map[int, int] hashStartIndex = nodeRegs.hashStartIndex;
     map[str, map[int, int]] hashMap = nodeRegs.hashMap;
     // loc met alle regels op volgorde
-    //list[tuple[int, list[loc]]] testDupList = getDupList(fileLineAsts, locsAtHash, sortedDomains);
+    //list[tuple[int, list[loc]]] testDupList = getDupList(hashMap, locsAtHash, sortedDomains, hashStartIndex, filesOrder);
     //println("TESTDUPLIST:::");
     //iprintln(testDupList);
+    //return testDupList;
+    //iprintln(testDupList[0][1]);
+    //iprintln(size(testDupList[0]));
     return getDupList(hashMap, locsAtHash, sortedDomains, hashStartIndex, filesOrder);
 }
 
@@ -256,7 +259,7 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 	for(int amount <- sort(domain(finalizedDups), bool(int a, int b){ return a > b; })){
 		list[loc] dupGroup = finalizedDups[amount];
 		//println("dupList <dupList> dupGroup <dupGroup>");
-		if((isLast || any(loc aDup <- dupGroup, willBeRemoved(aDup, newPotentialDuplicates))) && !any(tuple[int amount, list[loc] locList] aDup <- dupList, dupGroup <= aDup.locList) && !isSubElement(dupGroup, temp+dupList) && !all(loc aDup <- temp+dupList, isOutsideOfRange(aDup.locList, dupGroup))){
+		if((isLast || any(loc aDup <- dupGroup, willBeRemoved(aDup, newPotentialDuplicates))) && !any(tuple[int amount, list[loc] locList] aDup <- dupList, dupGroup <= aDup.locList) && !isSubElement(dupGroup, temp+dupList) && isOutsideOfRange(temp+dupList, dupGroup)){
 			dupList+=<amount, dupGroup>;
 			for(int j <- [0..size(finalizedDups[amount])]){
 				loc thisLoc = dupGroup[j];
@@ -271,6 +274,7 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 	}
 	//iprintln(temp);
 	if(size(temp) > 0){
+		//TODO: klopt dit?
 		int duplicateLines = 0;
 		for(tuple[int line, list[loc] locs] t <- temp){
 			for(loc l <- t.locs){
@@ -294,13 +298,18 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 	return dupList;
 }
 
-public bool isOutsideOfRange(list[loc] locList, list[loc] dupGroup){
+public bool isOutsideOfRange(list[tuple[int, list[loc]]] currDups, list[loc] dupGroup){
+	bool outSide = true;
 	for(loc l <- dupGroup){
-		if(!all(loc aDup <- locList, l.uri == aDup.uri && l.begin.line>=aDup.begin.line && l.end.line<=aDup.end.line)){
-			return true;
+		for(tuple[int amount, list[loc] locList] aDupList <- currDups){
+			if(any(loc aDup <- aDupList.locList, l.uri == aDup.uri && l.begin.line>=aDup.begin.line && l.end.line<=aDup.end.line)){
+				outSide = false;
+			}
+			else
+				outSide = true;
 		}
 	}
-	return false;
+	return outSide;
 }
 
 public bool isSubElement(list[loc] locList, list[tuple[int, list[loc]]] collectedDups){

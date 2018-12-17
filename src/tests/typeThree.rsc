@@ -9,49 +9,17 @@ import astCreation;
 import String;
 
 test bool duplicateTestNoDuplicates(){
-	M3 model = createM3FromDirectory(|file:///home/sander/.clone/projects/tests/ProjectWithoutDuplicate|);
-	map[loc, Declaration] astsMap = ();
-	list[Declaration] asts = [];
-	for (m <- model.containment, m[0].scheme == "java+compilationUnit"){
-		Declaration ast = createAstFromFile(m[0], true);
-		astsMap[m[0]] = ast;
-		asts += ast;
-	}
-	return(size(getDuplication(3, asts)) == 0);
+	return(size(getDuplication(3, createAstsFromDirectory(|file:///home/sander/.clone/projects/tests/ProjectWithoutDuplicate|, false))) == 0);
 }
 
 test bool duplicateTestDuplicatesWithinFile(){
-	M3 model = createM3FromDirectory(|file:///home/sander/.clone/projects/tests/ProjectWithDuplicateWithinOneFile|);
-	map[loc, Declaration] astsMap = ();
-	list[Declaration] asts = [];
-	for (m <- model.containment, m[0].scheme == "java+compilationUnit"){
-		Declaration ast = createAstFromFile(m[0], true);
-		astsMap[m[0]] = ast;
-		asts += ast;
-	}
-	return(size(getDuplication(1, asts)[0][1]) == 2);
+	return(size(getDuplication(3, createAstsFromDirectory(|file:///home/sander/.clone/projects/tests/ProjectWithDuplicateWithinOneFile|, false))[0][1]) == 2);
 }
 
 test bool duplicateTestThreeDuplicatesBetweenFiles(){
-	M3 model = createM3FromDirectory(|file:///home/sander/.clone/projects/tests/ProjectWithThreeDuplicatesBetweenFiles|);
-	map[loc, Declaration] astsMap = ();
-	list[Declaration] asts = [];
-	for (m <- model.containment, m[0].scheme == "java+compilationUnit"){
-		Declaration ast = createAstFromFile(m[0], true);
-		astsMap[m[0]] = ast;
-		asts += ast;
-	}
-	return(size(getDuplication(3, asts)[0][1]) == 3);
+	return(size(getDuplication(3, createAstsFromDirectory(|file:///home/sander/.clone/projects/tests/ProjectWithThreeDuplicatesBetweenFiles|, false))[0][1]) == 3);
 }
 
 test bool duplicateTestDuplicatesBetweenFiles(){
-	M3 model = createM3FromDirectory(|file:///home/sander/.clone/projects/tests/ProjectWithDuplicateBetweenFiles|);
-	map[loc, Declaration] astsMap = ();
-	list[Declaration] asts = [];
-	for (m <- model.containment, m[0].scheme == "java+compilationUnit"){
-		Declaration ast = createAstFromFile(m[0], true);
-		astsMap[m[0]] = ast;
-		asts += ast;
-	}
-	return(size(getDuplication(1, asts)[0][1]) == 2);
+	return(size(getDuplication(3, createAstsFromDirectory(|file:///home/sander/.clone/projects/tests/ProjectWithDuplicateBetweenFiles|, false))[0][1]) == 2);
 }
