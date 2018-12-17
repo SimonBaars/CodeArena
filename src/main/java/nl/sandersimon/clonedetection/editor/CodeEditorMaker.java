@@ -1,5 +1,6 @@
 package nl.sandersimon.clonedetection.editor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
@@ -12,7 +13,8 @@ public class CodeEditorMaker {
 
 	private CodeEditorMaker() {}
 
-	public static void create(CloneClass cloneClass) {
+	public static List<CodeEditor> create(CloneClass cloneClass) {
+		List<CodeEditor> codeEditors = new ArrayList<>();
 		for(int i = 0; i<cloneClass.size(); i++) {
 			final int j = i;
 			SwingUtilities.invokeLater(() -> {
@@ -22,8 +24,11 @@ public class CodeEditorMaker {
 					e.printStackTrace();
 				}
 				Location location = cloneClass.get(j);
-				new CodeEditor(location.file(), location.getBeginLine(), location.getEndLine(), j, cloneClass.size()).setVisible(true);
+				CodeEditor e = new CodeEditor(cloneClass, location.file(), location.getBeginLine(), location.getEndLine(), j, cloneClass.size());
+				codeEditors.add(e);
+				e.setVisible(true);
 			});
 		}
+		return codeEditors;
 	}
 }

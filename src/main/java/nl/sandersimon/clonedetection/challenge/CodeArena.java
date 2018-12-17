@@ -203,4 +203,14 @@ public class CodeArena extends Challenges {
 			e.printStackTrace();
 		}
 	}
+
+	public void killSpider(CloneClass cloneClass) {
+		for(int i = 0; i<activeMonsters.size(); i++) {
+			if(activeMonsters.get(i).getRepresents().equals(cloneClass)) {
+				activeMonsters.get(i).setDead();
+				activeMonsters.remove(i);
+				return;
+			}
+		}
+	}
 }

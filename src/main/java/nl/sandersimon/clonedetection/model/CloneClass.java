@@ -6,6 +6,7 @@ import java.util.List;
 
 import net.minecraft.scoreboard.Score;
 import nl.sandersimon.clonedetection.CloneDetection;
+import nl.sandersimon.clonedetection.editor.CodeEditor;
 import nl.sandersimon.clonedetection.editor.CodeEditorMaker;
 
 public class CloneClass implements Comparable<CloneClass>{
@@ -78,8 +79,8 @@ public class CloneClass implements Comparable<CloneClass>{
 		return lines * size();
 	}
 
-	public void open() {
-		CodeEditorMaker.create(this);
+	public List<CodeEditor> open() {
+		return CodeEditorMaker.create(this);
 	}
 
 	public String getName() {

@@ -25,6 +25,7 @@ import net.minecraft.world.World;
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.minecraft.structureloader.BlockPlaceHandler;
+import nl.sandersimon.clonedetection.model.CloneClass;
 
 public abstract class Challenges {
 	World worldIn;
@@ -232,5 +233,9 @@ public abstract class Challenges {
 
 	public void setScoreBoard(ScoreObjective scoreBoard) {
 		this.scoreBoard = scoreBoard;
+	}
+	
+	public void increaseScore(CloneClass c) {
+		displayScore.increaseScore(c.volume());
 	}
 }

@@ -12,7 +12,6 @@ import java.util.function.Consumer;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -26,11 +25,10 @@ import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.ResourceCommons;
 import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.common.TestingCommons;
+import nl.sandersimon.clonedetection.editor.CodeEditor;
 import nl.sandersimon.clonedetection.minecraft.CDEventHandler;
 import nl.sandersimon.clonedetection.minecraft.proxy.CommonProxy;
 import nl.sandersimon.clonedetection.model.CloneClass;
-import nl.sandersimon.clonedetection.monster.codespider.CodeSpiderFactory;
-import nl.sandersimon.clonedetection.monster.codespider.EntityCodeSpider;
 
 @Mod(modid = CloneDetection.MODID, name = CloneDetection.NAME, version = CloneDetection.VERSION, dependencies = "required-after:forge@[13.19.0.2129,)", useMetadata = true)
 public class CloneDetection
@@ -64,6 +62,7 @@ public class CloneDetection
 	List<Score> scores = new ArrayList<>();
 	
 	private CodeArena arena;
+	public List<CodeEditor> openEditors = new ArrayList<>();
 	
 	public static int dialoge;
 
@@ -314,5 +313,15 @@ public class CloneDetection
 	
 	private int perc(int total, int partOfTotal) {
 		return (int) Math.round((((double)partOfTotal / (double)total) * 100.0));
+	}
+
+	public void closeAllEditors() {
+		while(openEditors.size()>0) {
+			if(openEditors.get(0).isVisible()) {
+				openEditors.get(0).setVisible(false);
+				openEditors.get(0).dispose();
+			}
+			openEditors.remove(0);
+		}
 	}
 }

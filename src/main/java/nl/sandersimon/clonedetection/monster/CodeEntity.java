@@ -4,6 +4,7 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
+import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.model.CloneClass;
 
 public abstract class CodeEntity extends EntityMob {
@@ -26,7 +27,7 @@ public abstract class CodeEntity extends EntityMob {
 	@Override
 	public boolean attackEntityFrom(DamageSource source, float amount){
 		if(represents != null && source.getTrueSource() instanceof EntityPlayer) //{
-			represents.open();
+			CloneDetection.get().openEditors.addAll(represents.open());
 			//setDead();
 		//}
         return super.attackEntityFrom(source, amount);

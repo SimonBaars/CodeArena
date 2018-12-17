@@ -7,6 +7,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -52,7 +54,9 @@ import org.fife.ui.rtextarea.SearchContext;
 import org.fife.ui.rtextarea.SearchEngine;
 import org.fife.ui.rtextarea.SearchResult;
 
+import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.common.TestingCommons;
+import nl.sandersimon.clonedetection.model.CloneClass;
 
 
 /**
@@ -75,7 +79,7 @@ public class CodeEditor extends JFrame implements SearchListener {
 	private StatusBar statusBar;
 	private File file;
 
-	public CodeEditor(File file, int markedRangeStart, int markedRangeEnd, int pos, int amount) {
+	public CodeEditor(CloneClass cloneClass, File file, int markedRangeStart, int markedRangeEnd, int pos, int amount) {
 		this.file = file;
 		String content;
 		try {
@@ -128,6 +132,17 @@ public class CodeEditor extends JFrame implements SearchListener {
 			contentPane.add(errorStrip, BorderLayout.LINE_END);
 			///org.fife.rsta.ui.DocumentMap docMap = new org.fife.rsta.ui.DocumentMap(textArea);
 			//contentPane.add(docMap, BorderLayout.LINE_END);
+			
+			JButton fixedButton = new JButton("I fixed it! :-)");
+			fixedButton.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					CloneDetection.get().eventHandler.nextTickActions.add(() -> CloneDetection.get().getArena().killSpider(cloneClass));
+					CloneDetection.get().getArena().increaseScore(cloneClass);
+					CloneDetection.get().closeAllEditors();
+				}
+			});
 
 			statusBar = new StatusBar();
 			contentPane.add(statusBar, BorderLayout.SOUTH);
@@ -205,7 +220,7 @@ public class CodeEditor extends JFrame implements SearchListener {
 
 
 	public CodeEditor(File file, int markedRangeStart, int markedRangeEnd) {
-		this(file, markedRangeStart, markedRangeEnd, 0, 1);
+		this(null, file, markedRangeStart, markedRangeEnd, 0, 1);
 	}
 
 	public CodeEditor(File file) {
