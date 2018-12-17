@@ -17,10 +17,11 @@ alias LineRegistry = map[str, map[int, list[value]]];
 map[str, list[int]] countedLines = ();
 // = map[fileloc, map[regelnummer, wat er aan ast op de regel staat]]
 
-public list[tuple[int, list[loc]]] getDuplication(int t, set[Declaration] asts) {
+public list[tuple[int, list[loc]]] getDuplication(int t, set[Declaration] asts, real similarityPercentage) {
+	countedLines = ();
     LineRegistry fileLineAsts = fileLineMapGeneration(t, asts);
     set[str] filesOrder = domain(fileLineAsts);
-    tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] nodeRegs = calculateLocationsOfNodeTypes(fileLineAsts, filesOrder);
+    tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] nodeRegs = calculateLocationsOfNodeTypes(fileLineAsts, filesOrder, t, similarityPercentage);
     map[int, list[loc]] locsAtHash = nodeRegs.locRegistries;
     // alle locs die bij een hash horen 
     map[str, list[int]] sortedDomains = nodeRegs.sortedDomains;
@@ -33,7 +34,7 @@ public list[tuple[int, list[loc]]] getDuplication(int t, set[Declaration] asts) 
     return getDupList(hashMap, locsAtHash, sortedDomains, hashStartIndex, filesOrder);
 }
 
-public tuple[map[int, list[loc]] locRegistries,map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] calculateLocationsOfNodeTypes(LineRegistry fileLineAsts, set[str] filesOrder){
+public tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] calculateLocationsOfNodeTypes(LineRegistry fileLineAsts, set[str] filesOrder, int t, real similarityPercentage){
 	map[int, list[loc]] registry = ();
 	map[str, list[int]] sortedDomains = ();
 	map[int, int] hashStartIndex = ();
@@ -51,12 +52,38 @@ public tuple[map[int, list[loc]] locRegistries,map[str, list[int]] sortedDomains
 			//println("Line <lineNumber> of file <indexOf(sort(domain(fileLineAsts)), location)> has hash <makeHashOfLine(stuffOnLine)>");
 			//println(stuffOnLine);
 			int hash = makeHashOfLine(stuffOnLine);
+			if(t == 3){
+				tuple[map[int, list[loc]] registry, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] typeThreeHash = calculateType3Hash(l, location, i, fileLineAsts, hashMap, filesOrder, sortedDomains, similarityPercentage, stuffOnLine, registry, hashStartIndex);
+				registry = typeThreeHash.registry;
+				hashStartIndex = typeThreeHash.hashStartIndex;
+				hashMap = typeThreeHash.hashMap;
+			}
 			registry = addTo(registry, hash, l);
 			hashStartIndex[hash] = 0;
-			hashMap[l.uri][i] = hash;
+			hashMap[location][i] = hash;
 		}
 	}
 	return <registry, sortedDomains, hashStartIndex, hashMap>;
+}
+
+public tuple[map[int, list[loc]] registry, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] calculateType3Hash(loc thisLoc, str location, int i, LineRegistry fileLineAsts, map[str, map[int, int]] hashMap, set[str] filesOrder, map[str, list[int]] sortedDomains, real similarityPercentage, list[value] curLineContent, map[int, list[loc]] registry, map[int, int] hashStartIndex){
+	for(str l <- filesOrder){
+		map[int, list[value]] fileLines = fileLineAsts[location];
+		for(int j <- [0..size(fileLines)]){
+			if(l == location && i == j)
+				return <registry, hashStartIndex, hashMap>;
+			list[value] stuffOnLine = fileLines[sortedDomains[l][j]];
+			real similarity = calculateSimilarity(curLineContent, stuffOnLine);
+			//println(similarity);
+			if(similarity<=similarityPercentage && similarityPercentage != 0.00){
+				int hash = makeHashOfLine(stuffOnLine);
+				registry = addTo(registry, hash, thisLoc);
+				hashStartIndex[hash] = 0;
+				hashMap[l][j] = hash;
+			}
+		}
+	}
+	return <registry, hashStartIndex, hashMap>;
 }
 
 public int makeHashOfLine(list[value] lines){
@@ -135,20 +162,18 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 		if(sortedDomainSize!=0)
 			println(sortedDomainSize);
 		int i = 0;
-		while(i < sortedDomainSize){
-			int hash = hashMap[location][i];
-			hashStartIndex[hash] = hashStartIndex[hash] + 1;
-			
+		while(i < sortedDomainSize){			
 			if(i+5<sortedDomainSize && size(potentialDuplicates) == 0){
-				int futureRes = inspectFutureDups(i, locsAtHash, curFilesHashes);
-				if(futureRes != -1){
+				tuple[int skipAmount, map[int, int] hashStartIndex] futureRes = inspectFutureDups(i, locsAtHash, curFilesHashes, hashStartIndex);
+				if(futureRes.skipAmount != -1){
 					potentialDuplicates = [];
-					i+=futureRes+1;
+					i+=futureRes.skipAmount+1;
+					hashStartIndex = futureRes.hashStartIndex;
 					continue;
 				}
 			}
-			int lineNumber = sortedDomain[i];
-			
+			int hash = curFilesHashes[i];
+			hashStartIndex[hash] = hashStartIndex[hash] + 1;
 			list[loc] dupLines = locsAtHash[hash];
 			
 			
@@ -192,7 +217,7 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 					newPotentialDuplicates+=<1, potDupNew>;
 				//}
 			}
-			dupList = populateBeforeRemoval(dupList, potentialDuplicates, newPotentialDuplicates, sortedDomains, sortedDomain, location, i, lineNumber == last(sortedDomain));
+			dupList = populateBeforeRemoval(dupList, potentialDuplicates, newPotentialDuplicates, sortedDomains, sortedDomain, location, i, i == size(sortedDomain)-1);
 			potentialDuplicates = newPotentialDuplicates;
 			//iprintln("line = <lineNumber>");//, newPotDup = <newPotentialDuplicates>");
 			//iprintln(newPotentialDuplicates);
@@ -206,13 +231,15 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 	return dupList;
 }
 
-public int inspectFutureDups(int i, map[int, list[loc]] locsAtHash, map[int, int] curFilesHashes){
+public tuple[int skipAmount, map[int, int] hashStartIndex] inspectFutureDups(int i, map[int, list[loc]] locsAtHash, map[int, int] curFilesHashes, map[int, int] hashStartIndex){
 	for(int j <- [0..minAmountOfLines]){
-		if(size(locsAtHash[curFilesHashes[i+j]])<=1){
-			return j;
+		int hash = curFilesHashes[i+j];
+		hashStartIndex[hash] = hashStartIndex[hash] + 1;
+		if(size(locsAtHash[hash])<=hashStartIndex[hash]){
+			return <j, hashStartIndex>;
 		}
 	}
-	return -1;
+	return <-1, ()>;
 }
 
 public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[loc]]] dupList, list[tuple[int lines, loc duplicate]] potentialDuplicates, list[tuple[int lines, loc duplicate]] newPotentialDuplicates, map[str, list[int]] sortedDomains, list[int] sortedDomain, str location, int i, bool isLast){
@@ -306,6 +333,7 @@ public loc getSrc(value ast) {
 public real calculateSimilarity(list[value] line1, list[value] line2){
 	int differentElements = size(line1 - line2) + size(line2 - line1);
 	int combinedSize = size(line1) + size(line2);
+	//println("differentElements <differentElements> combinedSize <combinedSize> line1 <line1> line2 <line2>");
 	return toReal(differentElements)/toReal(combinedSize) * 100;
 }
 
