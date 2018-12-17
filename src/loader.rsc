@@ -12,9 +12,11 @@ import tests::typeTwo;
 import tests::typeThree;
 
 void calculateCodeDuplication(loc location, int cloneType){
+	if(cloneType<1 || cloneType>3)
+		throw "Clone type must be an integer value between 1 and 3.";
 	getDuplication(cloneType, createAstsFromDirectory(location, false));
 }
 
 void calculateCodeDuplication(loc location){
-	getDuplication(1, createAstsFromDirectory(location, false));
+	calculateCodeDuplication(location, 1);
 }
