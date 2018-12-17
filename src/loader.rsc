@@ -24,3 +24,10 @@ void calculateCodeDuplication(loc location){
 void calculateCodeDuplication(loc location, int cloneType){
 	calculateCodeDuplication(location, cloneType, 0.00);
 }
+
+void calculateCodeDuplication(list[loc] partialScanList){
+	list[Declaration] asts = [];
+	for (loc m <- partialScanList)
+		asts += createAstFromFile(m[0], true);
+	getDuplication(1, asts);
+}
