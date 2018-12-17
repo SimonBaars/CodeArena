@@ -275,9 +275,8 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 		for(tuple[int line, list[loc] locs] t <- temp){
 			for(loc l <- t.locs){
 				if(l.uri notin countedLines) countedLines[l.uri] = [];
-				for(i <- [l.begin.line .. l.end.line]){
-					list[int] domain = sortedDomains[l.uri];
-					if(i in domain && i notin countedLines[l.uri]){
+				for(i <- [l.begin.line .. l.end.line+1]){
+					if(i notin countedLines[l.uri]){
 						countedLines[l.uri] += i;
 						duplicateLines+=1;
 					}

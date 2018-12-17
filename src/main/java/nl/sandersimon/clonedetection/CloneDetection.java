@@ -313,6 +313,6 @@ public class CloneDetection
 	}
 	
 	private int perc(int total, int partOfTotal) {
-		return (int)(((double)partOfTotal / (double)total) * 100.0);
+		return (int) Math.round((((double)partOfTotal / (double)total) * 100.0));
 	}
 }
