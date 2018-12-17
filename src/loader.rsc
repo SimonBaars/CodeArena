@@ -11,6 +11,10 @@ import tests::typeOne;
 import tests::typeTwo;
 import tests::typeThree;
 
+void calculateCodeDuplication(loc location, int cloneType){
+	getDuplication(cloneType, createAstsFromDirectory(location, false));
+}
+
 void calculateCodeDuplication(loc location){
 	getDuplication(1, createAstsFromDirectory(location, false));
 }
