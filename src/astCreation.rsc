@@ -256,7 +256,7 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 	for(int amount <- sort(domain(finalizedDups), bool(int a, int b){ return a > b; })){
 		list[loc] dupGroup = finalizedDups[amount];
 		//println("dupList <dupList> dupGroup <dupGroup>");
-		if((isLast || any(loc aDup <- dupGroup, willBeRemoved(aDup, newPotentialDuplicates))) && !any(tuple[int amount, list[loc] locList] aDup <- dupList, dupGroup <= aDup.locList)){
+		if((isLast || any(loc aDup <- dupGroup, willBeRemoved(aDup, newPotentialDuplicates))) && !any(tuple[int amount, list[loc] locList] aDup <- dupList, dupGroup <= aDup.locList) && !isSubElement(dupGroup, temp+dupList) && !all(loc aDup <- temp+dupList, isOutsideOfRange(aDup.locList, dupGroup))){
 			dupList+=<amount, dupGroup>;
 			for(int j <- [0..size(finalizedDups[amount])]){
 				loc thisLoc = dupGroup[j];
@@ -292,6 +292,15 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 	}
 	//println("size = <size(dupList)>, potDups = <potentialDuplicates>");
 	return dupList;
+}
+
+public bool isOutsideOfRange(list[loc] locList, list[loc] dupGroup){
+	for(loc l <- dupGroup){
+		if(!all(loc aDup <- locList, l.uri == aDup.uri && l.begin.line>=aDup.begin.line && l.end.line<=aDup.end.line)){
+			return true;
+		}
+	}
+	return false;
 }
 
 public bool isSubElement(list[loc] locList, list[tuple[int, list[loc]]] collectedDups){
