@@ -31,7 +31,7 @@ public class CloneCommand implements ICommand {
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return "/codeclones <project_name>";
+		return "/codeclones <(optional) project_name> <(optional) clone type>";
 	}
 
 	@Override

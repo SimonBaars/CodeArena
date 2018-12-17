@@ -256,7 +256,7 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 	for(int amount <- sort(domain(finalizedDups), bool(int a, int b){ return a > b; })){
 		list[loc] dupGroup = finalizedDups[amount];
 		//println("dupList <dupList> dupGroup <dupGroup>");
-		if((isLast || any(loc aDup <- dupGroup, willBeRemoved(aDup, newPotentialDuplicates))) && !any(tuple[int amount, list[loc] locList] aDup <- dupList, dupGroup <= aDup.locList) && !isSubElement(dupGroup, temp+dupList) && !all(tuple[int amount, list[loc] locList] aDup <- temp+dupList, isOutsideOfRange(aDup.locList, dupGroup))){
+		if((isLast || any(loc aDup <- dupGroup, willBeRemoved(aDup, newPotentialDuplicates))) && !any(tuple[int amount, list[loc] locList] aDup <- dupList, dupGroup <= aDup.locList) && !isSubElement(dupGroup, temp+dupList) && !any(tuple[int amount, list[loc] locList] aDup <- temp+dupList, isOutsideOfRange(aDup.locList, dupGroup))){
 			dupList+=<amount, dupGroup>;
 			for(int j <- [0..size(finalizedDups[amount])]){
 				loc thisLoc = dupGroup[j];
