@@ -11,6 +11,16 @@ import tests::typeOne;
 import tests::typeTwo;
 import tests::typeThree;
 
+void calculateCodeDuplication(loc location, int cloneType, real similarityPercentage){
+	if(cloneType<1 || cloneType>3)
+		throw "Clone type must be an integer value between 1 and 3.";
+	getDuplication(cloneType, createAstsFromDirectory(location, false), similarityPercentage);
+}
+
 void calculateCodeDuplication(loc location){
-	getDuplication(1, createAstsFromDirectory(location, false));
+	calculateCodeDuplication(location, 1);
+}
+
+void calculateCodeDuplication(loc location, int cloneType){
+	calculateCodeDuplication(location, cloneType, 0.00);
 }
