@@ -255,7 +255,9 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 	list[tuple[int, list[loc]]] temp = [];
 	for(int amount <- sort(domain(finalizedDups), bool(int a, int b){ return a > b; })){
 		list[loc] dupGroup = finalizedDups[amount];
-		if((isLast || any(loc aDup <- dupGroup, willBeRemoved(aDup, newPotentialDuplicates))) && !(any(tuple[int, list[loc]] aDup <- dupList, dupGroup <= aDup[1])) && !isSubElement(dupGroup, temp+dupList)){
+		//println("dupList <dupList> dupGroup <dupGroup>");
+		if((isLast || any(loc aDup <- dupGroup, willBeRemoved(aDup, newPotentialDuplicates))) && !any(tuple[int amount, list[loc] locList] aDup <- dupList, dupGroup <= aDup.locList)){
+			dupList+=<amount, dupGroup>;
 			for(int j <- [0..size(finalizedDups[amount])]){
 				loc thisLoc = dupGroup[j];
 				loc l = |unknown:///|(0,0,<0,0>,<0,0>);
@@ -264,9 +266,7 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 				l.begin.line = sortedDomains[thisLoc.uri][thisLoc.begin.line];
 				dupGroup[j] = l;
 			}
-			tuple[int, list[loc]] entry = <amount, dupGroup>;
-			temp+=entry;
-			dupList+=entry;
+			temp+=<amount, dupGroup>;
 		}
 	}
 	//iprintln(temp);
@@ -277,11 +277,9 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 				if(l.uri notin countedLines) countedLines[l.uri] = [];
 				for(i <- [l.begin.line .. l.end.line]){
 					list[int] domain = sortedDomains[l.uri];
-					if(i in domain){
-						if(i notin countedLines[l.uri]){
-							countedLines[l.uri] += i;
-							duplicateLines+=1;
-						}
+					if(i in domain && i notin countedLines[l.uri]){
+						countedLines[l.uri] += i;
+						duplicateLines+=1;
 					}
 				}
 			}
