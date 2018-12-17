@@ -282,8 +282,7 @@ public bool isOutsideOfRange(list[tuple[int, list[loc]]] currDups, list[loc] dup
 			if(any(loc aDup <- aDupList.locList, l.uri == aDup.uri && l.begin.line>=aDup.begin.line && l.end.line<=aDup.end.line)){
 				outSide = false;
 			}
-			else
-				outSide = true;
+			else return true;
 		}
 	}
 	return outSide;
