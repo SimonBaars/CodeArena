@@ -135,20 +135,18 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 		if(sortedDomainSize!=0)
 			println(sortedDomainSize);
 		int i = 0;
-		while(i < sortedDomainSize){
-			int hash = hashMap[location][i];
-			hashStartIndex[hash] = hashStartIndex[hash] + 1;
-			
+		while(i < sortedDomainSize){			
 			if(i+5<sortedDomainSize && size(potentialDuplicates) == 0){
-				int futureRes = inspectFutureDups(i, locsAtHash, curFilesHashes);
-				if(futureRes != -1){
+				tuple[int skipAmount, map[int, int] hashStartIndex] futureRes = inspectFutureDups(i, locsAtHash, curFilesHashes, hashStartIndex);
+				if(futureRes.skipAmount != -1){
 					potentialDuplicates = [];
-					i+=futureRes+1;
+					i+=futureRes.skipAmount+1;
+					hashStartIndex = futureRes.hashStartIndex;
 					continue;
 				}
 			}
-			int lineNumber = sortedDomain[i];
-			
+			int hash = curFilesHashes[i];
+			hashStartIndex[hash] = hashStartIndex[hash] + 1;
 			list[loc] dupLines = locsAtHash[hash];
 			
 			
@@ -192,7 +190,7 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 					newPotentialDuplicates+=<1, potDupNew>;
 				//}
 			}
-			dupList = populateBeforeRemoval(dupList, potentialDuplicates, newPotentialDuplicates, sortedDomains, sortedDomain, location, i, lineNumber == last(sortedDomain));
+			dupList = populateBeforeRemoval(dupList, potentialDuplicates, newPotentialDuplicates, sortedDomains, sortedDomain, location, i, i == size(sortedDomain)-1);
 			potentialDuplicates = newPotentialDuplicates;
 			//iprintln("line = <lineNumber>");//, newPotDup = <newPotentialDuplicates>");
 			//iprintln(newPotentialDuplicates);
@@ -206,13 +204,15 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 	return dupList;
 }
 
-public int inspectFutureDups(int i, map[int, list[loc]] locsAtHash, map[int, int] curFilesHashes){
+public tuple[int skipAmount, map[int, int] hashStartIndex] inspectFutureDups(int i, map[int, list[loc]] locsAtHash, map[int, int] curFilesHashes, map[int, int] hashStartIndex){
 	for(int j <- [0..minAmountOfLines]){
-		if(size(locsAtHash[curFilesHashes[i+j]])<=1){
-			return j;
+		int hash = curFilesHashes[i+j];
+		hashStartIndex[hash] = hashStartIndex[hash] + 1;
+		if(size(locsAtHash[hash])<=hashStartIndex[hash]){
+			return <j, hashStartIndex>;
 		}
 	}
-	return -1;
+	return <-1, ()>;
 }
 
 public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[loc]]] dupList, list[tuple[int lines, loc duplicate]] potentialDuplicates, list[tuple[int lines, loc duplicate]] newPotentialDuplicates, map[str, list[int]] sortedDomains, list[int] sortedDomain, str location, int i, bool isLast){
