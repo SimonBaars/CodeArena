@@ -72,7 +72,7 @@ public class CloneClass implements Comparable<CloneClass>{
 
 	@Override
 	public String toString() {
-		return "CloneClass [lines=" + lines + ", locations=" + Arrays.toString(locations.toArray()) + "]";
+		return "CloneClass"+System.lineSeparator()+"lines=" + lines + System.lineSeparator()+"volume=" + System.lineSeparator()+"volume=" + volume() + System.lineSeparator()+"locations=" + Arrays.toString(locations.toArray());
 	}
 	
 	public int volume() {

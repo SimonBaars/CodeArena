@@ -301,7 +301,7 @@ public class CloneDetection
 		for(Score score : scores)
 			builder.append(score.getPlayerName()+": "+score.getScorePoints()+System.lineSeparator());
 		try {
-			TestingCommons.writeStringToFile(new File(SavePaths.getResourceFolder()+"clone_metrics.txt"), builder.toString());
+			TestingCommons.writeStringToFile(new File(SavePaths.createDirectoryIfNotExists(SavePaths.getSaveFolder())+"clone_metrics.txt"), builder.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

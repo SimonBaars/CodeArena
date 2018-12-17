@@ -184,18 +184,23 @@ public class Location {
 		}
 		return number.toString();
 	}
+	
+	
 
 	@Override
 	public String toString() {
-		return "Location [type=" + type + ", file=" + file + ", offset=" + offset + ", length=" + length
-				+ ", beginLine=" + beginLine + ", beginCol=" + beginCol + ", endLine=" + endLine + ", endCol=" + endCol
-				+ "]";
+		return System.lineSeparator()+"Location"+System.lineSeparator()+"type=" + type + System.lineSeparator() + "file=" + file + "beginLine=" + beginLine + System.lineSeparator() + " endLine=" + endLine
+				+ System.lineSeparator() + "code:"+System.lineSeparator() +"===================================="+ System.lineSeparator() + getSnippet() +"====================================";
 	}
 
 	public String getSnippet() {
 		try {
+			StringBuilder snippet = new StringBuilder();
 			String content = Commons.getFileAsString(new File(file));
-			return content.substring(offset, offset+length);
+			String[] lines = content.split(System.lineSeparator());
+			for(int i = beginLine - 1; i<=endLine-1; i++)
+				snippet.append(lines[i] + System.lineSeparator());
+			return snippet.toString();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

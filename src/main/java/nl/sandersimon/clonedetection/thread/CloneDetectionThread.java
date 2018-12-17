@@ -1,5 +1,7 @@
 package nl.sandersimon.clonedetection.thread;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -9,6 +11,7 @@ import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.challenge.CodeArena;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.SavePaths;
+import nl.sandersimon.clonedetection.common.TestingCommons;
 import nl.sandersimon.clonedetection.model.CloneClass;
 import nl.sandersimon.clonedetection.model.Location;
 
@@ -73,6 +76,7 @@ public class CloneDetectionThread extends Thread {
 				
 				
 				String res = c.readBuffer(bufferSize);
+				
 				//System.out.println(res+", "+bufferSizeString);
 				c.waitUntilExecuted('\n');
 				
@@ -82,6 +86,11 @@ public class CloneDetectionThread extends Thread {
 					listLoc = parseList(loc, res, listLoc+1)+2;
 					locs.add(loc);
 					c.eventHandler.nextTickActions.add(() -> c.getArena().create(loc, 1));
+					try {
+						TestingCommons.writeStringToFile(new File(SavePaths.createDirectoryIfNotExists(SavePaths.getSaveFolder())+"clone-"+c.hashCode()+".txt"), c.toString());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
