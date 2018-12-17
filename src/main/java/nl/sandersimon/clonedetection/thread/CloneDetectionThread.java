@@ -1,6 +1,5 @@
 package nl.sandersimon.clonedetection.thread;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -17,6 +16,8 @@ public class CloneDetectionThread extends Thread {
 	
 	private static CloneDetectionThread worker;
 	private final String project;
+	private final String type;
+	private final String similarityPercentage;
 
 	public CloneDetectionThread(String project) {
 		this(project, true);
@@ -25,16 +26,31 @@ public class CloneDetectionThread extends Thread {
 	public CloneDetectionThread(String project, boolean start) {
 		this.project = project;
 		if(start) start();
+		this.type = "";
+		this.similarityPercentage = "";
+	}
+
+	public CloneDetectionThread(String project, String type, String similarityPercentage) {
+		this.project = project;
+		this.type = type;
+		if(similarityPercentage.length()>0 && !similarityPercentage.contains("."))
+			this.similarityPercentage = similarityPercentage+".0";
+		else this.similarityPercentage = similarityPercentage;
+		start();
 	}
 
 	public void run() {
-		CloneDetection.get().executeTill("calculateCodeDuplication(|file://"+SavePaths.getProjectFolder()+project+"/|)", '\n');
+		CloneDetection.get().executeTill("calculateCodeDuplication(|file://"+SavePaths.getProjectFolder()+project+"/|"+addIfNotEmpty(type)+addIfNotEmpty(similarityPercentage)+")", '\n');
 		populateResult();
 		CloneDetection.get().writeAllMetricsToFile();
 		CloneDetection.get().waitUntilExecuted();
 		Minecraft.getMinecraft().player.sendChatMessage("All clones have been successfully parsed!");
 	}
 	
+	private String addIfNotEmpty(String string) {
+		return string.isEmpty() ? "" : ", "+string;
+	}
+
 	public void populateResult(){
 		CloneDetection c = CloneDetection.get();
 		List<CloneClass> locs = c.getClones();
@@ -84,7 +100,7 @@ public class CloneDetectionThread extends Thread {
 		return elementLoc;
 	}
 	
-	public static void startWorker(MinecraftServer server, ICommandSender s, String project) {
+	public static void startWorker(MinecraftServer server, ICommandSender s, String[] args) {
 		//System.out.println("Spawn at pos "+s.getPosition());
 		//new StructureCreatorClient("arena", s.getPosition().getX()+95, s.getPosition().getY()-2, s.getPosition().getZ()+80	, false, 0);
 		CloneDetection.get().setArena(new CodeArena(s.getPosition().getX(), s.getPosition().getY(), s.getPosition().getZ()));
@@ -94,7 +110,8 @@ public class CloneDetectionThread extends Thread {
 			return;
 		}
 		s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "Searching for clones, please wait..."));
-		worker = new CloneDetectionThread(project);
+		
+		worker = new CloneDetectionThread(args[0], args.length > 1 ? args[1] : "", args.length > 2 ? args[2] : "");
 	}
 
 	public static CloneDetectionThread getWorker() {

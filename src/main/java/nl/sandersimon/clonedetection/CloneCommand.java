@@ -31,7 +31,7 @@ public class CloneCommand implements ICommand {
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return "/codeclones <(optional) project_name> <(optional) clone type>";
+		return "/codeclones <(optional) project name> <(optional) clone type> <(optional) similarity>";
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class CloneCommand implements ICommand {
 			CloneDetection.dialoge = 1;
 			return;
 		}
-		CloneDetectionThread.startWorker(server, sender, args[0]);
+		CloneDetectionThread.startWorker(server, sender, args);
 	}
 
 	@Override
