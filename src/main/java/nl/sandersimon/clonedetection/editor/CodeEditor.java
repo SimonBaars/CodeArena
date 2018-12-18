@@ -140,7 +140,6 @@ public class CodeEditor extends JFrame implements SearchListener {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					CloneDetection.get().eventHandler.nextTickActions.add(() -> CloneDetection.get().getArena().killSpider(cloneClass));
 					ChangesScannerThread.startWorker(Minecraft.getMinecraft().player, cloneClass, false);
 					CloneDetection.get().closeAllEditors();
 				}

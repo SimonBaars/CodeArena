@@ -60,7 +60,8 @@ public class ChangesScannerThread extends Thread {
 				}
 				cloneDetection.eventHandler.nextTickActions.add(() -> cloneDetection.getArena().increaseScore(scoreGain));
 			}
-			
+			if(metrics.getTotalNumberOfCloneClasses().getScorePoints() < cloneDetection.before.getTotalNumberOfCloneClasses().getScorePoints())
+				cloneDetection.eventHandler.nextTickActions.add(() -> cloneDetection.getArena().killSpider(c));
 			cloneDetection.before = null;
 		}
 	}
