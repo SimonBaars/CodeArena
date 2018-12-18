@@ -231,7 +231,12 @@ public list[tuple[int, list[loc]]] addActualClones(list[tuple[int, list[loc]]] c
 			temp+=<amount.lines, dupGroup>;
 		}
 	}
+	printTempDupReg(temp);
 	
+	return dupList;
+}
+
+public void printTempDupReg(list[tuple[int, list[loc]]] temp){
 	if(size(temp) > 0){
 		int duplicateLines = 0;
 		for(tuple[int line, list[loc] locs] t <- temp){
@@ -251,7 +256,6 @@ public list[tuple[int, list[loc]]] addActualClones(list[tuple[int, list[loc]]] c
 		println(duplicateLines);
 		println(buffer);
 	}
-	return dupList;
 }
 
 public tuple[int skipAmount, map[int, int] hashStartIndex] inspectFutureDups(int i, map[int, list[loc]] locsAtHash, map[int, int] curFilesHashes, map[int, int] hashStartIndex){
