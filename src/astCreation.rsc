@@ -218,7 +218,8 @@ public list[tuple[int, list[loc]]] addActualClones(list[tuple[int, list[loc]]] c
 	
 	for(tuple[int lines, list[loc] locs] amount <- sort(currentCloneClassGroup, bool(tuple[int lines, list[loc] locs] a, tuple[int lines, list[loc] locs] b){ return a.lines > b.lines; })){
 		list[loc] dupGroup = amount.locs;
-		if(isOutsideOfRange(dupList, dupGroup)){
+		
+		if(!any(tuple[int amount, list[loc] locList] aDup <- dupList, dupGroup <= aDup.locList) && isOutsideOfRange(dupList, dupGroup)){
 			dupList+=amount;
 			for(int j <- [0..size(amount.locs)]){
 				loc thisLoc = dupGroup[j];
@@ -290,7 +291,7 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 
 	for(int amount <- sort(domain(finalizedDups), bool(int a, int b){ return a > b; })){
 		list[loc] dupGroup = finalizedDups[amount];
-		if((isLast || any(loc aDup <- dupGroup, willBeRemoved(aDup, newPotentialDuplicates))) && !any(tuple[int amount, list[loc] locList] aDup <- dupList, dupGroup <= aDup.locList))
+		if((isLast || any(loc aDup <- dupGroup, willBeRemoved(aDup, newPotentialDuplicates))))
 			currentCloneClassGroup+=<amount, dupGroup>;
 	}
 	
@@ -298,6 +299,7 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 }
 
 public bool isOutsideOfRange(list[tuple[int, list[loc]]] currDups, list[loc] dupGroup){
+	//println("isOutsideOfRange(<currDups>, <dupGroup>)");
 	//iprintln(currDups);
 	//iprintln("WWW");
 	//iprintln(dupGroup);
@@ -315,15 +317,6 @@ public bool isOutsideOfRangeCheck(loc l, list[tuple[int, list[loc]]] currDups){
 		else return true;
 	}
 	return true;
-}
-
-public bool isSubElement(list[loc] locList, list[tuple[int, list[loc]]] collectedDups){
-	for(tuple[int lines, list[loc] locs] dup <- collectedDups){
-		if(size (locList) == size(dup.locs)){
-			return true;
-		}
-	}
-	return false;
 }
 
 public bool willBeRemoved(loc dup, list[loc] newPotentialDuplicates){
