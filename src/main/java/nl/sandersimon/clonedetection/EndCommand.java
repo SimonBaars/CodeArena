@@ -44,9 +44,9 @@ public class EndCommand implements ICommand {
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		CloneDetection c = CloneDetection.get();
-		if(c.getArena() != null)
+		if(c.getArena() == null)
 			sender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.RED, "There is no Code Arena running"));
-		c.getArena().endChallengeForAllPlayers();
+		else c.getArena().endChallengeForAllPlayers();
 		
 	}
 
