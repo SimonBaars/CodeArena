@@ -17,15 +17,15 @@ void calculateCodeDuplication(loc location, int cloneType, real allowedDiffPerce
 	getDuplication(cloneType, createAstsFromDirectory(location, false), allowedDiffPercentage);
 }
 
-void calculateCodeDuplication(loc location){
+void calculateCodeDuplication(list[loc] partialScanList){
 	calculateCodeDuplication(location, 1);
 }
 
-void calculateCodeDuplication(loc location, int cloneType){
+void calculateCodeDuplication(list[loc] partialScanList, int cloneType){
 	calculateCodeDuplication(location, cloneType, 0.00);
 }
 
-void doPartialScan(list[loc] partialScanList){
+void calculateCodeDuplication(list[loc] partialScanList, int cloneType, real similarityPercentage){
 	set[Declaration] asts = {};
 	for (loc m <- partialScanList)
 		asts += createAstFromFile(m, true);
