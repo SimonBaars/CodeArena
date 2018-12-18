@@ -68,7 +68,7 @@ public class CodeArena extends Challenges {
 			player.setHealth(20);
 			items.add(Items.DIAMOND_SWORD);
 			items.add(Items.BOW);
-			for(int i = 0; i<10; i++)
+			for(int i = 0; i<3; i++)
 				items.add(Items.ARROW);
 		}
 		resetPlayer();
