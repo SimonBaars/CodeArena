@@ -216,7 +216,7 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 public list[tuple[int, list[loc]]] addActualClones(list[tuple[int, list[loc]]] currentCloneClassGroup, list[tuple[int, list[loc]]] dupList, map[str, list[int]] sortedDomains){
 	list[tuple[int, list[loc]]] temp = [];
 	//iprintln(currentCloneClassGroup);
-	for(tuple[int lines, list[loc] locs] amount <- sort(currentCloneClassGroup, bool(tuple[int lines, list[loc] locs] a, tuple[int lines, list[loc] locs] b){ return a.lines > b.lines; })){
+	for(tuple[int lines, list[loc] locs] amount <- sort(currentCloneClassGroup, bool(tuple[int lines, list[loc] locs] a, tuple[int lines, list[loc] locs] b){ return a.lines > b.lines || (a.lines == b.lines && size(a.locs) > size(b.locs)); })){
 		list[loc] dupGroup = amount.locs;
 		
 		if(!any(tuple[int amount, list[loc] locList] aDup <- dupList, dupGroup <= aDup.locList) && isOutsideOfRange(dupList, dupGroup)){
