@@ -1,5 +1,7 @@
 package nl.sandersimon.clonedetection.model;
 
+import java.util.Arrays;
+
 import net.minecraft.scoreboard.Score;
 import nl.sandersimon.clonedetection.CloneDetection;
 
@@ -118,5 +120,9 @@ public class CloneMetrics {
 
 	public CloneScore[] getScores() {
 		return scores;
+	}
+	
+	public CloneScore getScoreByName(String name) {
+		return Arrays.stream(scores).filter(s -> s.getName().equals(name)).findAny().get();
 	}
 }

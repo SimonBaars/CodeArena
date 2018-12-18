@@ -4,18 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.event.entity.player.PlayerEvent.Clone;
 import nl.sandersimon.clonedetection.CloneDetection;
-import nl.sandersimon.clonedetection.challenge.CodeArena;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.common.TestingCommons;
 import nl.sandersimon.clonedetection.model.CloneClass;
 import nl.sandersimon.clonedetection.model.CloneMetrics;
+import nl.sandersimon.clonedetection.model.CloneScore;
 import nl.sandersimon.clonedetection.model.Location;
 
 public class ChangesScannerThread extends Thread {
@@ -49,9 +46,21 @@ public class ChangesScannerThread extends Thread {
 		if(before) {
 			cloneDetection.before = metrics;
 		} else {
-			cloneDetection.before = null;
-			mySender.sendMessage(Commons.format(TextFormatting.AQUA, "Clone fix results:"));
+			mySender.sendMessage(Commons.format(TextFormatting.AQUA, "Clone fix results (counted only over the edited files:"));
+			for(CloneScore score : metrics.getScores()) {
+				int points = score.getScorePoints();
+				int prevPoints = cloneDetection.before.getScoreByName(score.getName()).getScorePoints();
+				int scoreGain = prevPoints - points;
+				if(points < prevPoints) {
+					mySender.sendMessage(Commons.format(TextFormatting.DARK_GREEN, "Well done! "+score.getName()+ " went from "+prevPoints+" to "+points+"! Because of this you gain "+scoreGain+" points!"));
+				} else if(points == prevPoints) {
+					mySender.sendMessage(Commons.format(TextFormatting.WHITE, "Your fix didn't change anything for "+score.getName()+ "."));
+				} else {
+					mySender.sendMessage(Commons.format(TextFormatting.RED, "Too bad! "+score.getName()+ " went from "+prevPoints+" to "+points+"! Because of this you lose "+Math.abs(scoreGain)+" points!"));
+				}
+			}
 			
+			cloneDetection.before = null;
 		}
 	}
 	
