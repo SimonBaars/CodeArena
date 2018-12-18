@@ -26,8 +26,8 @@ void calculateCodeDuplication(loc location, int cloneType){
 }
 
 void doPartialScan(list[loc] partialScanList){
-	list[Declaration] asts = [];
+	set[Declaration] asts = {};
 	for (loc m <- partialScanList)
-		asts += createAstFromFile(m[0], true);
-	getDuplication(1, asts);
+		asts += createAstFromFile(m, true);
+	getDuplication(1, asts, 0.00);
 }

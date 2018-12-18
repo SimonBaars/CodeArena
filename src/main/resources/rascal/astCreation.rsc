@@ -28,9 +28,12 @@ public list[tuple[int, list[loc]]] getDuplication(int t, set[Declaration] asts, 
     map[int, int] hashStartIndex = nodeRegs.hashStartIndex;
     map[str, map[int, int]] hashMap = nodeRegs.hashMap;
     // loc met alle regels op volgorde
-    //list[tuple[int, list[loc]]] testDupList = getDupList(fileLineAsts, locsAtHash, sortedDomains);
+    //list[tuple[int, list[loc]]] testDupList = getDupList(hashMap, locsAtHash, sortedDomains, hashStartIndex, filesOrder);
     //println("TESTDUPLIST:::");
     //iprintln(testDupList);
+    //println(size(testDupList));
+    //println(size(testDupList[0][1]));
+    //println(size(testDupList[1][1]));
     return getDupList(hashMap, locsAtHash, sortedDomains, hashStartIndex, filesOrder);
 }
 
@@ -146,6 +149,7 @@ public map[int, list[value]] addToMap(map[int, list[value]] astMap, int line, li
 public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, map[int, list[loc]] locsAtHash, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, set[str] filesOrder){
 	list[tuple[int, list[loc]]] dupList = [];
 	for(str location <- filesOrder){
+		list[tuple[int, list[loc]]] currentCloneClassGroup = [];
 		map[int,int] curFilesHashes = hashMap[location];
 		list[loc] potentialDuplicates = [];
 		list[int] sortedDomain = sortedDomains[location];
@@ -195,7 +199,11 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 				}
 				newPotentialDuplicates+=potDupNew;
 			}
-			dupList = populateBeforeRemoval(dupList, potentialDuplicates, newPotentialDuplicates, sortedDomains, sortedDomain, location, i, i == size(sortedDomain)-1);
+			currentCloneClassGroup = populateBeforeRemoval(currentCloneClassGroup, dupList, potentialDuplicates, newPotentialDuplicates, location, i, i == size(sortedDomain)-1);
+			if(newPotentialDuplicates == [] || i == size(sortedDomain)-1){
+				dupList = addActualClones(currentCloneClassGroup, dupList, sortedDomains);
+				currentCloneClassGroup = [];
+			}
 			potentialDuplicates = newPotentialDuplicates;
 			i+=1;
 		}
@@ -203,6 +211,52 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 	}
 	println(0); //EOF
 	return dupList;
+}
+
+public list[tuple[int, list[loc]]] addActualClones(list[tuple[int, list[loc]]] currentCloneClassGroup, list[tuple[int, list[loc]]] dupList, map[str, list[int]] sortedDomains){
+	list[tuple[int, list[loc]]] temp = [];
+	//iprintln(currentCloneClassGroup);
+	for(tuple[int lines, list[loc] locs] amount <- sort(currentCloneClassGroup, bool(tuple[int lines, list[loc] locs] a, tuple[int lines, list[loc] locs] b){ return a.lines > b.lines || (a.lines == b.lines && size(a.locs) > size(b.locs)); })){
+		list[loc] dupGroup = amount.locs;
+		
+		if(!any(tuple[int amount, list[loc] locList] aDup <- dupList, dupGroup <= aDup.locList) && isOutsideOfRange(dupList, dupGroup)){
+			dupList+=amount;
+			for(int j <- [0..size(amount.locs)]){
+				loc thisLoc = dupGroup[j];
+				loc l = |unknown:///|(0,0,<0,0>,<0,0>);
+				l.uri = thisLoc.uri;
+				l.end.line = sortedDomains[thisLoc.uri][thisLoc.end.line];
+				l.begin.line = sortedDomains[thisLoc.uri][thisLoc.begin.line];
+				dupGroup[j] = l;
+			}
+			temp+=<amount.lines, dupGroup>;
+		}
+	}
+	printTempDupReg(temp);
+	
+	return dupList;
+}
+
+public void printTempDupReg(list[tuple[int, list[loc]]] temp){
+	if(size(temp) > 0){
+		int duplicateLines = 0;
+		for(tuple[int line, list[loc] locs] t <- temp){
+			for(loc l <- t.locs){
+				if(l.uri notin countedLines) countedLines[l.uri] = [];
+				for(int i <- [l.begin.line .. l.end.line+1]){
+					if(i notin countedLines[l.uri]){
+						countedLines[l.uri] += i;
+						duplicateLines+=1;
+					}
+				}
+			}
+		}
+		
+		str buffer = toString(temp);
+		println(size(buffer));
+		println(duplicateLines);
+		println(buffer);
+	}
 }
 
 public tuple[int skipAmount, map[int, int] hashStartIndex] inspectFutureDups(int i, map[int, list[loc]] locsAtHash, map[int, int] curFilesHashes, map[int, int] hashStartIndex){
@@ -220,7 +274,7 @@ int amountOfLines(loc location){
 	return location.end.line-location.begin.line+1;
 }
 
-public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[loc]]] dupList, list[loc] potentialDuplicates, list[loc] newPotentialDuplicates, map[str, list[int]] sortedDomains, list[int] sortedDomain, str location, int i, bool isLast){
+public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[loc]]] currentCloneClassGroup, list[tuple[int, list[loc]]] dupList, list[loc] potentialDuplicates, list[loc] newPotentialDuplicates, str location, int i, bool isLast){
 	map[int, list[loc]] finalizedDups = ();
 	for(loc potDup <- potentialDuplicates, amountOfLines(potDup)>=minAmountOfLines){
 		int potDupLines = amountOfLines(potDup);
@@ -235,62 +289,29 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 		finalizedDups[potDupLines] += potDup;
 	}
 
-	list[tuple[int, list[loc]]] temp = [];
 	for(int amount <- sort(domain(finalizedDups), bool(int a, int b){ return a > b; })){
 		list[loc] dupGroup = finalizedDups[amount];
-		if((isLast || any(loc aDup <- dupGroup, willBeRemoved(aDup, newPotentialDuplicates))) && !any(tuple[int amount, list[loc] locList] aDup <- dupList, dupGroup <= aDup.locList) && !isSubElement(dupGroup, temp+dupList) /*&& !any(tuple[int amount, list[loc] locList] aDup <- temp+dupList, isOutsideOfRange(aDup.locList, dupGroup))*/){
-			dupList+=<amount, dupGroup>;
-			for(int j <- [0..size(finalizedDups[amount])]){
-				loc thisLoc = dupGroup[j];
-				loc l = |unknown:///|(0,0,<0,0>,<0,0>);
-				l.uri = thisLoc.uri;
-				l.end.line = sortedDomains[thisLoc.uri][thisLoc.end.line];
-				l.begin.line = sortedDomains[thisLoc.uri][thisLoc.begin.line];
-				dupGroup[j] = l;
-			}
-			temp+=<amount, dupGroup>;
-		}
+		if((isLast || any(loc aDup <- dupGroup, willBeRemoved(aDup, newPotentialDuplicates))))
+			currentCloneClassGroup+=<amount, dupGroup>;
 	}
-
-	if(size(temp) > 0){
-		int duplicateLines = 0;
-		for(tuple[int line, list[loc] locs] t <- temp){
-			for(loc l <- t.locs){
-				if(l.uri notin countedLines) countedLines[l.uri] = [];
-				for(i <- [l.begin.line .. l.end.line+1]){
-					if(i notin countedLines[l.uri]){
-						countedLines[l.uri] += i;
-						duplicateLines+=1;
-					}
-				}
-			}
-		}
-		
-		str buffer = toString(temp);
-		println(size(buffer));
-		println(duplicateLines);
-		println(buffer);
-	}
-	//println("size = <size(dupList)>, potDups = <potentialDuplicates>");
-	return dupList;
+	
+	return currentCloneClassGroup;
 }
 
-public bool isOutsideOfRange(list[loc] locList, list[loc] dupGroup){
-	for(loc l <- dupGroup){
-		if(!all(loc aDup <- locList, l.uri == aDup.uri && l.begin.line>=aDup.begin.line && l.end.line<=aDup.end.line)){
-			return true;
-		}
-	}
-	return false;
+public bool isOutsideOfRange(list[tuple[int, list[loc]]] currDups, list[loc] dupGroup){
+	//iprintln(currDups);
+	//iprintln("WWW");
+	//iprintln(dupGroup);
+	return any(loc l <- dupGroup, isOutsideOfRangeCheck(l, currDups));
 }
 
-public bool isSubElement(list[loc] locList, list[tuple[int, list[loc]]] collectedDups){
-	for(tuple[int lines, list[loc] locs] dup <- collectedDups){
-		if(size (locList) == size(dup.locs)){
-			return true;
+public bool isOutsideOfRangeCheck(loc l, list[tuple[int, list[loc]]] currDups){
+	for(tuple[int amount, list[loc] locList] aDupList <- currDups){
+		if(any(loc aDup <- aDupList.locList, l.uri == aDup.uri && l.begin.line>=aDup.begin.line && l.end.line<=aDup.end.line)){
+			return false;
 		}
 	}
-	return false;
+	return true;
 }
 
 public bool willBeRemoved(loc dup, list[loc] newPotentialDuplicates){
