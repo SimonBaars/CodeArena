@@ -43,7 +43,7 @@ public class ChangesScannerThread extends Thread {
 			}
 		}
 		//System.out.println("Gonna exx rascal");
-		cloneDetection.executeRascal(cloneDetection.getScanIn(), cloneDetection.getScanOut(), "doPartialScan("+c.rascalLocList()+")", '\n');
+		cloneDetection.executeRascal(cloneDetection.getScanIn(), cloneDetection.getScanOut(), "calculateCodeDuplication("+c.rascalLocList()+")", '\n');
 		//System.out.println("populate");
 		populateResult();
 		//System.out.println("Waiting till finished...");

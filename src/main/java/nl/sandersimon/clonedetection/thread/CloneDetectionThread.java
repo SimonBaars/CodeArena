@@ -2,6 +2,13 @@ package nl.sandersimon.clonedetection.thread;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.command.ICommandSender;
@@ -35,7 +42,22 @@ public class CloneDetectionThread extends Thread {
 
 	public void run() {
 		CloneDetection cloneDetection = CloneDetection.get();
-		cloneDetection.executeTill("calculateCodeDuplication(|file://"+SavePaths.getProjectFolder()+project+"/|"+addIfNotEmpty(type)+addIfNotEmpty(similarityPercentage)+")", '\n');
+		CloneClass foundLocs = new CloneClass();
+		try {
+			Files.walkFileTree(Paths.get(SavePaths.getProjectFolder()+project+"/src/"), new SimpleFileVisitor<Path>() {
+			    @Override
+			    public FileVisitResult visitFile(Path filePath, BasicFileAttributes attrs) throws IOException {
+			    	File file = filePath.toFile();
+					if(file.getName().endsWith(".java"))
+			    		foundLocs.getLocations().add(new Location(file.getAbsolutePath()));
+			    	return FileVisitResult.CONTINUE;
+			    }
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		cloneDetection.executeTill("calculateCodeDuplication("+foundLocs.rascalLocList()+addIfNotEmpty(type)+addIfNotEmpty(similarityPercentage)+")", '\n');
 		populateResult();
 		cloneDetection.writeAllMetricsToFile();
 		cloneDetection.waitUntilExecuted();
