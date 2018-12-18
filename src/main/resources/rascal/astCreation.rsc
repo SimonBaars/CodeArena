@@ -88,6 +88,7 @@ public int makeHashOfLine(list[value] lines){
 	for(lineVal <- lines) {
 		switch(lineVal){
 			case int n: hash += hash*31 + n;
+			case bool n: hash += hash*31 + n;
 			case str n: hash = doHash(hash, n);
 			case node n: hash = doHash(hash, toString(n));
 		}
