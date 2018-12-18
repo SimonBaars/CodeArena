@@ -6,6 +6,7 @@ import Map;
 import List;
 import Node;
 import String;
+import Boolean;
 import lang::java::m3::Core;
 import lang::java::m3::AST;
 import util::Math;
@@ -15,7 +16,6 @@ int minAmountOfLines = 6;
 
 alias LineRegistry = map[str, map[int, list[value]]];
 map[str, list[int]] countedLines = ();
-// = map[fileloc, map[regelnummer, wat er aan ast op de regel staat]]
 
 public list[tuple[int, list[loc]]] getDuplication(int t, set[Declaration] asts, real allowedDiffPercentage) {
 	countedLines = ();
@@ -23,17 +23,9 @@ public list[tuple[int, list[loc]]] getDuplication(int t, set[Declaration] asts, 
     set[str] filesOrder = domain(fileLineAsts);
     tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] nodeRegs = calculateLocationsOfNodeTypes(fileLineAsts, filesOrder, t, allowedDiffPercentage);
     map[int, list[loc]] locsAtHash = nodeRegs.locRegistries;
-    // alle locs die bij een hash horen 
     map[str, list[int]] sortedDomains = nodeRegs.sortedDomains;
     map[int, int] hashStartIndex = nodeRegs.hashStartIndex;
     map[str, map[int, int]] hashMap = nodeRegs.hashMap;
-    // loc met alle regels op volgorde
-    //list[tuple[int, list[loc]]] testDupList = getDupList(hashMap, locsAtHash, sortedDomains, hashStartIndex, filesOrder);
-    //println("TESTDUPLIST:::");
-    //iprintln(testDupList);
-    //println(size(testDupList));
-    //println(size(testDupList[0][1]));
-    //println(size(testDupList[1][1]));
     return getDupList(hashMap, locsAtHash, sortedDomains, hashStartIndex, filesOrder);
 }
 
@@ -52,8 +44,6 @@ public tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomain
 			l.uri = location;
 			l.end.line = i;
 			l.begin.line = i;
-			//println("Line <i> of file <indexOf(sort(domain(fileLineAsts)), location)> has hash <makeHashOfLine(stuffOnLine)>");
-			//println(stuffOnLine);
 			int hash = makeHashOfLine(stuffOnLine);
 			if(t == 3)
 				registry = calculateType3Hash(l, location, i, fileLineAsts, hashMap, filesOrder, sortedDomains, allowedDiffPercentage, stuffOnLine, registry);
@@ -71,7 +61,6 @@ public map[int, list[loc]] calculateType3Hash(loc thisLoc, str location, int i, 
 		for(int j <- [0..size(fileLines)]){
 			if(l == location && i == j)
 				return registry;
-			//println("l <l> j <j>");
 			list[value] stuffOnLine = fileLines[sortedDomains[l][j]];
 			real difference = calculateDifference(curLineContent, stuffOnLine);
 			if(difference<=allowedDiffPercentage && allowedDiffPercentage != 0.00){
@@ -88,16 +77,17 @@ public int makeHashOfLine(list[value] lines){
 	for(lineVal <- lines) {
 		switch(lineVal){
 			case int n: hash += hash*31 + n;
-			case str n: hash = doHash(hash, n);
-			case node n: hash = doHash(hash, toString(n));
+			case bool n: hash += doHash(hash, toString(n), 33);
+			case str n: hash = doHash(hash, n, 35);
+			case node n: hash = doHash(hash, toString(n), 37);
 		}
 	}
 	return hash;
 }
 
-public int doHash(int hash, str string){
+public int doHash(int hash, str string, int multiplier){
 	for(int j <- [0 .. size(string)])
-		hash += hash*31 + charAt(string, j);
+		hash += hash*multiplier + charAt(string, j);
 	return hash;
 }
 
@@ -105,10 +95,6 @@ public map[int, list[loc]] addTo(map[int, list[loc]] numberMap, int codeNumber, 
 	if(codeNumber in numberMap)
 		numberMap[codeNumber] += l;
 	else numberMap[codeNumber] = [l];
-	//println("LOC DIE WORDT TOEGEVOEGD AAN MAP");
-	//println(l);
-	//println("De MAP");
-	//iprintln(numberMap[codeNumber]);
 	return numberMap;
 }
 
@@ -131,8 +117,6 @@ public map[int, list[value]] getLocLineAst(int t, Declaration location) {
 
 public map[int, list[value]] addToASTMap(int t, map[int, list[value]] astMap, node n){
 	loc location = getSrc(n);
-	//print("VISIT ");
-	//println(location);
 	if(location!=|unknown:///|){
 		list[value] values = getComparables(n, t);
 		astMap = addToMap(astMap, location.begin.line, values);
@@ -161,7 +145,7 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 			println(sortedDomainSize);
 		int i = 0;
 		while(i < sortedDomainSize){			
-			if(i+5<sortedDomainSize && size(potentialDuplicates) == 0){
+			if(i+(minAmountOfLines-1)<sortedDomainSize && size(potentialDuplicates) == 0){
 				tuple[int skipAmount, map[int, int] hashStartIndex] futureRes = inspectFutureDups(i, locsAtHash, curFilesHashes, hashStartIndex);
 				if(futureRes.skipAmount != -1){
 					potentialDuplicates = [];
@@ -218,7 +202,6 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 
 public list[tuple[int, list[loc]]] addActualClones(list[tuple[int, list[loc]]] currentCloneClassGroup, list[tuple[int, list[loc]]] dupList, map[str, list[int]] sortedDomains){
 	list[tuple[int, list[loc]]] temp = [];
-	//iprintln(currentCloneClassGroup);
 	for(tuple[int lines, list[loc] locs] amount <- sort(currentCloneClassGroup, bool(tuple[int lines, list[loc] locs] a, tuple[int lines, list[loc] locs] b){ return a.lines > b.lines || (a.lines == b.lines && size(a.locs) > size(b.locs)); })){
 		list[loc] dupGroup = amount.locs;
 		
@@ -254,7 +237,6 @@ public void printTempDupReg(list[tuple[int, list[loc]]] temp){
 				}
 			}
 		}
-		//iprintln(temp);
 		str buffer = toString(temp);
 		println(size(buffer));
 		println(duplicateLines);
@@ -336,9 +318,6 @@ public loc getSrc(value ast) {
 public real calculateDifference(list[value] line1, list[value] line2){
 	int differentElements = size(line1 - line2) + size(line2 - line1);
 	int combinedSize = size(line1) + size(line2);
-	//println("differentElements <differentElements> combinedSize <combinedSize> line1 <line1> line2 <line2>");
-	//println("CDIFFSCORE");
-	//println(toReal(differentElements)/toReal(combinedSize) * 100);
 	return toReal(differentElements)/toReal(combinedSize) * 100;
 }
 
