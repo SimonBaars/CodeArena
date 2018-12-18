@@ -272,7 +272,7 @@ public class EntityCodeSpider extends CodeEntity
     public float getScaleFactor() {
     	if(getRepresents() == null)//{
     	//	setDead();
-    		return 1.00F;
+    		return 0.5F;
     	//}
     	return 0.05F*getRepresents().volume();
     }

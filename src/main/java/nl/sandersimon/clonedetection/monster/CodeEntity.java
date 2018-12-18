@@ -18,6 +18,7 @@ public abstract class CodeEntity extends EntityMob {
 		this.setHealth(Float.MAX_VALUE);
 		this.setAlwaysRenderNameTag(true);
 		this.setCustomNameTag(cloneClass.getName());
+		this.ignoreFrustumCheck = true;
 	}
 	
 	public CodeEntity(World worldIn) {

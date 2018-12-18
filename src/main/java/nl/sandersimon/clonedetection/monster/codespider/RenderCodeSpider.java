@@ -30,6 +30,7 @@ public class RenderCodeSpider<T extends EntityCodeSpider> extends RenderLiving<T
     public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks){
     	GlStateManager.scale(entity.getScaleFactor(), entity.getScaleFactor(), entity.getScaleFactor());
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
+        GlStateManager.scale(entity.getScaleFactor(), entity.getScaleFactor(), entity.getScaleFactor());
     }
     
     /**
