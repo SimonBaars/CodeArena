@@ -88,17 +88,17 @@ public int makeHashOfLine(list[value] lines){
 	for(lineVal <- lines) {
 		switch(lineVal){
 			case int n: hash += hash*31 + n;
-			case bool n: hash += hash*31 + n;
-			case str n: hash = doHash(hash, n);
-			case node n: hash = doHash(hash, toString(n));
+			case bool n: hash += hash*33 + n;
+			case str n: hash = doHash(hash, n, 35);
+			case node n: hash = doHash(hash, toString(n), 37);
 		}
 	}
 	return hash;
 }
 
-public int doHash(int hash, str string){
+public int doHash(int hash, str string, int multiplier){
 	for(int j <- [0 .. size(string)])
-		hash += hash*31 + charAt(string, j);
+		hash += hash*multiplier + charAt(string, j);
 	return hash;
 }
 
