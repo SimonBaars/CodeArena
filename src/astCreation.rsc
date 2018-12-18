@@ -215,7 +215,7 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 
 public list[tuple[int, list[loc]]] addActualClones(list[tuple[int, list[loc]]] currentCloneClassGroup, list[tuple[int, list[loc]]] dupList, map[str, list[int]] sortedDomains){
 	list[tuple[int, list[loc]]] temp = [];
-	
+	//iprintln(currentCloneClassGroup);
 	for(tuple[int lines, list[loc] locs] amount <- sort(currentCloneClassGroup, bool(tuple[int lines, list[loc] locs] a, tuple[int lines, list[loc] locs] b){ return a.lines > b.lines; })){
 		list[loc] dupGroup = amount.locs;
 		if(isOutsideOfRange(dupList, dupGroup)){
@@ -231,7 +231,7 @@ public list[tuple[int, list[loc]]] addActualClones(list[tuple[int, list[loc]]] c
 			temp+=<amount.lines, dupGroup>;
 		}
 	}
-	
+	//iprintln(temp);
 	if(size(temp) > 0){
 		int duplicateLines = 0;
 		for(tuple[int line, list[loc] locs] t <- temp){
@@ -294,21 +294,14 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 }
 
 public bool isOutsideOfRange(list[tuple[int, list[loc]]] currDups, list[loc] dupGroup){
-	//iprintln(currDups);
-	//iprintln("WWW");
-	//iprintln(dupGroup);
 	return any(loc l <- dupGroup, isOutsideOfRangeCheck(l, currDups));
 }
 
 public bool isOutsideOfRangeCheck(loc l, list[tuple[int, list[loc]]] currDups){
 	for(tuple[int amount, list[loc] locList] aDupList <- currDups){
-		//println(l);
-		//println("WWWW");
-		//println(aDupList);
 		if(any(loc aDup <- aDupList.locList, l.uri == aDup.uri && l.begin.line>=aDup.begin.line && l.end.line<=aDup.end.line)){
 			return false;
 		}
-		else return true;
 	}
 	return true;
 }
