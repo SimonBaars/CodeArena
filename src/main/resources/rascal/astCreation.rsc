@@ -144,7 +144,7 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 			println(sortedDomainSize);
 		int i = 0;
 		while(i < sortedDomainSize){			
-			if(i+5<sortedDomainSize && size(potentialDuplicates) == 0){
+			if(i+(minAmountOfLines-1)<sortedDomainSize && size(potentialDuplicates) == 0){
 				tuple[int skipAmount, map[int, int] hashStartIndex] futureRes = inspectFutureDups(i, locsAtHash, curFilesHashes, hashStartIndex);
 				if(futureRes.skipAmount != -1){
 					potentialDuplicates = [];
