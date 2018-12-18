@@ -49,6 +49,8 @@ public class CDEventHandler {
 	}
 	@SubscribeEvent
 	public void update(TickEvent.ClientTickEvent event){
+		if(!isLoaded && Minecraft.getMinecraft().world!=null)
+			load();
 		while(nextTickActions.size()!=0) {
 			nextTickActions.get(0).run();
 			nextTickActions.remove(0);

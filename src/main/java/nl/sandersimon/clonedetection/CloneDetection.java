@@ -86,8 +86,10 @@ public class CloneDetection
 		try {
 			System.out.println("Starting Rascal..");
 			rascal = getProcess("java -jar "+ResourceCommons.getResource("Rascal.jar").getAbsolutePath(), ResourceCommons.getResource("rascal"));
-			executeRascal("import loader;");
 			partialScan = getProcess("java -jar "+ResourceCommons.getResource("Rascal.jar").getAbsolutePath(), ResourceCommons.getResource("rascal"));
+			waitUntilExecuted(rascalIn, getRascalReadyState());
+			executeRascal("import loader;");
+			waitUntilExecuted(scanIn, getRascalReadyState());
 			executeRascal(scanIn, scanOut, "import loader;", getRascalReadyState());
 			System.out.println("Rascal Started!");
 		} catch (IOException e) {
@@ -117,7 +119,6 @@ public class CloneDetection
 		else scanOut = new BufferedWriter(new OutputStreamWriter(pr.getOutputStream()));
 		if(rascalIn == null) rascalIn = new InputStreamReader(pr.getInputStream());
 		else scanIn = new InputStreamReader(pr.getInputStream());
-		waitUntilExecuted();
 		return pr;
 	}
 

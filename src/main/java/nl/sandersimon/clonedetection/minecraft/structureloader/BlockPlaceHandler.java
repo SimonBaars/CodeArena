@@ -15,7 +15,7 @@ public class BlockPlaceHandler {
 		for(int x = 0; x<sizex; x++){
 			for(int y =0; y<sizey; y++){
 				for(int z =0; z<sizez; z++){
-					pos= new BlockPos(posx+x,posy+y,posz+z);
+					pos= new BlockPos(posx-x,posy+y,posz-z);
 					setBlock(worldIn,pos, block.getDefaultState());
 					setBlock(serverWorld, pos, block.getDefaultState());
 				}

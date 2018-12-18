@@ -62,7 +62,7 @@ public class CodeArena extends Challenges {
 		cornerz=z-20;
 		initArena();
 		for(EntityPlayerMP player : players){
-			player.setPosition(x, y+2,z);
+			player.setPosition(x, y+3,z);
 			player.setHealth(20);
 		}
 		resetPlayer();
@@ -74,7 +74,7 @@ public class CodeArena extends Challenges {
 		sizex=structure.length;
 		sizey=structure.height;
 		sizez=structure.width;
-		structure.process(serverWorld, worldIn, x+32, y-1, z+37);
+		structure.process(serverWorld, worldIn, x+32, y, z+37);
 	}
 	
 	void spawnMobs(int monsterId, int amount){
@@ -92,7 +92,7 @@ public class CodeArena extends Challenges {
 	public void create(CloneClass cloneClass, int type) {
 		CodeEntity monster = getMonster(serverWorld, cloneClass, type);
 		//System.out.println("Created "+monster.getRepresents());
-		monster.setLocationAndAngles(cornerx+((int)(Math.random()*(fieldx-2)))+1, y+2, cornerz+((int)(Math.random()*(fieldz-2)))+1, 0, 0);
+		monster.setLocationAndAngles(cornerx+((int)(Math.random()*(fieldx-2)))+1, y+3, cornerz+((int)(Math.random()*(fieldz-2)))+1, 0, 0);
 		monster.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(monster)), (IEntityLivingData)null);
 		//monster.spawnEntityInWorld(monster);
 		serverWorld.spawnEntity(monster);
@@ -133,7 +133,7 @@ public class CodeArena extends Challenges {
 
 	void destroy(){
 		CloneDetection.get().setArena(null);
-		placeBlocks(Blocks.AIR, x+32, y-1,z+38,sizex,sizey,sizez);
+		placeBlocks(Blocks.AIR, x+32, y,z+38,sizex,sizey,sizez);
 		for(int i = 0; i<activeMonsters.size(); i++){
 			activeMonsters.get(i).setDead();
 		}
@@ -141,7 +141,7 @@ public class CodeArena extends Challenges {
 	
 	boolean closeToGameRoom(int howClose, int x, int y, int z){
 		x = x-cornerx-howClose;
-		y = y-this.y-1-howClose;
+		y = y-this.y-howClose;
 		z = z-cornerz-howClose;
 		//System.out.println(x+", "+y+", "+z+", "+(fieldx+(2*howClose))+", "+(fieldy+(2*howClose)+3)+", "+(fieldz+(2*howClose)+2));
 		return (x>=0 && x<=fieldx+(2*howClose) && y>=0 && y<=fieldy+(2*howClose) && z>=0 && z<=fieldz+(2*howClose)+2);
@@ -165,17 +165,17 @@ public class CodeArena extends Challenges {
 	private void removeWaterWorld() {
 		// TODO Auto-generated method stub
 		doReplaceStuff=true;
-		placeBlocks(Blocks.AIR, cornerx+fieldx-1, y+1,cornerz+fieldz,fieldx,2,fieldz);
+		placeBlocks(Blocks.AIR, cornerx+fieldx-1, y+2,cornerz+fieldz,fieldx,2,fieldz);
 	}
 
 	private void setWaterWorld() {
 		// TODO Auto-generated method stub
 		doReplaceStuff=false;
-		placeBlocks(Blocks.WATER, cornerx+fieldx-1, y+1,cornerz+fieldz,fieldx,2,fieldz);
+		placeBlocks(Blocks.WATER, cornerx+fieldx-1, y+2,cornerz+fieldz,fieldx,2,fieldz);
 		for(int i  = 0; i<fieldx; i+=3){
 			for(int j = 0; j<2; j++){
 				for(int k  = 0; k<fieldz; k+=3){
-					placeBlocks(Blocks.SAND, cornerx+fieldx-1-i, y+1+j,cornerz+fieldz-k,1,2,1);
+					placeBlocks(Blocks.SAND, cornerx+fieldx-1-i, y+2+j,cornerz+fieldz-k,1,2,1);
 				}
 			}
 		}

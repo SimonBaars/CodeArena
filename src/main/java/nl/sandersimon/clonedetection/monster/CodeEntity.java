@@ -27,7 +27,7 @@ public abstract class CodeEntity extends EntityMob {
 	@Override
 	public boolean attackEntityFrom(DamageSource source, float amount){
 		if(represents != null && source.getTrueSource() instanceof EntityPlayer) //{
-			CloneDetection.get().openEditors.addAll(represents.open());
+			represents.open();
 			//setDead();
 		//}
         return super.attackEntityFrom(source, amount);

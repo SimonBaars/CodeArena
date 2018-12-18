@@ -79,10 +79,12 @@ public class CodeEditor extends JFrame implements SearchListener {
 	private FindToolBar findToolBar;
 	private ReplaceToolBar replaceToolBar;
 	private StatusBar statusBar;
-	private File file;
+	private final File file;
+	private final CloneClass cloneClass;
 
 	public CodeEditor(CloneClass cloneClass, File file, int markedRangeStart, int markedRangeEnd, int pos, int amount) {
 		this.file = file;
+		this.cloneClass = cloneClass;
 		String content;
 		try {
 			content = TestingCommons.getFileAsString(file);
@@ -134,16 +136,6 @@ public class CodeEditor extends JFrame implements SearchListener {
 			contentPane.add(errorStrip, BorderLayout.LINE_END);
 			///org.fife.rsta.ui.DocumentMap docMap = new org.fife.rsta.ui.DocumentMap(textArea);
 			//contentPane.add(docMap, BorderLayout.LINE_END);
-			
-			JButton fixedButton = new JButton("I fixed it! :-)");
-			fixedButton.addActionListener(new ActionListener() {
-				
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					ChangesScannerThread.startWorker(Minecraft.getMinecraft().player, cloneClass, false);
-					CloneDetection.get().closeAllEditors();
-				}
-			});
 
 			statusBar = new StatusBar();
 			contentPane.add(statusBar, BorderLayout.SOUTH);
@@ -254,8 +246,23 @@ public class CodeEditor extends JFrame implements SearchListener {
 			}
 		});
 		menuItem.setText("Save");
+		JMenuItem fixedButton = new JMenuItem(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				statusBar.setLabel("You fixed it!2");
+				ChangesScannerThread.startWorker(Minecraft.getMinecraft().player, cloneClass, false);
+				CloneDetection.get().closeAllEditors();
+				statusBar.setLabel("You fixed it!");
+			}
+		});
+		fixedButton.setText("I fixed it! :-)");
+		menu.add(fixedButton);
+		
 		menu.add(menuItem);
 		mb.add(menu);
+		
+		
 		
 		
 		menu = new JMenu("Search");

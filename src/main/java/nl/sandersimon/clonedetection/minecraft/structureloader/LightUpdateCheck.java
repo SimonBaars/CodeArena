@@ -29,7 +29,7 @@ public class LightUpdateCheck {
 	public void runClient() {
 		for(int i = clientProcesses.size()-1; i>=0; i--){
 			if(clientProcesses.get(i)!=null){
-			worldIn.checkLightFor(EnumSkyBlock.SKY, clientProcesses.get(i));
+				worldIn.checkLightFor(EnumSkyBlock.SKY, clientProcesses.get(i));
 			}
 			clientProcesses.remove(i);
 		}	

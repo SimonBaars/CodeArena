@@ -77,8 +77,8 @@ public class CloneClass implements Comparable<CloneClass>{
 		return lines * size();
 	}
 
-	public List<CodeEditor> open() {
-		return CodeEditorMaker.create(this);
+	public void open() {
+		CodeEditorMaker.create(this);
 	}
 
 	public String getName() {

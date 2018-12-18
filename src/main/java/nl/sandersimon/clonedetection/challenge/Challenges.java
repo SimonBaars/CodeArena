@@ -198,7 +198,7 @@ public abstract class Challenges {
 	//abstract boolean addToMap(IBlockState state, int x,int y, int z);
 
 	public void placeBlocks(Block block, int posx, int posy, int posz, int sizex, int sizey, int sizez){
-		System.out.println("PLACING "+block+" BETWEEN x "+posx+", y "+posy+", z "+posz+", sizex "+sizex+", sizey "+sizey+", sizez "+sizez);
+		//System.out.println("PLACING "+block+" BETWEEN x "+posx+", y "+posy+", z "+posz+", sizex "+sizex+", sizey "+sizey+", sizez "+sizez);
 		BlockPlaceHandler.placeBlocks(worldIn, serverWorld, block, posx, posy, posz, sizex, sizey, sizez);
 	}
 

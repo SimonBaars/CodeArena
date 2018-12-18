@@ -7,6 +7,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import net.minecraft.client.Minecraft;
+import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.model.CloneClass;
 import nl.sandersimon.clonedetection.model.Location;
 import nl.sandersimon.clonedetection.thread.ChangesScannerThread;
@@ -15,8 +16,7 @@ public class CodeEditorMaker {
 
 	private CodeEditorMaker() {}
 
-	public static List<CodeEditor> create(CloneClass cloneClass) {
-		List<CodeEditor> codeEditors = new ArrayList<>();
+	public static void create(CloneClass cloneClass) {
 		ChangesScannerThread.startWorker(Minecraft.getMinecraft().player, cloneClass, true);
 		for(int i = 0; i<cloneClass.size(); i++) {
 			final int j = i;
@@ -28,10 +28,9 @@ public class CodeEditorMaker {
 				}
 				Location location = cloneClass.get(j);
 				CodeEditor e = new CodeEditor(cloneClass, location.file(), location.getBeginLine(), location.getEndLine(), j, cloneClass.size());
-				codeEditors.add(e);
+				CloneDetection.get().openEditors.add(e);
 				e.setVisible(true);
 			});
 		}
-		return codeEditors;
 	}
 }
