@@ -10,8 +10,8 @@ import nl.sandersimon.clonedetection.editor.CodeEditorMaker;
 
 public class CloneClass implements Comparable<CloneClass>{
 
-	int lines;
-	List<Location> locations = new ArrayList<>();
+	private int lines;
+	private List<Location> locations = new ArrayList<>();
 	
 	public CloneClass(CloneMetrics metrics) {
 		super();
@@ -92,6 +92,6 @@ public class CloneClass implements Comparable<CloneClass>{
 	}
 
 	public String rascalLocList() {
-		return "["+locations.stream().map(e -> e.rascalFile()).collect(Collectors.joining(","))+"]";
+		return "["+locations.stream().map(Location::rascalFile).collect(Collectors.joining(","))+"]";
 	}
 }

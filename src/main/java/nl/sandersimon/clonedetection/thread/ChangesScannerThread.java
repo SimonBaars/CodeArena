@@ -18,7 +18,7 @@ import nl.sandersimon.clonedetection.model.Location;
 public class ChangesScannerThread extends Thread {
 	
 	private static ChangesScannerThread worker;
-	CloneClass c;
+	private CloneClass c;
 	private boolean before;
 	private CloneMetrics metrics = new CloneMetrics();
 	private final ICommandSender mySender;
@@ -111,11 +111,6 @@ public class ChangesScannerThread extends Thread {
 					listLoc = parseList(loc, res, listLoc+1)+2;
 					locs.add(loc);
 					c.eventHandler.nextTickActions.add(() -> c.getArena().create(loc));
-					try {
-						TestingCommons.writeStringToFile(new File(SavePaths.createDirectoryIfNotExists(SavePaths.getSaveFolder())+"clone-"+loc.hashCode()+".txt"), loc.toString());
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
 				}
 			}
 		}

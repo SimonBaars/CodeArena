@@ -139,7 +139,7 @@ public class CloneDetection
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		readBuffer(statement.length());
+		readBuffer(r, statement.length());
 		return waitUntilExecuted(r, till);
 	}
 
@@ -188,10 +188,10 @@ public class CloneDetection
 		return lines;
 	}
 	
-	public String readBuffer(InputStreamReader scanIn2, int bufferSize) {
+	public String readBuffer(InputStreamReader i, int bufferSize) {
 		char[] cbuf = new char[bufferSize];
 		try {
-			int read = scanIn2.read(cbuf);
+			int read = i.read(cbuf);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
