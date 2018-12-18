@@ -54,9 +54,11 @@ import org.fife.ui.rtextarea.SearchContext;
 import org.fife.ui.rtextarea.SearchEngine;
 import org.fife.ui.rtextarea.SearchResult;
 
+import net.minecraft.client.Minecraft;
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.common.TestingCommons;
 import nl.sandersimon.clonedetection.model.CloneClass;
+import nl.sandersimon.clonedetection.thread.ChangesScannerThread;
 
 
 /**
@@ -139,7 +141,7 @@ public class CodeEditor extends JFrame implements SearchListener {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					CloneDetection.get().eventHandler.nextTickActions.add(() -> CloneDetection.get().getArena().killSpider(cloneClass));
-					CloneDetection.get().getArena().increaseScore(cloneClass);
+					ChangesScannerThread.startWorker(Minecraft.getMinecraft().player, cloneClass, false);
 					CloneDetection.get().closeAllEditors();
 				}
 			});

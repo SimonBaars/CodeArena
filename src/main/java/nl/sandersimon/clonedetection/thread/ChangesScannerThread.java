@@ -52,12 +52,13 @@ public class ChangesScannerThread extends Thread {
 				int prevPoints = cloneDetection.before.getScoreByName(score.getName()).getScorePoints();
 				int scoreGain = prevPoints - points;
 				if(points < prevPoints) {
-					mySender.sendMessage(Commons.format(TextFormatting.DARK_GREEN, "Well done! "+score.getName()+ " went from "+prevPoints+" to "+points+"! Because of this you gain "+scoreGain+" points!"));
+					cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(TextFormatting.DARK_GREEN, "Well done! "+score.getName()+ " went from "+prevPoints+" to "+points+"! Because of this you gain "+scoreGain+" points!")));
 				} else if(points == prevPoints) {
-					mySender.sendMessage(Commons.format(TextFormatting.WHITE, "Your fix didn't change anything for "+score.getName()+ "."));
+					cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(TextFormatting.WHITE, "Your fix didn't change anything for "+score.getName()+ ".")));
 				} else {
-					mySender.sendMessage(Commons.format(TextFormatting.RED, "Too bad! "+score.getName()+ " went from "+prevPoints+" to "+points+"! Because of this you lose "+Math.abs(scoreGain)+" points!"));
+					cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(TextFormatting.RED, "Too bad! "+score.getName()+ " went from "+prevPoints+" to "+points+"! Because of this you lose "+Math.abs(scoreGain)+" points!")));
 				}
+				cloneDetection.eventHandler.nextTickActions.add(() -> cloneDetection.getArena().increaseScore(scoreGain));
 			}
 			
 			cloneDetection.before = null;

@@ -236,7 +236,7 @@ public abstract class Challenges {
 		this.scoreBoard = scoreBoard;
 	}
 	
-	public void increaseScore(CloneClass c) {
-		displayScore.increaseScore(c.volume());
+	public void increaseScore(int scoreGain) {
+		displayScore.increaseScore(scoreGain);
 	}
 }
