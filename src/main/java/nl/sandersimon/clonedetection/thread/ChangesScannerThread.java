@@ -7,6 +7,7 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.event.entity.player.PlayerEvent.Clone;
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.challenge.CodeArena;
@@ -23,18 +24,35 @@ public class ChangesScannerThread extends Thread {
 	CloneClass c;
 	private boolean before;
 	private CloneMetrics metrics = new CloneMetrics();
+	private final ICommandSender mySender;
 
-	public ChangesScannerThread(CloneClass c, boolean before) {
+	public ChangesScannerThread(ICommandSender s, CloneClass c, boolean before) {
 		this.c = c;
 		this.before = before;
+		this.mySender = s;
 	}
 
 	public void run() {
 		CloneDetection cloneDetection = CloneDetection.get();
+		if(!before) {
+			while(cloneDetection.before == null) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
+			}
+		}
 		cloneDetection.executeRascal(cloneDetection.getScanIn(), cloneDetection.getScanOut(), "doPartialScan("+c.rascalLocList()+")", '\n');
 		populateResult();
 		cloneDetection.waitUntilExecuted(cloneDetection.getScanIn(), cloneDetection.getRascalReadyState());
-		Minecraft.getMinecraft().player.sendChatMessage("All clones have been successfully parsed!");
+		if(before) {
+			cloneDetection.before = metrics;
+		} else {
+			cloneDetection.before = null;
+			mySender.sendMessage(Commons.format(TextFormatting.AQUA, "Clone fix results:"));
+			
+		}
 	}
 	
 	public void populateResult(){
@@ -92,8 +110,8 @@ public class ChangesScannerThread extends Thread {
 		return elementLoc;
 	}
 	
-	public static CloneMetrics startWorker(ICommandSender s, CloneClass c, boolean before) {
-		worker = new ChangesScannerThread(c, before);
+	public static void startWorker(ICommandSender s, CloneClass c, boolean before) {
+		worker = new ChangesScannerThread(s, c, before);
 		
 		/*while(worker.isAlive()) {
 			try {

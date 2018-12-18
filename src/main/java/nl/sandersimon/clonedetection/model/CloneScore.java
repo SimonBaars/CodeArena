@@ -3,7 +3,7 @@ package nl.sandersimon.clonedetection.model;
 import net.minecraft.scoreboard.Score;
 
 public class CloneScore {
-	private final Score score;
+	private Score score;
 	private int scorePoints = 0;
 	
 	public CloneScore () {
@@ -31,6 +31,14 @@ public class CloneScore {
 	public void setScorePoints(int scorePoints) {
 		this.scorePoints = scorePoints;
 		if(score != null) score.setScorePoints(scorePoints);
+	}
+
+	public Score getScore() {
+		return score;
+	}
+
+	public void setScore(Score score) {
+		this.score = score;
 	}
 
 	@Override

@@ -4,6 +4,8 @@ import net.minecraft.scoreboard.Score;
 import nl.sandersimon.clonedetection.CloneDetection;
 
 public class CloneMetrics {
+	private final CloneScore[] scores;
+	
 	private CloneScore totalAmountOfClonedLinesInProject;
 	private CloneScore totalAmountOfLinesInProject;
 	private CloneScore percentageOfProjectCloned;
@@ -24,20 +26,10 @@ public class CloneMetrics {
 		this.mostOccurrentClone = new CloneScore();
 		this.biggestCloneClass = new CloneScore();
 		this.totalCloneVolume = new CloneScore();
+		scores = new CloneScore[]{this.totalAmountOfClonedLinesInProject, this.totalAmountOfLinesInProject, this.percentageOfProjectCloned, this.totalNumberOfClones,
+				this.totalNumberOfCloneClasses, this.mostLinesCloneClass, this.mostOccurrentClone, this.biggestCloneClass, this.totalCloneVolume};
 	}
 	
-	public CloneMetrics(Score totalAmountOfClonedLinesInProject, Score totalAmountOfLinesInProject, Score percentageOfProjectCloned, Score totalNumberOfClones, Score totalNumberOfCloneClasses, Score mostLinesCloneClass, Score mostOccurrentClone, Score biggestCloneClass, Score totalCloneVolume) {
-		this.totalAmountOfClonedLinesInProject = new CloneScore(totalAmountOfClonedLinesInProject);
-		this.totalAmountOfLinesInProject = new CloneScore(totalAmountOfLinesInProject);
-		this.percentageOfProjectCloned = new CloneScore(percentageOfProjectCloned);
-		this.totalNumberOfClones = new CloneScore(totalNumberOfClones);
-		this.totalNumberOfCloneClasses = new CloneScore(totalNumberOfCloneClasses);
-		this.mostLinesCloneClass = new CloneScore(mostLinesCloneClass);
-		this.mostOccurrentClone = new CloneScore(mostOccurrentClone);
-		this.biggestCloneClass = new CloneScore(biggestCloneClass);
-		this.totalCloneVolume = new CloneScore(totalCloneVolume);
-	}
-
 	public CloneScore getTotalAmountOfClonedLinesInProject() {
 		return totalAmountOfClonedLinesInProject;
 	}
@@ -74,40 +66,40 @@ public class CloneMetrics {
 		return totalCloneVolume;
 	}
 
-	public void setTotalAmountOfClonedLinesInProject(CloneScore totalAmountOfClonedLinesInProject) {
-		this.totalAmountOfClonedLinesInProject = totalAmountOfClonedLinesInProject;
+	public void setTotalAmountOfClonedLinesInProject(Score totalAmountOfClonedLinesInProject) {
+		this.totalAmountOfClonedLinesInProject.setScore(totalAmountOfClonedLinesInProject);
 	}
 
-	public void setTotalAmountOfLinesInProject(CloneScore totalAmountOfLinesInProject) {
-		this.totalAmountOfLinesInProject = totalAmountOfLinesInProject;
+	public void setTotalAmountOfLinesInProject(Score totalAmountOfLinesInProject) {
+		this.totalAmountOfClonedLinesInProject.setScore(totalAmountOfLinesInProject);
 	}
 
-	public void setPercentageOfProjectCloned(CloneScore percentageOfProjectCloned) {
-		this.percentageOfProjectCloned = percentageOfProjectCloned;
+	public void setPercentageOfProjectCloned(Score percentageOfProjectCloned) {
+		this.totalAmountOfClonedLinesInProject.setScore(percentageOfProjectCloned);
 	}
 
-	public void setTotalNumberOfClones(CloneScore totalNumberOfClones) {
-		this.totalNumberOfClones = totalNumberOfClones;
+	public void setTotalNumberOfClones(Score totalNumberOfClones) {
+		this.totalAmountOfClonedLinesInProject.setScore(totalNumberOfClones);
 	}
 
-	public void setTotalNumberOfCloneClasses(CloneScore totalNumberOfCloneClasses) {
-		this.totalNumberOfCloneClasses = totalNumberOfCloneClasses;
+	public void setTotalNumberOfCloneClasses(Score totalNumberOfCloneClasses) {
+		this.totalAmountOfClonedLinesInProject.setScore(totalNumberOfCloneClasses);
 	}
 
-	public void setMostLinesCloneClass(CloneScore mostLinesCloneClass) {
-		this.mostLinesCloneClass = mostLinesCloneClass;
+	public void setMostLinesCloneClass(Score mostLinesCloneClass) {
+		this.totalAmountOfClonedLinesInProject.setScore(mostLinesCloneClass);
 	}
 
-	public void setMostOccurrentClone(CloneScore mostOccurrentClone) {
-		this.mostOccurrentClone = mostOccurrentClone;
+	public void setMostOccurrentClone(Score mostOccurrentClone) {
+		this.totalAmountOfClonedLinesInProject.setScore(mostOccurrentClone);
 	}
 
-	public void setBiggestCloneClass(CloneScore biggestCloneClass) {
-		this.biggestCloneClass = biggestCloneClass;
+	public void setBiggestCloneClass(Score biggestCloneClass) {
+		this.totalAmountOfClonedLinesInProject.setScore(biggestCloneClass);
 	}
 
-	public void setTotalCloneVolume(CloneScore totalCloneVolume) {
-		this.totalCloneVolume = totalCloneVolume;
+	public void setTotalCloneVolume(Score totalCloneVolume) {
+		this.totalAmountOfClonedLinesInProject.setScore(totalCloneVolume);
 	}
 
 	@Override

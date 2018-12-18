@@ -51,15 +51,14 @@ public class CloneDetection
 	private static CloneDetection cloneDetection;
 	private List<CloneClass> clones = new ArrayList<>();
 	
-	private CloneMetrics metrics;
+	private final CloneMetrics metrics = new CloneMetrics();
 	
-	 @SidedProxy(clientSide = "nl.sandersimon.clonedetection.minecraft.proxy.ClientProxy", serverSide = "nl.sandersimon.clonedetection.minecraft.proxy.ServerProxy")
-	    public static CommonProxy proxy;
-	
-	List<Score> scores = new ArrayList<>();
+	@SidedProxy(clientSide = "nl.sandersimon.clonedetection.minecraft.proxy.ClientProxy", serverSide = "nl.sandersimon.clonedetection.minecraft.proxy.ServerProxy")
+	public static CommonProxy proxy;
 	
 	private CodeArena arena;
 	public List<CodeEditor> openEditors = new ArrayList<>();
+	public CloneMetrics before = null;
 	
 	public static int dialoge;
 
@@ -206,34 +205,6 @@ public class CloneDetection
 		this.clones = clones;
 	}
 
-	public void setTotalAmountOfClonedLinesInProject(Score totalAmountOfClonedLinesInProject) {
-		metrics.setTotalAmountOfClonedLinesInProject(new CloneScore(totalAmountOfClonedLinesInProject));
-	}
-
-	public void setPercentageOfProjectCloned(Score percentageOfProjectCloned) {
-		metrics.setPercentageOfProjectCloned(new CloneScore(percentageOfProjectCloned));
-	}
-
-	public void setTotalNumberOfClones(Score totalNumberOfClones) {
-		metrics.setTotalNumberOfClones(new CloneScore(totalNumberOfClones));
-	}
-
-	public void setTotalNumberOfCloneClasses(Score totalNumberOfCloneClasses) {
-		metrics.setTotalNumberOfCloneClasses(new CloneScore(totalNumberOfCloneClasses));
-	}
-
-	public void setMostLinesCloneClass(Score mostLinesCloneClass) {
-		metrics.setMostLinesCloneClass(new CloneScore(mostLinesCloneClass));
-	}
-
-	public void setMostOccurrentClone(Score mostOccurrentClone) {
-		metrics.setMostOccurrentClone(new CloneScore(mostOccurrentClone));
-	}
-
-	public void setBiggestCloneClass(Score biggestCloneClass) {
-		metrics.setBiggestCloneClass(new CloneScore(biggestCloneClass));
-	}
-
 	public CodeArena getArena() {
 		return arena;
 	}
@@ -241,32 +212,23 @@ public class CloneDetection
 	public void setArena(CodeArena arena) {
 		this.arena = arena;
 	}
-
-	public void setTotalCloneVolume(Score totalCloneVolume) {
-		metrics.setTotalCloneVolume(new CloneScore(totalCloneVolume));
-	}
-
-	public void setTotalAmountOfLinesInProject(Score totalAmountOfLinesInProject) {
-		metrics.setTotalAmountOfLinesInProject(new CloneScore(totalAmountOfLinesInProject));
-	}
-
+	
 	public void initScoreboards() {
 		ScoreObjective scoreBoard = arena.getScoreBoard();
-		createScoreBoard(scoreBoard, this::setTotalAmountOfLinesInProject, "Amount of lines in project");
-		createScoreBoard(scoreBoard, this::setTotalAmountOfClonedLinesInProject, "Amount of cloned lines");
-		createScoreBoard(scoreBoard, this::setPercentageOfProjectCloned, "Percentage of project cloned");
-		createScoreBoard(scoreBoard, this::setTotalNumberOfClones, "Amount of clones");
-		createScoreBoard(scoreBoard, this::setTotalNumberOfCloneClasses, "Number of clone classes");
-		createScoreBoard(scoreBoard, this::setTotalCloneVolume, "Total clone volume");
-		createScoreBoard(scoreBoard, this::setMostLinesCloneClass, "Biggest clone class (in lines)");
-		createScoreBoard(scoreBoard, this::setMostOccurrentClone, "Most occurring clone class");
-		createScoreBoard(scoreBoard, this::setBiggestCloneClass, "Biggest clone class (in volume)");
+		createScoreBoard(scoreBoard, metrics::setTotalAmountOfLinesInProject, "Amount of lines in project");
+		createScoreBoard(scoreBoard, metrics::setTotalAmountOfClonedLinesInProject, "Amount of cloned lines");
+		createScoreBoard(scoreBoard, metrics::setPercentageOfProjectCloned, "Percentage of project cloned");
+		createScoreBoard(scoreBoard, metrics::setTotalNumberOfClones, "Amount of clones");
+		createScoreBoard(scoreBoard, metrics::setTotalNumberOfCloneClasses, "Number of clone classes");
+		createScoreBoard(scoreBoard, metrics::setTotalCloneVolume, "Total clone volume");
+		createScoreBoard(scoreBoard, metrics::setMostLinesCloneClass, "Biggest clone class (in lines)");
+		createScoreBoard(scoreBoard, metrics::setMostOccurrentClone, "Most occurring clone class");
+		createScoreBoard(scoreBoard, metrics::setBiggestCloneClass, "Biggest clone class (in volume)");
 	}
 
 	private void createScoreBoard(ScoreObjective scoreBoard, Consumer<Score> setter, String text) {
 		Score display = scoreBoard.getScoreboard().getOrCreateScore(text, scoreBoard);
 		display.setScorePoints(0);
-		scores.add(display);
 		setter.accept(display);
 	}
 	
