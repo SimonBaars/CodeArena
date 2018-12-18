@@ -44,6 +44,7 @@ test bool duplicateTestSubDuplicatesBetweenFiles(){
 
 test bool duplicateTestThreeDuplicatesWithinFiles(){
 	list[tuple[int, list[loc]]] dupList = getDuplication(1, createAstsFromDirectory(|file:///home/sander/.clone/projects/tests/T1/ThreeDupWithinOneFile|, false), 0.00);
+	//println(dupList);
 	return(size(dupList) == 1 && size(dupList[0][1]) == 3);
 } 
 

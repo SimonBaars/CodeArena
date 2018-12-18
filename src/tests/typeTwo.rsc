@@ -34,12 +34,12 @@ test bool duplicateTestDuplicatesBetweenThreeFiles(){
 
 test bool duplicateTestFourDuplicatesBetweenFiles(){
 	list[tuple[int, list[loc]]] dupList = getDuplication(2, createAstsFromDirectory(|file:///home/sander/.clone/projects/tests/T2/FourDupBetweenFiles|, false), 0.00);
-	return(size(dupList) == 2 && size(dupList[0][1]) == 2 && size(dupList[1][1]) == 2);
+	return(size(dupList) == 1 && size(dupList[0][1]) == 4);
 }
 
 test bool duplicateTestSubDuplicatesBetweenFiles(){
 	list[tuple[int, list[loc]]] dupList = getDuplication(2, createAstsFromDirectory(|file:///home/sander/.clone/projects/tests/T2/SubDupBetweenFiles|, false), 0.00);
-	return(size(dupList) == 2 && size(dupList[0][1]) == 2 && size(dupList[1][1]) == 3);
+	return(size(dupList) == 3 && size(dupList[0][1]) == 2 && size(dupList[1][1]) == 2 && size(dupList[2][1]) == 3);
 }
 
 test bool duplicateTestThreeDuplicatesWithinFiles(){
