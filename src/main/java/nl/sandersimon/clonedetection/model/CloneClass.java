@@ -3,11 +3,8 @@ package nl.sandersimon.clonedetection.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import net.minecraft.scoreboard.Score;
-import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.editor.CodeEditor;
 import nl.sandersimon.clonedetection.editor.CodeEditorMaker;
 
@@ -16,16 +13,16 @@ public class CloneClass implements Comparable<CloneClass>{
 	int lines;
 	List<Location> locations = new ArrayList<>();
 	
-	public CloneClass() {
+	public CloneClass(CloneMetrics metrics) {
 		super();
-		CloneDetection.get().getTotalNumberOfCloneClasses().incrementScore();
+		metrics.getTotalNumberOfCloneClasses().incrementScore();
 	}
 
-	public CloneClass(int lines, List<Location> locations) {
-		this();
-		this.lines = lines;
-		this.locations = locations;
-	}
+	//public CloneClass(int lines, List<Location> locations) {
+	//	this();
+	//	this.lines = lines;
+	//	this.locations = locations;
+	//}
 
 	public int getLines() {
 		return lines;
@@ -48,18 +45,17 @@ public class CloneClass implements Comparable<CloneClass>{
 		return Integer.compare(volume(), o.volume());
 	}
 
-	public void add(Location construct) {
-		CloneDetection c = CloneDetection.get();
+	public void add(CloneMetrics metrics, Location construct) {
 		locations.add(construct);
-		c.getTotalNumberOfClones().incrementScore();
-		c.getTotalCloneVolume().increaseScore(lines);
-		CloneScore mostLines = c.getMostLinesCloneClass();
+		metrics.getTotalNumberOfClones().incrementScore();
+		metrics.getTotalCloneVolume().increaseScore(lines);
+		CloneScore mostLines = metrics.getMostLinesCloneClass();
 		if(lines > mostLines.getScorePoints())
 			mostLines.setScorePoints(lines);
-		CloneScore mostOccurrent = c.getMostOccurrentClone();
+		CloneScore mostOccurrent = metrics.getMostOccurrentClone();
 		if(size() > mostOccurrent.getScorePoints())
 			mostOccurrent.setScorePoints(size());
-		CloneScore highestVolume = c.getBiggestCloneClass();
+		CloneScore highestVolume = metrics.getBiggestCloneClass();
 		if(volume() > highestVolume.getScorePoints())
 			highestVolume.setScorePoints(volume());
 	}

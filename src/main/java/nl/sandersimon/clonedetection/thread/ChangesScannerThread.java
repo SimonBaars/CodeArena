@@ -65,7 +65,7 @@ public class ChangesScannerThread extends Thread {
 				
 				int listLoc = 1;
 				while (listLoc < res.length() && res.charAt(listLoc) == '<') {
-					CloneClass loc = new CloneClass();
+					CloneClass loc = new CloneClass(metrics);
 					listLoc = parseList(loc, res, listLoc+1)+2;
 					locs.add(loc);
 					c.eventHandler.nextTickActions.add(() -> c.getArena().create(loc, 1));
@@ -86,14 +86,23 @@ public class ChangesScannerThread extends Thread {
 			if(indexOf == -1)
 				break; // Not a valid location
 			String stringRep = res.substring(elementLoc+1, indexOf);
-			loc.add(Location.construct(stringRep));
+			loc.add(metrics, Location.construct(stringRep));
 			elementLoc += stringRep.length()+3;
 		}
 		return elementLoc;
 	}
 	
-	public static void startWorker(MinecraftServer server, ICommandSender s, CloneClass c, boolean before) {
+	public static CloneMetrics startWorker(ICommandSender s, CloneClass c, boolean before) {
 		worker = new ChangesScannerThread(c, before);
+		
+		/*while(worker.isAlive()) {
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		}
+		if(before)*/
 	}
 
 	public static ChangesScannerThread getWorker() {

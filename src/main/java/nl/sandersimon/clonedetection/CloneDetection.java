@@ -206,56 +206,28 @@ public class CloneDetection
 		this.clones = clones;
 	}
 
-	public CloneScore getTotalAmountOfClonedLinesInProject() {
-		return metrics.getTotalAmountOfClonedLinesInProject();
-	}
-
 	public void setTotalAmountOfClonedLinesInProject(Score totalAmountOfClonedLinesInProject) {
 		metrics.setTotalAmountOfClonedLinesInProject(new CloneScore(totalAmountOfClonedLinesInProject));
-	}
-
-	public CloneScore getPercentageOfProjectCloned() {
-		return metrics.getPercentageOfProjectCloned();
 	}
 
 	public void setPercentageOfProjectCloned(Score percentageOfProjectCloned) {
 		metrics.setPercentageOfProjectCloned(new CloneScore(percentageOfProjectCloned));
 	}
 
-	public CloneScore getTotalNumberOfClones() {
-		return metrics.getTotalNumberOfClones();
-	}
-
 	public void setTotalNumberOfClones(Score totalNumberOfClones) {
 		metrics.setTotalNumberOfClones(new CloneScore(totalNumberOfClones));
-	}
-
-	public CloneScore getTotalNumberOfCloneClasses() {
-		return metrics.getTotalNumberOfCloneClasses();
 	}
 
 	public void setTotalNumberOfCloneClasses(Score totalNumberOfCloneClasses) {
 		metrics.setTotalNumberOfCloneClasses(new CloneScore(totalNumberOfCloneClasses));
 	}
 
-	public CloneScore getMostLinesCloneClass() {
-		return metrics.getMostLinesCloneClass();
-	}
-
 	public void setMostLinesCloneClass(Score mostLinesCloneClass) {
 		metrics.setMostLinesCloneClass(new CloneScore(mostLinesCloneClass));
 	}
 
-	public CloneScore getMostOccurrentClone() {
-		return metrics.getMostOccurrentClone();
-	}
-
 	public void setMostOccurrentClone(Score mostOccurrentClone) {
 		metrics.setMostOccurrentClone(new CloneScore(mostOccurrentClone));
-	}
-
-	public CloneScore getBiggestCloneClass() {
-		return metrics.getBiggestCloneClass();
 	}
 
 	public void setBiggestCloneClass(Score biggestCloneClass) {
@@ -270,16 +242,8 @@ public class CloneDetection
 		this.arena = arena;
 	}
 
-	public CloneScore getTotalCloneVolume() {
-		return metrics.getTotalCloneVolume();
-	}
-
 	public void setTotalCloneVolume(Score totalCloneVolume) {
 		metrics.setTotalCloneVolume(new CloneScore(totalCloneVolume));
-	}
-
-	public CloneScore getTotalAmountOfLinesInProject() {
-		return metrics.getTotalAmountOfLinesInProject();
 	}
 
 	public void setTotalAmountOfLinesInProject(Score totalAmountOfLinesInProject) {
@@ -318,7 +282,7 @@ public class CloneDetection
 	}
 
 	public void calculateClonePercentage() {
-		getPercentageOfProjectCloned().setScorePoints(perc(getTotalAmountOfLinesInProject().getScorePoints(), getTotalAmountOfClonedLinesInProject().getScorePoints()));
+		metrics.getPercentageOfProjectCloned().setScorePoints(perc(metrics.getTotalAmountOfLinesInProject().getScorePoints(), metrics.getTotalAmountOfClonedLinesInProject().getScorePoints()));
 	}
 	
 	public int perc(int total, int partOfTotal) {

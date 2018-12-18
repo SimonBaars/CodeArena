@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import nl.sandersimon.clonedetection.CloneDetection;
@@ -13,6 +12,7 @@ import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.common.TestingCommons;
 import nl.sandersimon.clonedetection.model.CloneClass;
+import nl.sandersimon.clonedetection.model.CloneMetrics;
 import nl.sandersimon.clonedetection.model.Location;
 
 public class CloneDetectionThread extends Thread {
@@ -48,13 +48,14 @@ public class CloneDetectionThread extends Thread {
 
 	public void populateResult(){
 		CloneDetection c = CloneDetection.get();
+		CloneMetrics m = c.getMetrics();
 		List<CloneClass> locs = c.getClones();
 		while(true) {
 			String unitSizeString = c.waitUntilExecuted('\n').get(0);
 			int unitSize = Integer.parseInt(unitSizeString);
 			if(unitSize == 0)
 				break;
-			c.getTotalAmountOfLinesInProject().increaseScore(unitSize);
+			m.getTotalAmountOfLinesInProject().increaseScore(unitSize);
 			c.calculateClonePercentage();
 			while(true) {
 				String bufferSizeString = c.waitUntilExecuted('\n').get(0);
@@ -64,7 +65,7 @@ public class CloneDetectionThread extends Thread {
 				
 				String dupLinesString = c.waitUntilExecuted('\n').get(0);
 				int dupLines = Integer.parseInt(dupLinesString);
-				c.getTotalAmountOfClonedLinesInProject().increaseScore(dupLines);
+				m.getTotalAmountOfClonedLinesInProject().increaseScore(dupLines);
 				
 				
 				String res = c.readBuffer(bufferSize);
@@ -74,7 +75,7 @@ public class CloneDetectionThread extends Thread {
 				
 				int listLoc = 1;
 				while (listLoc < res.length() && res.charAt(listLoc) == '<') {
-					CloneClass loc = new CloneClass();
+					CloneClass loc = new CloneClass(CloneDetection.get().getMetrics());
 					listLoc = parseList(loc, res, listLoc+1)+2;
 					locs.add(loc);
 					c.eventHandler.nextTickActions.add(() -> c.getArena().create(loc, 1));
@@ -95,7 +96,7 @@ public class CloneDetectionThread extends Thread {
 			if(indexOf == -1)
 				break; // Not a valid location
 			String stringRep = res.substring(elementLoc+1, indexOf);
-			loc.add(Location.construct(stringRep));
+			loc.add(CloneDetection.get().getMetrics(), Location.construct(stringRep));
 			elementLoc += stringRep.length()+3;
 		}
 		return elementLoc;
