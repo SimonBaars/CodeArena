@@ -28,13 +28,13 @@ public class RenderCodeSpider<T extends EntityCodeSpider> extends RenderLiving<T
 
     @Override
     public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks){
-    	GlStateManager.pushMatrix();
+    	/*GlStateManager.pushMatrix();
         GlStateManager.disableCull();
         GlStateManager.enableRescaleNormal();
         GlStateManager.scale(entity.getScaleFactor(), entity.getScaleFactor(), entity.getScaleFactor());
         GlStateManager.disableRescaleNormal();
     	GlStateManager.enableCull();
-        GlStateManager.popMatrix();
+        GlStateManager.popMatrix();*/
     	super.doRender(entity, x, y, z, entityYaw, partialTicks);
     }
     
