@@ -215,27 +215,14 @@ public class CloneDetection
 	
 	public void initScoreboards() {
 		ScoreObjective scoreBoard = arena.getScoreBoard();
-		createScoreBoard(scoreBoard, metrics::setTotalAmountOfLinesInProject, "Amount of lines in project");
-		createScoreBoard(scoreBoard, metrics::setTotalAmountOfClonedLinesInProject, "Amount of cloned lines");
-		createScoreBoard(scoreBoard, metrics::setPercentageOfProjectCloned, "Percentage of project cloned");
-		createScoreBoard(scoreBoard, metrics::setTotalNumberOfClones, "Amount of clones");
-		createScoreBoard(scoreBoard, metrics::setTotalNumberOfCloneClasses, "Number of clone classes");
-		createScoreBoard(scoreBoard, metrics::setTotalCloneVolume, "Total clone volume");
-		createScoreBoard(scoreBoard, metrics::setMostLinesCloneClass, "Biggest clone class (in lines)");
-		createScoreBoard(scoreBoard, metrics::setMostOccurrentClone, "Most occurring clone class");
-		createScoreBoard(scoreBoard, metrics::setBiggestCloneClass, "Biggest clone class (in volume)");
-	}
-
-	private void createScoreBoard(ScoreObjective scoreBoard, Consumer<Score> setter, String text) {
-		Score display = scoreBoard.getScoreboard().getOrCreateScore(text, scoreBoard);
-		display.setScorePoints(0);
-		setter.accept(display);
+		for(CloneScore score : metrics.getScores())
+			score.setScore(scoreBoard);
 	}
 	
 	public void writeAllMetricsToFile() {
 		StringBuilder builder = new StringBuilder();
-		for(Score score : scores)
-			builder.append(score.getPlayerName()+": "+score.getScorePoints()+System.lineSeparator());
+		for(CloneScore score : metrics.getScores())
+			builder.append(score.getScore().getPlayerName()+": "+score.getScorePoints()+System.lineSeparator());
 		try {
 			TestingCommons.writeStringToFile(new File(SavePaths.createDirectoryIfNotExists(SavePaths.getSaveFolder())+"clone_metrics.txt"), builder.toString());
 		} catch (IOException e) {
@@ -279,9 +266,5 @@ public class CloneDetection
 
 	public CloneMetrics getMetrics() {
 		return metrics;
-	}
-
-	public void setMetrics(CloneMetrics metrics) {
-		this.metrics = metrics;
 	}
 }

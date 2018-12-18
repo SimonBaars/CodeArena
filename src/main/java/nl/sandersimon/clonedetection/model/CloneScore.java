@@ -1,17 +1,21 @@
 package nl.sandersimon.clonedetection.model;
 
 import net.minecraft.scoreboard.Score;
+import net.minecraft.scoreboard.ScoreObjective;
 
 public class CloneScore {
 	private Score score;
 	private int scorePoints = 0;
+	private final String name;
 	
-	public CloneScore () {
+	public CloneScore (String name) {
 		this.score = null;
+		this.name = name;
 	}
 	
-	public CloneScore (Score score) {
+	public CloneScore (String name, Score score) {
 		this.score = score;
+		this.name = name;
 	}
 	
 	public void increaseScore(int s) {
@@ -39,10 +43,19 @@ public class CloneScore {
 
 	public void setScore(Score score) {
 		this.score = score;
+		this.score.setScorePoints(0);
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	@Override
 	public String toString() {
 		return "CloneScore [score=" + scorePoints + "]";
+	}
+
+	public void setScore(ScoreObjective scoreBoard) {
+		setScore(scoreBoard.getScoreboard().getOrCreateScore(getName(), scoreBoard));
 	}
 }

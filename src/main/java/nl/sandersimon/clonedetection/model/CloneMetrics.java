@@ -6,26 +6,26 @@ import nl.sandersimon.clonedetection.CloneDetection;
 public class CloneMetrics {
 	private final CloneScore[] scores;
 	
-	private CloneScore totalAmountOfClonedLinesInProject;
-	private CloneScore totalAmountOfLinesInProject;
-	private CloneScore percentageOfProjectCloned;
-	private CloneScore totalNumberOfClones;
-	private CloneScore totalNumberOfCloneClasses;
-	private CloneScore mostLinesCloneClass;
-	private CloneScore mostOccurrentClone;
-	private CloneScore biggestCloneClass;
-	private CloneScore totalCloneVolume;
+	private final CloneScore totalAmountOfClonedLinesInProject;
+	private final CloneScore totalAmountOfLinesInProject;
+	private final CloneScore percentageOfProjectCloned;
+	private final CloneScore totalNumberOfClones;
+	private final CloneScore totalNumberOfCloneClasses;
+	private final CloneScore mostLinesCloneClass;
+	private final CloneScore mostOccurrentClone;
+	private final CloneScore biggestCloneClass;
+	private final CloneScore totalCloneVolume;
 
 	public CloneMetrics() {
-		this.totalAmountOfClonedLinesInProject = new CloneScore();
-		this.totalAmountOfLinesInProject = new CloneScore();
-		this.percentageOfProjectCloned = new CloneScore();
-		this.totalNumberOfClones = new CloneScore();
-		this.totalNumberOfCloneClasses = new CloneScore();
-		this.mostLinesCloneClass = new CloneScore();
-		this.mostOccurrentClone = new CloneScore();
-		this.biggestCloneClass = new CloneScore();
-		this.totalCloneVolume = new CloneScore();
+		this.totalAmountOfClonedLinesInProject = new CloneScore("Amount of cloned lines");
+		this.totalAmountOfLinesInProject = new CloneScore("Amount of lines in project");
+		this.percentageOfProjectCloned = new CloneScore("Percentage of project cloned");
+		this.totalNumberOfClones = new CloneScore("Amount of clones");
+		this.totalNumberOfCloneClasses = new CloneScore("Number of clone classes");
+		this.mostLinesCloneClass = new CloneScore("Biggest clone class (in lines)");
+		this.mostOccurrentClone = new CloneScore("Most occurring clone class");
+		this.biggestCloneClass = new CloneScore("Biggest clone class (in volume)");
+		this.totalCloneVolume = new CloneScore("Total clone volume");
 		scores = new CloneScore[]{this.totalAmountOfClonedLinesInProject, this.totalAmountOfLinesInProject, this.percentageOfProjectCloned, this.totalNumberOfClones,
 				this.totalNumberOfCloneClasses, this.mostLinesCloneClass, this.mostOccurrentClone, this.biggestCloneClass, this.totalCloneVolume};
 	}
@@ -114,5 +114,9 @@ public class CloneMetrics {
 
 	public void calculateClonePercentage() {
 		getPercentageOfProjectCloned().setScorePoints(CloneDetection.get().perc(getTotalAmountOfLinesInProject().getScorePoints(), getTotalAmountOfClonedLinesInProject().getScorePoints()));
+	}
+
+	public CloneScore[] getScores() {
+		return scores;
 	}
 }
