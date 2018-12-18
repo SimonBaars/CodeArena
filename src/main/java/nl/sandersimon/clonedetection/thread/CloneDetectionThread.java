@@ -100,9 +100,9 @@ public class CloneDetectionThread extends Thread {
 					CloneClass loc = new CloneClass(CloneDetection.get().getMetrics());
 					listLoc = parseList(loc, res, listLoc+1)+2;
 					locs.add(loc);
-					c.eventHandler.nextTickActions.add(() -> c.getArena().create(loc, 1));
+					c.eventHandler.nextTickActions.add(() -> c.getArena().create(loc));
 					try {
-						TestingCommons.writeStringToFile(new File(SavePaths.createDirectoryIfNotExists(SavePaths.getSaveFolder())+"clone-"+c.hashCode()+".txt"), c.toString());
+						TestingCommons.writeStringToFile(new File(SavePaths.createDirectoryIfNotExists(SavePaths.getSaveFolder())+"clone-"+loc.hashCode()+".txt"), loc.toString());
 					} catch (IOException e) {
 						e.printStackTrace();
 					}

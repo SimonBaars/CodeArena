@@ -28,9 +28,11 @@ public class RenderCodeSpider<T extends EntityCodeSpider> extends RenderLiving<T
 
     @Override
     public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks){
-    	GlStateManager.scale(entity.getScaleFactor(), entity.getScaleFactor(), entity.getScaleFactor());
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
-        GlStateManager.scale(entity.getScaleFactor(), entity.getScaleFactor(), entity.getScaleFactor());
+        GL11.glPushMatrix();
+        GL11.glTranslatef(0F, 1.5F-1.5F*entity.getScaleFactor(), 0F); 
+        GL11.glScalef(entity.getScaleFactor(), entity.getScaleFactor(), entity.getScaleFactor());
+        GL11.glPopMatrix();
     }
     
     /**

@@ -95,8 +95,8 @@ public class CodeArena extends Challenges {
 		//}
 	}
 	
-	public void create(CloneClass cloneClass, int type) {
-		CodeEntity monster = getMonster(serverWorld, cloneClass, type);
+	public void create(CloneClass cloneClass) {
+		CodeEntity monster = getMonster(serverWorld, cloneClass);
 		//System.out.println("Created "+monster.getRepresents());
 		monster.setLocationAndAngles(cornerx+((int)(Math.random()*(fieldx-2)))+1, y+3, cornerz+((int)(Math.random()*(fieldz-2)))+1, 0, 0);
 		monster.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(monster)), (IEntityLivingData)null);
@@ -105,13 +105,8 @@ public class CodeArena extends Challenges {
 		activeMonsters.add(monster);
 	}
 
-	private CodeEntity getMonster(World world, CloneClass cloneClass, int type) {
-		switch(type){
-			case 1: return new EntityCodeSpider(world, cloneClass);
-		//case 2: return new EntityBlaze(world);
-		//case 3: return new EntityCaveSpider(world);
-		}
-		return null;
+	private CodeEntity getMonster(World world, CloneClass cloneClass) {
+		return new EntityCodeSpider(world, cloneClass);
 	}
 	
 	private EntityLiving getMonster(int monsterId, World world) {
