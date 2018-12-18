@@ -34,7 +34,7 @@ test bool duplicateTestDuplicatesBetweenThreeFiles(){
 
 test bool duplicateTestFourDuplicatesBetweenFiles(){
 	list[tuple[int, list[loc]]] dupList = getDuplication(1, createAstsFromDirectory(|file:///home/sander/.clone/projects/tests/T1/FourDupBetweenFiles|, false), 0.00);
-	return(size(dupList) == 1 && size(dupList[0][1]) == 4);
+	return(size(dupList) == 2 && size(dupList[0][1]) == 2 && size(dupList[1][1]) == 2);
 }
 
 test bool duplicateTestSubDuplicatesBetweenFiles(){
