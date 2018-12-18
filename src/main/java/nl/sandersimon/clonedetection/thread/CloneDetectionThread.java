@@ -18,36 +18,28 @@ import nl.sandersimon.clonedetection.model.Location;
 public class CloneDetectionThread extends Thread {
 	
 	private static CloneDetectionThread worker;
+	private final ICommandSender mySender;
 	private final String project;
 	private final String type;
 	private final String similarityPercentage;
-
-	public CloneDetectionThread(String project) {
-		this(project, true);
-	}
 	
-	public CloneDetectionThread(String project, boolean start) {
-		this.project = project;
-		if(start) start();
-		this.type = "";
-		this.similarityPercentage = "";
-	}
-
-	public CloneDetectionThread(String project, String type, String similarityPercentage) {
+	public CloneDetectionThread(String project, String type, String similarityPercentage, ICommandSender s) {
 		this.project = project;
 		this.type = type;
 		if(similarityPercentage.length()>0 && !similarityPercentage.contains("."))
 			this.similarityPercentage = similarityPercentage+".0";
 		else this.similarityPercentage = similarityPercentage;
+		this.mySender = s;
 		start();
 	}
 
 	public void run() {
-		CloneDetection.get().executeTill("calculateCodeDuplication(|file://"+SavePaths.getProjectFolder()+project+"/|"+addIfNotEmpty(type)+addIfNotEmpty(similarityPercentage)+")", '\n');
+		CloneDetection cloneDetection = CloneDetection.get();
+		cloneDetection.executeTill("calculateCodeDuplication(|file://"+SavePaths.getProjectFolder()+project+"/|"+addIfNotEmpty(type)+addIfNotEmpty(similarityPercentage)+")", '\n');
 		populateResult();
-		CloneDetection.get().writeAllMetricsToFile();
-		CloneDetection.get().waitUntilExecuted();
-		Minecraft.getMinecraft().player.sendChatMessage("All clones have been successfully parsed!");
+		cloneDetection.writeAllMetricsToFile();
+		cloneDetection.waitUntilExecuted();
+		cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "All clones have been successfully parsed!")));
 	}
 	
 	private String addIfNotEmpty(String string) {
@@ -120,7 +112,7 @@ public class CloneDetectionThread extends Thread {
 		}
 		s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "Searching for clones, please wait..."));
 		
-		worker = new CloneDetectionThread(args[0], args.length > 1 ? args[1] : "", args.length > 2 ? args[2] : "");
+		worker = new CloneDetectionThread(args[0], args.length > 1 ? args[1] : "", args.length > 2 ? args[2] : "", s);
 	}
 
 	public static CloneDetectionThread getWorker() {

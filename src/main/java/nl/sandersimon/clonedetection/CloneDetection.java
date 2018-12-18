@@ -29,6 +29,8 @@ import nl.sandersimon.clonedetection.editor.CodeEditor;
 import nl.sandersimon.clonedetection.minecraft.CDEventHandler;
 import nl.sandersimon.clonedetection.minecraft.proxy.CommonProxy;
 import nl.sandersimon.clonedetection.model.CloneClass;
+import nl.sandersimon.clonedetection.model.CloneMetrics;
+import nl.sandersimon.clonedetection.model.CloneScore;
 
 @Mod(modid = CloneDetection.MODID, name = CloneDetection.NAME, version = CloneDetection.VERSION, dependencies = "required-after:forge@[13.19.0.2129,)", useMetadata = true)
 public class CloneDetection
@@ -49,15 +51,7 @@ public class CloneDetection
 	private static CloneDetection cloneDetection;
 	private List<CloneClass> clones = new ArrayList<>();
 	
-	private Score totalAmountOfClonedLinesInProject;
-	private Score totalAmountOfLinesInProject;
-	private Score percentageOfProjectCloned;
-	private Score totalNumberOfClones;
-	private Score totalNumberOfCloneClasses;
-	private Score mostLinesCloneClass;
-	private Score mostOccurrentClone;
-	private Score biggestCloneClass;
-	private Score totalCloneVolume;
+	private CloneMetrics metrics;
 	
 	 @SidedProxy(clientSide = "nl.sandersimon.clonedetection.minecraft.proxy.ClientProxy", serverSide = "nl.sandersimon.clonedetection.minecraft.proxy.ServerProxy")
 	    public static CommonProxy proxy;
@@ -212,60 +206,60 @@ public class CloneDetection
 		this.clones = clones;
 	}
 
-	public Score getTotalAmountOfClonedLinesInProject() {
-		return totalAmountOfClonedLinesInProject;
+	public CloneScore getTotalAmountOfClonedLinesInProject() {
+		return metrics.getTotalAmountOfClonedLinesInProject();
 	}
 
 	public void setTotalAmountOfClonedLinesInProject(Score totalAmountOfClonedLinesInProject) {
-		this.totalAmountOfClonedLinesInProject = totalAmountOfClonedLinesInProject;
+		metrics.setTotalAmountOfClonedLinesInProject(new CloneScore(totalAmountOfClonedLinesInProject));
 	}
 
-	public Score getPercentageOfProjectCloned() {
-		return percentageOfProjectCloned;
+	public CloneScore getPercentageOfProjectCloned() {
+		return metrics.getPercentageOfProjectCloned();
 	}
 
 	public void setPercentageOfProjectCloned(Score percentageOfProjectCloned) {
-		this.percentageOfProjectCloned = percentageOfProjectCloned;
+		metrics.setPercentageOfProjectCloned(new CloneScore(percentageOfProjectCloned));
 	}
 
-	public Score getTotalNumberOfClones() {
-		return totalNumberOfClones;
+	public CloneScore getTotalNumberOfClones() {
+		return metrics.getTotalNumberOfClones();
 	}
 
 	public void setTotalNumberOfClones(Score totalNumberOfClones) {
-		this.totalNumberOfClones = totalNumberOfClones;
+		metrics.setTotalNumberOfClones(new CloneScore(totalNumberOfClones));
 	}
 
-	public Score getTotalNumberOfCloneClasses() {
-		return totalNumberOfCloneClasses;
+	public CloneScore getTotalNumberOfCloneClasses() {
+		return metrics.getTotalNumberOfCloneClasses();
 	}
 
 	public void setTotalNumberOfCloneClasses(Score totalNumberOfCloneClasses) {
-		this.totalNumberOfCloneClasses = totalNumberOfCloneClasses;
+		metrics.setTotalNumberOfCloneClasses(new CloneScore(totalNumberOfCloneClasses));
 	}
 
-	public Score getMostLinesCloneClass() {
-		return mostLinesCloneClass;
+	public CloneScore getMostLinesCloneClass() {
+		return metrics.getMostLinesCloneClass();
 	}
 
 	public void setMostLinesCloneClass(Score mostLinesCloneClass) {
-		this.mostLinesCloneClass = mostLinesCloneClass;
+		metrics.setMostLinesCloneClass(new CloneScore(mostLinesCloneClass));
 	}
 
-	public Score getMostOccurrentClone() {
-		return mostOccurrentClone;
+	public CloneScore getMostOccurrentClone() {
+		return metrics.getMostOccurrentClone();
 	}
 
 	public void setMostOccurrentClone(Score mostOccurrentClone) {
-		this.mostOccurrentClone = mostOccurrentClone;
+		metrics.setMostOccurrentClone(new CloneScore(mostOccurrentClone));
 	}
 
-	public Score getBiggestCloneClass() {
-		return biggestCloneClass;
+	public CloneScore getBiggestCloneClass() {
+		return metrics.getBiggestCloneClass();
 	}
 
 	public void setBiggestCloneClass(Score biggestCloneClass) {
-		this.biggestCloneClass = biggestCloneClass;
+		metrics.setBiggestCloneClass(new CloneScore(biggestCloneClass));
 	}
 
 	public CodeArena getArena() {
@@ -276,20 +270,20 @@ public class CloneDetection
 		this.arena = arena;
 	}
 
-	public Score getTotalCloneVolume() {
-		return totalCloneVolume;
+	public CloneScore getTotalCloneVolume() {
+		return metrics.getTotalCloneVolume();
 	}
 
 	public void setTotalCloneVolume(Score totalCloneVolume) {
-		this.totalCloneVolume = totalCloneVolume;
+		metrics.setTotalCloneVolume(new CloneScore(totalCloneVolume));
 	}
 
-	public Score getTotalAmountOfLinesInProject() {
-		return totalAmountOfLinesInProject;
+	public CloneScore getTotalAmountOfLinesInProject() {
+		return metrics.getTotalAmountOfLinesInProject();
 	}
 
 	public void setTotalAmountOfLinesInProject(Score totalAmountOfLinesInProject) {
-		this.totalAmountOfLinesInProject = totalAmountOfLinesInProject;
+		metrics.setTotalAmountOfLinesInProject(new CloneScore(totalAmountOfLinesInProject));
 	}
 
 	public void initScoreboards() {
@@ -327,7 +321,7 @@ public class CloneDetection
 		getPercentageOfProjectCloned().setScorePoints(perc(getTotalAmountOfLinesInProject().getScorePoints(), getTotalAmountOfClonedLinesInProject().getScorePoints()));
 	}
 	
-	private int perc(int total, int partOfTotal) {
+	public int perc(int total, int partOfTotal) {
 		return (int) Math.round((((double)partOfTotal / (double)total) * 100.0));
 	}
 
@@ -355,5 +349,13 @@ public class CloneDetection
 
 	public InputStreamReader getScanIn() {
 		return scanIn;
+	}
+
+	public CloneMetrics getMetrics() {
+		return metrics;
+	}
+
+	public void setMetrics(CloneMetrics metrics) {
+		this.metrics = metrics;
 	}
 }

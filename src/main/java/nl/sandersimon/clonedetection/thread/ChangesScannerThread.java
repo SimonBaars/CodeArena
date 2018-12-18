@@ -14,6 +14,7 @@ import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.common.TestingCommons;
 import nl.sandersimon.clonedetection.model.CloneClass;
+import nl.sandersimon.clonedetection.model.CloneMetrics;
 import nl.sandersimon.clonedetection.model.Location;
 
 public class ChangesScannerThread extends Thread {
@@ -21,6 +22,7 @@ public class ChangesScannerThread extends Thread {
 	private static ChangesScannerThread worker;
 	CloneClass c;
 	private boolean before;
+	private CloneMetrics metrics = new CloneMetrics();
 
 	public ChangesScannerThread(CloneClass c, boolean before) {
 		this.c = c;
@@ -29,7 +31,7 @@ public class ChangesScannerThread extends Thread {
 
 	public void run() {
 		CloneDetection cloneDetection = CloneDetection.get();
-		cloneDetection.executeTill("doPartialScan("+c.rascalLocList()+")", '\n');
+		cloneDetection.executeRascal(cloneDetection.getScanIn(), cloneDetection.getScanOut(), "doPartialScan("+c.rascalLocList()+")", '\n');
 		populateResult();
 		cloneDetection.waitUntilExecuted(cloneDetection.getScanIn(), cloneDetection.getRascalReadyState());
 		Minecraft.getMinecraft().player.sendChatMessage("All clones have been successfully parsed!");
@@ -43,8 +45,8 @@ public class ChangesScannerThread extends Thread {
 			int unitSize = Integer.parseInt(unitSizeString);
 			if(unitSize == 0)
 				break;
-			c.getTotalAmountOfLinesInProject().increaseScore(unitSize);
-			c.calculateClonePercentage();
+			metrics.getTotalAmountOfLinesInProject().increaseScore(unitSize);
+			metrics.calculateClonePercentage();
 			while(true) {
 				String bufferSizeString = c.waitUntilExecuted('\n').get(0);
 				int bufferSize = Integer.parseInt(bufferSizeString);
@@ -53,7 +55,7 @@ public class ChangesScannerThread extends Thread {
 				
 				String dupLinesString = c.waitUntilExecuted('\n').get(0);
 				int dupLines = Integer.parseInt(dupLinesString);
-				c.getTotalAmountOfClonedLinesInProject().increaseScore(dupLines);
+				metrics.getTotalAmountOfClonedLinesInProject().increaseScore(dupLines);
 				
 				
 				String res = c.readBuffer(bufferSize);

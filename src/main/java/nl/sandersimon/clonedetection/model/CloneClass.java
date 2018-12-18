@@ -53,13 +53,13 @@ public class CloneClass implements Comparable<CloneClass>{
 		locations.add(construct);
 		c.getTotalNumberOfClones().incrementScore();
 		c.getTotalCloneVolume().increaseScore(lines);
-		Score mostLines = c.getMostLinesCloneClass();
+		CloneScore mostLines = c.getMostLinesCloneClass();
 		if(lines > mostLines.getScorePoints())
 			mostLines.setScorePoints(lines);
-		Score mostOccurrent = c.getMostOccurrentClone();
+		CloneScore mostOccurrent = c.getMostOccurrentClone();
 		if(size() > mostOccurrent.getScorePoints())
 			mostOccurrent.setScorePoints(size());
-		Score highestVolume = c.getBiggestCloneClass();
+		CloneScore highestVolume = c.getBiggestCloneClass();
 		if(volume() > highestVolume.getScorePoints())
 			highestVolume.setScorePoints(volume());
 	}
