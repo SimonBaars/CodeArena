@@ -30,6 +30,8 @@ import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.GameType;
@@ -64,6 +66,10 @@ public class CodeArena extends Challenges {
 		for(EntityPlayerMP player : players){
 			player.setPosition(x, y+3,z);
 			player.setHealth(20);
+			items.add(Items.DIAMOND_SWORD);
+			items.add(Items.BOW);
+			for(int i = 0; i<10; i++)
+				items.add(Items.ARROW);
 		}
 		resetPlayer();
 	}
@@ -148,17 +154,6 @@ public class CodeArena extends Challenges {
 	}
 	
 	public boolean run() {
-		if(activeMonsters == null)
-			return false;
-		for(int i = 0; i<activeMonsters.size(); i++){
-			if(activeMonsters.get(i).isDead){
-				displayScore.increaseScore(activeMonsters.get(i).getRepresents().volume());
-				activeMonsters.remove(i);
-				i--;
-			} else if(activeMonsters.get(i).posY>y+4){
-				activeMonsters.get(i).setDead();
-			}
-		}
 		return true;
 	}
 	

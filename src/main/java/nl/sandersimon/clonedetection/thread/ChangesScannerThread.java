@@ -27,9 +27,11 @@ public class ChangesScannerThread extends Thread {
 		this.c = c;
 		this.before = before;
 		this.mySender = s;
+		start();
 	}
 
 	public void run() {
+		//System.out.println("Running changes scan");
 		CloneDetection cloneDetection = CloneDetection.get();
 		if(!before) {
 			while(cloneDetection.before == null) {
@@ -40,9 +42,13 @@ public class ChangesScannerThread extends Thread {
 				}
 			}
 		}
+		//System.out.println("Gonna exx rascal");
 		cloneDetection.executeRascal(cloneDetection.getScanIn(), cloneDetection.getScanOut(), "doPartialScan("+c.rascalLocList()+")", '\n');
+		//System.out.println("populate");
 		populateResult();
+		//System.out.println("Waiting till finished...");
 		cloneDetection.waitUntilExecuted(cloneDetection.getScanIn(), cloneDetection.getRascalReadyState());
+		//System.out.println("Cleaning up...");
 		if(before) {
 			cloneDetection.before = metrics;
 		} else {
@@ -70,27 +76,34 @@ public class ChangesScannerThread extends Thread {
 		CloneDetection c = CloneDetection.get();
 		List<CloneClass> locs = c.getClones();
 		while(true) {
-			String unitSizeString = c.waitUntilExecuted('\n').get(0);
+			//System.out.println("UNIT SIZE");
+			String unitSizeString = c.waitUntilExecuted(c.getScanIn(), '\n').get(0);
+			//System.out.println("UNIT SIZE = "+unitSizeString);
 			int unitSize = Integer.parseInt(unitSizeString);
 			if(unitSize == 0)
 				break;
 			metrics.getTotalAmountOfLinesInProject().increaseScore(unitSize);
 			metrics.calculateClonePercentage();
 			while(true) {
-				String bufferSizeString = c.waitUntilExecuted('\n').get(0);
+				//System.out.println("BUFFER SIZE");
+				String bufferSizeString = c.waitUntilExecuted(c.getScanIn(), '\n').get(0);
+				//System.out.println("BUFFER SIZE = "+bufferSizeString);
 				int bufferSize = Integer.parseInt(bufferSizeString);
 				if(bufferSize == 0)
 					break;
 				
-				String dupLinesString = c.waitUntilExecuted('\n').get(0);
+				//System.out.println("DUPLINES SIZE");
+				String dupLinesString = c.waitUntilExecuted(c.getScanIn(), '\n').get(0);
+				//System.out.println("DUPLINES SIZE = "+dupLinesString);
 				int dupLines = Integer.parseInt(dupLinesString);
 				metrics.getTotalAmountOfClonedLinesInProject().increaseScore(dupLines);
 				
-				
-				String res = c.readBuffer(bufferSize);
+				//System.out.println("READBUFFER SIZE");
+				String res = c.readBuffer(c.getScanIn(), bufferSize);
+				//System.out.println("READBUFFER SIZE = "+bufferSize);
 				
 				//System.out.println(res+", "+bufferSizeString);
-				c.waitUntilExecuted('\n');
+				c.waitUntilExecuted(c.getScanIn(), '\n');
 				
 				int listLoc = 1;
 				while (listLoc < res.length() && res.charAt(listLoc) == '<') {
@@ -99,7 +112,7 @@ public class ChangesScannerThread extends Thread {
 					locs.add(loc);
 					c.eventHandler.nextTickActions.add(() -> c.getArena().create(loc, 1));
 					try {
-						TestingCommons.writeStringToFile(new File(SavePaths.createDirectoryIfNotExists(SavePaths.getSaveFolder())+"clone-"+c.hashCode()+".txt"), c.toString());
+						TestingCommons.writeStringToFile(new File(SavePaths.createDirectoryIfNotExists(SavePaths.getSaveFolder())+"clone-"+c.hashCode()+".txt"), loc.toString());
 					} catch (IOException e) {
 						e.printStackTrace();
 					}

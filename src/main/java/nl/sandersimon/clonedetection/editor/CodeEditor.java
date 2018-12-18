@@ -250,10 +250,9 @@ public class CodeEditor extends JFrame implements SearchListener {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				statusBar.setLabel("You fixed it!2");
+				statusBar.setLabel("You fixed it!");
 				ChangesScannerThread.startWorker(Minecraft.getMinecraft().player, cloneClass, false);
 				CloneDetection.get().closeAllEditors();
-				statusBar.setLabel("You fixed it!");
 			}
 		});
 		fixedButton.setText("I fixed it! :-)");

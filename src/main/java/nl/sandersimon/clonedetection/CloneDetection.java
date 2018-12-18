@@ -187,15 +187,19 @@ public class CloneDetection
 		return lines;
 	}
 	
-	public String readBuffer(int bufferSize) {
+	public String readBuffer(InputStreamReader scanIn2, int bufferSize) {
 		char[] cbuf = new char[bufferSize];
 		try {
-			int read = rascalIn.read(cbuf);
+			int read = scanIn2.read(cbuf);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		System.out.println(cbuf);
 		return new String(cbuf);
+	}
+	
+	public String readBuffer(int bufferSize) {
+		return readBuffer(rascalIn, bufferSize);
 	}
 
 	public List<CloneClass> getClones() {
@@ -240,7 +244,7 @@ public class CloneDetection
 	}
 
 	public void closeAllEditors() {
-		while(openEditors.size()>0) {
+		while(!openEditors.isEmpty()) {
 			if(openEditors.get(0).isVisible()) {
 				openEditors.get(0).setVisible(false);
 				openEditors.get(0).dispose();
