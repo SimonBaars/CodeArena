@@ -11,19 +11,23 @@ import tests::typeOne;
 import tests::typeTwo;
 import tests::typeThree;
 
-void calculateCodeDuplication(list[loc] partialScanList){
-	calculateCodeDuplication(partialScanList, 1);
-}
-
-void calculateCodeDuplication(list[loc] partialScanList, int cloneType){
-	calculateCodeDuplication(partialScanList, cloneType, 0.00);
-}
-
-void doPartialScan(list[loc] partialScanList, int cloneType, real similarityPercentage){
+void calculateCodeDuplication(loc location, int cloneType, real similarityPercentage){
 	if(cloneType<1 || cloneType>3)
 		throw "Clone type must be an integer value between 1 and 3.";
+	getDuplication(cloneType, createAstsFromDirectory(location, false), similarityPercentage);
+}
+
+void calculateCodeDuplication(loc location){
+	calculateCodeDuplication(location, 1);
+}
+
+void calculateCodeDuplication(loc location, int cloneType){
+	calculateCodeDuplication(location, cloneType, 0.00);
+}
+
+void doPartialScan(list[loc] partialScanList){
 	set[Declaration] asts = {};
 	for (loc m <- partialScanList)
 		asts += createAstFromFile(m, true);
-	getDuplication(cloneType, asts, similarityPercentage);
+	getDuplication(1, asts, 0.00);
 }

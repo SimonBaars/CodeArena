@@ -17,10 +17,6 @@ public class CloneClass implements Comparable<CloneClass>{
 		super();
 		metrics.getTotalNumberOfCloneClasses().incrementScore();
 	}
-	
-	public CloneClass() {
-		super();
-	}
 
 	//public CloneClass(int lines, List<Location> locations) {
 	//	this();

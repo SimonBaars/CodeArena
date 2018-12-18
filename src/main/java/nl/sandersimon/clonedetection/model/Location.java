@@ -45,10 +45,6 @@ public class Location {
 		this.endCol = endCol;
 	}
 
-	public Location(String absolutePath) {
-		this.file = absolutePath;
-	}
-
 	public String getType() {
 		return type;
 	}
