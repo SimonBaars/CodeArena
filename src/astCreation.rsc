@@ -28,9 +28,12 @@ public list[tuple[int, list[loc]]] getDuplication(int t, set[Declaration] asts, 
     map[int, int] hashStartIndex = nodeRegs.hashStartIndex;
     map[str, map[int, int]] hashMap = nodeRegs.hashMap;
     // loc met alle regels op volgorde
-    //list[tuple[int, list[loc]]] testDupList = getDupList(fileLineAsts, locsAtHash, sortedDomains);
+    //list[tuple[int, list[loc]]] testDupList = getDupList(hashMap, locsAtHash, sortedDomains, hashStartIndex, filesOrder);
     //println("TESTDUPLIST:::");
     //iprintln(testDupList);
+    //println(size(testDupList));
+    //println(size(testDupList[0][1]));
+    //println(size(testDupList[1][1]));
     return getDupList(hashMap, locsAtHash, sortedDomains, hashStartIndex, filesOrder);
 }
 
@@ -238,7 +241,7 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 	list[tuple[int, list[loc]]] temp = [];
 	for(int amount <- sort(domain(finalizedDups), bool(int a, int b){ return a > b; })){
 		list[loc] dupGroup = finalizedDups[amount];
-		if((isLast || any(loc aDup <- dupGroup, willBeRemoved(aDup, newPotentialDuplicates))) && !any(tuple[int amount, list[loc] locList] aDup <- dupList, dupGroup <= aDup.locList) && !isSubElement(dupGroup, temp+dupList) && isOutsideOfRange(temp+dupList, dupGroup)){
+		if((isLast || any(loc aDup <- dupGroup, willBeRemoved(aDup, newPotentialDuplicates))) && !any(tuple[int amount, list[loc] locList] aDup <- dupList, dupGroup <= aDup.locList) && !isSubElement(dupGroup, temp+dupList) && isOutsideOfRange(dupList, dupGroup)){
 			dupList+=<amount, dupGroup>;
 			for(int j <- [0..size(finalizedDups[amount])]){
 				loc thisLoc = dupGroup[j];
@@ -276,16 +279,23 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 }
 
 public bool isOutsideOfRange(list[tuple[int, list[loc]]] currDups, list[loc] dupGroup){
-	bool outSide = true;
-	for(loc l <- dupGroup){
-		for(tuple[int amount, list[loc] locList] aDupList <- currDups){
-			if(any(loc aDup <- aDupList.locList, l.uri == aDup.uri && l.begin.line>=aDup.begin.line && l.end.line<=aDup.end.line)){
-				outSide = false;
-			}
-			else return true;
+	//iprintln(currDups);
+	//iprintln("WWW");
+	//iprintln(dupGroup);
+	return any(loc l <- dupGroup, isOutsideOfRangeCheck(l, currDups));
+}
+
+public bool isOutsideOfRangeCheck(loc l, list[tuple[int, list[loc]]] currDups){
+	for(tuple[int amount, list[loc] locList] aDupList <- currDups){
+		//println(l);
+		//println("WWWW");
+		//println(aDupList);
+		if(any(loc aDup <- aDupList.locList, l.uri == aDup.uri && l.begin.line>=aDup.begin.line && l.end.line<=aDup.end.line)){
+			return false;
 		}
+		else return true;
 	}
-	return outSide;
+	return true;
 }
 
 public bool isSubElement(list[loc] locList, list[tuple[int, list[loc]]] collectedDups){
