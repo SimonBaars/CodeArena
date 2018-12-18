@@ -3,6 +3,8 @@ package nl.sandersimon.clonedetection.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import net.minecraft.scoreboard.Score;
 import nl.sandersimon.clonedetection.CloneDetection;
@@ -87,5 +89,9 @@ public class CloneClass implements Comparable<CloneClass>{
 		if(size() == 0)
 			return "error";
 		return get(0).getName();
+	}
+
+	public String rascalLocList() {
+		return "["+locations.stream().map(e -> e.rascalFile()).collect(Collectors.joining(","))+"]";
 	}
 }

@@ -40,8 +40,11 @@ public class CloneDetection
 	public static final CDEventHandler eventHandler = new CDEventHandler();
 
 	private Process rascal;
-	private BufferedWriter rascalOut;
-	private InputStreamReader rascalIn;
+	private Process partialScan;
+	private BufferedWriter rascalOut = null;
+	private InputStreamReader rascalIn = null;
+	private BufferedWriter scanOut = null;
+	private InputStreamReader scanIn = null;
 	@Mod.Instance
 	private static CloneDetection cloneDetection;
 	private List<CloneClass> clones = new ArrayList<>();
@@ -91,6 +94,8 @@ public class CloneDetection
 			System.out.println("Starting Rascal..");
 			rascal = getProcess("java -jar "+ResourceCommons.getResource("Rascal.jar").getAbsolutePath(), ResourceCommons.getResource("rascal"));
 			executeRascal("import loader;");
+			partialScan = getProcess("java -jar "+ResourceCommons.getResource("Rascal.jar").getAbsolutePath(), ResourceCommons.getResource("rascal"));
+			executeRascal(scanIn, scanOut, "import loader;", getRascalReadyState());
 			System.out.println("Rascal Started!");
 		} catch (IOException e) {
 			throw new RuntimeException("Rascal could not be started!", e);
@@ -115,8 +120,10 @@ public class CloneDetection
 		ProcessBuilder prb = new ProcessBuilder(com);
 		prb.directory(dir);
 		Process pr = prb.start();
-		rascalOut = new BufferedWriter(new OutputStreamWriter(pr.getOutputStream()));
-		rascalIn = new InputStreamReader(pr.getInputStream());
+		if(rascalOut == null) rascalOut = new BufferedWriter(new OutputStreamWriter(pr.getOutputStream()));
+		else scanOut = new BufferedWriter(new OutputStreamWriter(pr.getOutputStream()));
+		if(rascalIn == null) rascalIn = new InputStreamReader(pr.getInputStream());
+		else scanIn = new InputStreamReader(pr.getInputStream());
 		waitUntilExecuted();
 		return pr;
 	}
@@ -126,15 +133,19 @@ public class CloneDetection
 	}
 	
 	public List<String> executeRascal(String statement, char till) {
+		return executeRascal(rascalIn, rascalOut, statement, till);
+	}
+	
+	public List<String> executeRascal(InputStreamReader r, BufferedWriter w, String statement, char till) {
 		System.out.println("Executing Rascal: "+statement);
 		try {
-			rascalOut.write(statement);
-			rascalOut.newLine();
-			rascalOut.flush();
+			w.write(statement);
+			w.newLine();
+			w.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return waitUntilExecuted(till);
+		return waitUntilExecuted(r, till);
 	}
 
 	public String executeSingleLineRascal(String statement) {
@@ -149,17 +160,21 @@ public class CloneDetection
 		return waitUntilExecuted(getRascalReadyState());
 	}
 
-	private char getRascalReadyState() {
+	public char getRascalReadyState() {
 		return '>';
 	}
-
+	
 	public List<String> waitUntilExecuted(char till) {
+		return waitUntilExecuted(rascalIn, till);
+	}
+
+	public List<String> waitUntilExecuted(InputStreamReader i, char till) {
 		List<String> lines = new ArrayList<>();
 		outerloop: while(true) {
 			StringBuilder buffer = new StringBuilder();
 			try {
-				while(rascalIn.ready()) {
-					int read = rascalIn.read();
+				while(i.ready()) {
+					int read = i.read();
 					System.out.print((char)read+"");
 					if((char)read == till) {
 						lines.add(buffer.toString());
@@ -185,6 +200,7 @@ public class CloneDetection
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		System.out.println(cbuf);
 		return new String(cbuf);
 	}
 
@@ -323,5 +339,21 @@ public class CloneDetection
 			}
 			openEditors.remove(0);
 		}
+	}
+
+	public BufferedWriter getRascalOut() {
+		return rascalOut;
+	}
+
+	public InputStreamReader getRascalIn() {
+		return rascalIn;
+	}
+
+	public BufferedWriter getScanOut() {
+		return scanOut;
+	}
+
+	public InputStreamReader getScanIn() {
+		return scanIn;
 	}
 }

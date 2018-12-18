@@ -214,4 +214,8 @@ public class Location {
 	public String getName() {
 		return file().getName();
 	}
+
+	public String rascalFile() {
+		return "|file://"+getFile()+"|";
+	}
 }
