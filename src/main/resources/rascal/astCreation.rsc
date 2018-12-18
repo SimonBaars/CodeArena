@@ -17,11 +17,11 @@ alias LineRegistry = map[str, map[int, list[value]]];
 map[str, list[int]] countedLines = ();
 // = map[fileloc, map[regelnummer, wat er aan ast op de regel staat]]
 
-public list[tuple[int, list[loc]]] getDuplication(int t, set[Declaration] asts, real similarityPercentage) {
+public list[tuple[int, list[loc]]] getDuplication(int t, set[Declaration] asts, real allowedDiffPercentage) {
 	countedLines = ();
     LineRegistry fileLineAsts = fileLineMapGeneration(t, asts);
     set[str] filesOrder = domain(fileLineAsts);
-    tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] nodeRegs = calculateLocationsOfNodeTypes(fileLineAsts, filesOrder, t, similarityPercentage);
+    tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] nodeRegs = calculateLocationsOfNodeTypes(fileLineAsts, filesOrder, t, allowedDiffPercentage);
     map[int, list[loc]] locsAtHash = nodeRegs.locRegistries;
     // alle locs die bij een hash horen 
     map[str, list[int]] sortedDomains = nodeRegs.sortedDomains;
@@ -37,7 +37,7 @@ public list[tuple[int, list[loc]]] getDuplication(int t, set[Declaration] asts, 
     return getDupList(hashMap, locsAtHash, sortedDomains, hashStartIndex, filesOrder);
 }
 
-public tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] calculateLocationsOfNodeTypes(LineRegistry fileLineAsts, set[str] filesOrder, int t, real similarityPercentage){
+public tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] calculateLocationsOfNodeTypes(LineRegistry fileLineAsts, set[str] filesOrder, int t, real allowedDiffPercentage){
 	map[int, list[loc]] registry = ();
 	map[str, list[int]] sortedDomains = ();
 	map[int, int] hashStartIndex = ();
@@ -52,11 +52,11 @@ public tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomain
 			l.uri = location;
 			l.end.line = i;
 			l.begin.line = i;
-			//println("Line <lineNumber> of file <indexOf(sort(domain(fileLineAsts)), location)> has hash <makeHashOfLine(stuffOnLine)>");
+			//println("Line <i> of file <indexOf(sort(domain(fileLineAsts)), location)> has hash <makeHashOfLine(stuffOnLine)>");
 			//println(stuffOnLine);
 			int hash = makeHashOfLine(stuffOnLine);
 			if(t == 3)
-				registry = calculateType3Hash(l, location, i, fileLineAsts, hashMap, filesOrder, sortedDomains, similarityPercentage, stuffOnLine, registry);
+				registry = calculateType3Hash(l, location, i, fileLineAsts, hashMap, filesOrder, sortedDomains, allowedDiffPercentage, stuffOnLine, registry);
 			registry = addTo(registry, hash, l);
 			hashStartIndex[hash] = 0;
 			hashMap[location][i] = hash;
@@ -65,7 +65,7 @@ public tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomain
 	return <registry, sortedDomains, hashStartIndex, hashMap>;
 }
 
-public map[int, list[loc]] calculateType3Hash(loc thisLoc, str location, int i, LineRegistry fileLineAsts, map[str, map[int, int]] hashMap, set[str] filesOrder, map[str, list[int]] sortedDomains, real similarityPercentage, list[value] curLineContent, map[int, list[loc]] registry){
+public map[int, list[loc]] calculateType3Hash(loc thisLoc, str location, int i, LineRegistry fileLineAsts, map[str, map[int, int]] hashMap, set[str] filesOrder, map[str, list[int]] sortedDomains, real allowedDiffPercentage, list[value] curLineContent, map[int, list[loc]] registry){
 	for(str l <- filesOrder){
 		map[int, list[value]] fileLines = fileLineAsts[l];
 		for(int j <- [0..size(fileLines)]){
@@ -73,9 +73,8 @@ public map[int, list[loc]] calculateType3Hash(loc thisLoc, str location, int i, 
 				return registry;
 			//println("l <l> j <j>");
 			list[value] stuffOnLine = fileLines[sortedDomains[l][j]];
-			real similarity = calculateSimilarity(curLineContent, stuffOnLine);
-			//println(similarity);
-			if(similarity<=similarityPercentage && similarityPercentage != 0.00){
+			real difference = calculateDifference(curLineContent, stuffOnLine);
+			if(difference<=allowedDiffPercentage && allowedDiffPercentage != 0.00){
 				int hash = hashMap[l][j];
 				registry = addTo(registry, hash, thisLoc);
 			}
@@ -106,6 +105,10 @@ public map[int, list[loc]] addTo(map[int, list[loc]] numberMap, int codeNumber, 
 	if(codeNumber in numberMap)
 		numberMap[codeNumber] += l;
 	else numberMap[codeNumber] = [l];
+	//println("LOC DIE WORDT TOEGEVOEGD AAN MAP");
+	//println(l);
+	//println("De MAP");
+	//iprintln(numberMap[codeNumber]);
 	return numberMap;
 }
 
@@ -251,7 +254,7 @@ public void printTempDupReg(list[tuple[int, list[loc]]] temp){
 				}
 			}
 		}
-		
+		//iprintln(temp);
 		str buffer = toString(temp);
 		println(size(buffer));
 		println(duplicateLines);
@@ -291,17 +294,14 @@ public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[lo
 
 	for(int amount <- sort(domain(finalizedDups), bool(int a, int b){ return a > b; })){
 		list[loc] dupGroup = finalizedDups[amount];
-		if((isLast || any(loc aDup <- dupGroup, willBeRemoved(aDup, newPotentialDuplicates))))
-			currentCloneClassGroup+=<amount, dupGroup>;
+		if((isLast || any(loc aDup <- dupGroup, willBeRemoved(aDup, newPotentialDuplicates)))){
+			currentCloneClassGroup+=<amount, dupGroup>;}
 	}
 	
 	return currentCloneClassGroup;
 }
 
 public bool isOutsideOfRange(list[tuple[int, list[loc]]] currDups, list[loc] dupGroup){
-	//iprintln(currDups);
-	//iprintln("WWW");
-	//iprintln(dupGroup);
 	return any(loc l <- dupGroup, isOutsideOfRangeCheck(l, currDups));
 }
 
@@ -333,19 +333,16 @@ public loc getSrc(value ast) {
 	}
 }
 
-public real calculateSimilarity(list[value] line1, list[value] line2){
+public real calculateDifference(list[value] line1, list[value] line2){
 	int differentElements = size(line1 - line2) + size(line2 - line1);
 	int combinedSize = size(line1) + size(line2);
 	//println("differentElements <differentElements> combinedSize <combinedSize> line1 <line1> line2 <line2>");
+	//println("CDIFFSCORE");
+	//println(toReal(differentElements)/toReal(combinedSize) * 100);
 	return toReal(differentElements)/toReal(combinedSize) * 100;
 }
 
 list[value] getComparables(node n, int t){
-	if(t == 3){
-		switch(n){
-			case Statement d: return [0];
-		}
-	}
     switch(n){
     //Decls
         case \compilationUnit(list[Declaration] imports, list[Declaration] types) : return [1];

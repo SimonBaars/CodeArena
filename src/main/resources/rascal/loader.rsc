@@ -19,9 +19,7 @@ void calculateCodeDuplication(list[loc] partialScanList, int cloneType){
 	calculateCodeDuplication(partialScanList, cloneType, 0.00);
 }
 
-void doPartialScan(list[loc] partialScanList, int cloneType, real similarityPercentage){
-	if(cloneType<1 || cloneType>3)
-		throw "Clone type must be an integer value between 1 and 3.";
+void calculateCodeDuplication(list[loc] partialScanList, int cloneType, real similarityPercentage){
 	set[Declaration] asts = {};
 	for (loc m <- partialScanList)
 		asts += createAstFromFile(m, true);

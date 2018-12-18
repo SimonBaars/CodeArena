@@ -21,7 +21,7 @@ public class ProjectParseTest {
 	public void test() {
 		CloneClass foundLocs = new CloneClass();
 		try {
-			Files.walkFileTree(Paths.get(SavePaths.getProjectFolder()+"ProjectWithDuplicateBetweenFiles"+"/src/"), new SimpleFileVisitor<Path>() {
+			Files.walkFileTree(Paths.get(SavePaths.getProjectFolder()+"smallsql0.21_src"+"/src/"), new SimpleFileVisitor<Path>() {
 			    @Override
 			    public FileVisitResult visitFile(Path filePath, BasicFileAttributes attrs) throws IOException {
 			    	File file = filePath.toFile();

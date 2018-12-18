@@ -51,10 +51,6 @@ public class CDEventHandler {
 	public void update(TickEvent.ClientTickEvent event){
 		if(!isLoaded && Minecraft.getMinecraft().world!=null)
 			load();
-		while(nextTickActions.size()!=0) {
-			nextTickActions.get(0).run();
-			nextTickActions.remove(0);
-		}
 		if(challenge!= null) challenge.run();
 		/*for(int i = 0; i<liveCreators.size(); i++){
 			if(System.currentTimeMillis()>liveCreators.get(i).lastTickTime+liveCreators.get(i).waitTime){
@@ -96,6 +92,10 @@ public class CDEventHandler {
 	
 	@SubscribeEvent
 	public void update(TickEvent.ServerTickEvent event){
+		while(nextTickActions.size()!=0) {
+			nextTickActions.get(0).run();
+			nextTickActions.remove(0);
+		}
 		for(int i = 0; i<serverCreators.size(); i++){
 			if(serverCreators.get(i).run()){
 				serverCreators.remove(i);

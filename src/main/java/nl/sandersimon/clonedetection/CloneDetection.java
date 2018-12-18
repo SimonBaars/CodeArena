@@ -139,6 +139,7 @@ public class CloneDetection
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		readBuffer(statement.length());
 		return waitUntilExecuted(r, till);
 	}
 
