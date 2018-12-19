@@ -193,7 +193,7 @@ public class Location {
 
 	@Override
 	public String toString() {
-		return System.lineSeparator()+"Location"+System.lineSeparator()+"type=" + type + System.lineSeparator() + "file=" + file + "beginLine=" + beginLine + System.lineSeparator() + " endLine=" + endLine
+		return System.lineSeparator()+"Location"+System.lineSeparator()+"type=" +type + System.lineSeparator() + "file=" + file + System.lineSeparator() +"beginLine=" + beginLine + System.lineSeparator() + "endLine=" + endLine
 				+ System.lineSeparator() + "code:"+System.lineSeparator() +"===================================="+ System.lineSeparator() + getSnippet() +"====================================";
 	}
 

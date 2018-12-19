@@ -30,16 +30,19 @@ public class RenderCodeSpider<T extends EntityCodeSpider> extends RenderLiving<T
     @Override
     protected void preRenderCallback(T entitylivingbaseIn, float partialTickTime)
     {
-    	CodeArena arena = CloneDetection.get().getArena();
-    	if(arena == null)
-    		return;
-    	
-		CloneClass c = arena.findEntity(entitylivingbaseIn);
-		
-		if(c == null)
-			return;
-		
+    	CloneClass c = entitylivingbaseIn.getRepresents();
+    	if(c == null) {
+	    	CodeArena arena = CloneDetection.get().getArena();
+	    	if(arena == null)
+	    		return;
+	    	
+			c = arena.findEntity(entitylivingbaseIn);
+			
+			if(c == null)
+				return;
+    	}
 		float scale = c.volume()*0.05F;
+		
         GlStateManager.scale(scale, scale, scale);
         //System.out.println("Scaled by "+entitylivingbaseIn.getScaleFactor()+" because of "+entitylivingbaseIn.getCustomNameTag()+", "+entitylivingbaseIn.getHealth()+", "+entitylivingbaseIn.getAbsorptionAmount());
     }

@@ -227,6 +227,7 @@ public class CodeArena extends Challenges {
 			if(codeEntity.getEntityId() == e.getEntityId()) {
 				//System.out.println("Found!");
 				clientServerEntityMapping.put(e, codeEntity);
+				e.setRepresents(codeEntity.getRepresents());
 				return codeEntity.getRepresents();
 			}
 		}
