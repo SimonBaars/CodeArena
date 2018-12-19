@@ -33,7 +33,7 @@ public class ForgeEventHandler {
 					if(inputNumber < 1 || inputNumber > projects.length){
 						CloneDetection.eventHandler.delayedPrints.add("This is not a valid number of a project. Please enter a number between 1-"+projects.length+".");
 					} else {
-						CloneDetection.eventHandler.delayedPrints.add("Thank you. We'll generate a beatiful city out of the clones of this project.");
+						//CloneDetection.eventHandler.delayedPrints.add("Thank you. We'll generate a beatiful city out of the clones of this project.");
 						CloneDetection.dialoge=0;
 						CloneDetectionThread.startWorker(event.getPlayer().getServer(), event.getPlayer(), new String[]{projects[inputNumber-1]});
 					}

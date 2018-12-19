@@ -18,8 +18,6 @@ import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
-import net.minecraft.entity.monster.EntityIronGolem;
-import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
@@ -34,6 +32,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.EnumDifficulty;
@@ -75,8 +74,17 @@ public class EntityCodeSpider extends CodeEntity
         this.tasks.addTask(6, new EntityAILookIdle(this));
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false, new Class[0]));
         //this.targetTasks.addTask(2, new EntityCodeSpider.AICodeSpiderTarget(this, EntityPlayer.class));
-        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
+        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, false, false));
     }
+    
+  /*  @Override
+    public void setPosition(double par1, double par2, double par3) {
+    	AxisAlignedBB b = this.getEntityBoundingBox();
+    	double boxSX = b.maxX - b.minX;
+    	double boxSY = b.maxY - b.minY;
+    	double boxSZ = b.maxZ - b.minZ;
+    	this.setEntityBoundingBox(new AxisAlignedBB(posX - boxSX/2D, posY, posZ - boxSZ/2D, posX + boxSX/2D, posY + boxSY, posZ + boxSZ/2D));
+    }*/
 
     /**
      * Returns the Y offset from the entity's position for any entity riding this one.

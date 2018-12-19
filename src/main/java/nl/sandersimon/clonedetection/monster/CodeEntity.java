@@ -12,18 +12,20 @@ import nl.sandersimon.clonedetection.model.CloneClass;
 public abstract class CodeEntity extends EntityMob {
 	
 	CloneClass represents;
+	private boolean isServer = false;
 
 	public CodeEntity(World worldIn, CloneClass cloneClass) {
 		super(worldIn);
 		this.represents = cloneClass;
-		//double f = 0.05*cloneClass.volume();
+		float f = 0.03F*cloneClass.volume();
 		//double boundingX = getEntityBoundingBox().maxX-getEntityBoundingBox().minX*3;
 		//double boundingY = getEntityBoundingBox().maxY-getEntityBoundingBox().minY/2;
 		//double boundingZ = getEntityBoundingBox().maxZ-getEntityBoundingBox().minZ*3;
 		//Vec3d center = getEntityBoundingBox().getCenter();
 		
 		//this.setEntityBoundingBox(new AxisAlignedBB(center.x-((boundingX/2)*f), center.y-((boundingY/2)*f), center.z-((boundingZ/2)*f), center.x+((boundingX/2)*f), center.y+((boundingY/2)*f), center.z+((boundingZ/2)*f)));
-		//this.setSize(width*f, height*f);
+		//this.setSize(1.5F*f, 0.5F*f);
+		this.isServer = true;
 		this.setHealth(Float.MAX_VALUE);
 		this.setAlwaysRenderNameTag(true);
 		this.setCustomNameTag(cloneClass.getName());
@@ -34,9 +36,13 @@ public abstract class CodeEntity extends EntityMob {
         super(worldIn);
     }
 	
+	public void setSizePublic(float w, float h) {
+		this.setSize(w, h);
+	}
+	
 	@Override
 	public boolean attackEntityFrom(DamageSource source, float amount){
-		if(represents != null && source.getTrueSource() instanceof EntityPlayer) //{
+		if(isServer && represents != null && source.getTrueSource() instanceof EntityPlayer) //{
 			represents.open();
 			//setDead();
 		//}
@@ -50,4 +56,13 @@ public abstract class CodeEntity extends EntityMob {
 	public void setRepresents(CloneClass represents) {
 		this.represents = represents;
 	}
+	
+	 /*@Override
+	    public void setPosition(double par1, double par2, double par3) {
+	    	AxisAlignedBB b = this.getEntityBoundingBox();
+	    	double boxSX = b.maxX - b.minX;
+	    	double boxSY = b.maxY - b.minY;
+	    	double boxSZ = b.maxZ - b.minZ;
+	    	this.setEntityBoundingBox(new AxisAlignedBB(posX - boxSX/2D, posY, posZ - boxSZ/2D, posX + boxSX/2D, posY + boxSY, posZ + boxSZ/2D));
+	    }*/
 }

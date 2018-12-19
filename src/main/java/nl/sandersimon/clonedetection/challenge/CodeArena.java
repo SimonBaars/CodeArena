@@ -228,6 +228,9 @@ public class CodeArena extends Challenges {
 				//System.out.println("Found!");
 				clientServerEntityMapping.put(e, codeEntity);
 				e.setRepresents(codeEntity.getRepresents());
+				float f = codeEntity.getRepresents().volume()*0.03F;
+				e.setSizePublic(1.5F*f, 0.8F*f);
+				codeEntity.setSizePublic(1.5F*f, 0.8F*f);
 				return codeEntity.getRepresents();
 			}
 		}
