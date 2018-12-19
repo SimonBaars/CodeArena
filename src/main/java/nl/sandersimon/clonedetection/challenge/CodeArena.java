@@ -5,7 +5,10 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLiving;
@@ -30,8 +33,6 @@ import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.GameType;
@@ -52,6 +53,7 @@ public class CodeArena extends Challenges {
 	int cornerx;
 	int cornerz;
 	List<CodeEntity> activeMonsters = new ArrayList<>();
+	Map<CodeEntity, CodeEntity> clientServerEntityMapping= new HashMap<>();
 	int wave = 0;
 	final int nWaves = 20;
 	private SchematicStructure checkStructure;
@@ -202,5 +204,34 @@ public class CodeArena extends Challenges {
 				return;
 			}
 		}
+	}
+
+	public CloneClass getSpiderByPos(BlockPos pos) {
+		for(int i = 0; i<activeMonsters.size(); i++) {
+			if(activeMonsters.get(i).getPosition().equals(pos)) {
+				return activeMonsters.get(i).getRepresents();
+			}
+		}
+		
+		System.out.println("Not found "+pos+ " for "+activeMonsters.stream().map(e -> e.getPosition().toString()).collect(Collectors.joining(",")));
+		return null;
+	}
+
+	public CloneClass findEntity(EntityCodeSpider e) {
+		if(clientServerEntityMapping.containsKey(e)) {
+			return clientServerEntityMapping.get(e).getRepresents();
+		}
+		
+		for(int i = 0; i<activeMonsters.size(); i++) {
+			CodeEntity codeEntity = activeMonsters.get(i);
+			if(codeEntity.posX == e.posX && codeEntity.posY == e.posY && codeEntity.posZ == e.posZ) {
+				//System.out.println("Found!");
+				clientServerEntityMapping.put(e, codeEntity);
+				return codeEntity.getRepresents();
+			}
+		}
+		
+		//System.out.println("Not found "+e.getPosition()+ " for "+activeMonsters.stream().map(i -> i.getPosition().toString()).collect(Collectors.joining(",")));
+		return null;
 	}
 }

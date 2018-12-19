@@ -49,6 +49,10 @@ public class EntityCodeSpider extends CodeEntity
     public EntityCodeSpider(World worldIn, CloneClass cloneClass)
     {
         super(worldIn, cloneClass);
+        //setAbsorptionAmount(0.05F*getRepresents().volume());
+        //entityCollisionReduction = 0.05F*getRepresents().volume();
+        //System.out.println("SET COLISION TO "+entityCollisionReduction);
+        
     }
     
     public EntityCodeSpider(World worldIn)
@@ -270,10 +274,6 @@ public class EntityCodeSpider extends CodeEntity
         }
     
     public float getScaleFactor() {
-    	if(getRepresents() == null)//{
-    	//	setDead();
-    		return 0.5F;
-    	//}
-    	return 0.05F*getRepresents().volume();
+    	return entityCollisionReduction;
     }
 }

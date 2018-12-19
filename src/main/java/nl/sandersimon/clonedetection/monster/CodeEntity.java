@@ -14,7 +14,8 @@ public abstract class CodeEntity extends EntityMob {
 	public CodeEntity(World worldIn, CloneClass cloneClass) {
 		super(worldIn);
 		this.represents = cloneClass;
-		//this.setSize(0.07F*(cloneSize/2), 0.05F*(cloneSize/2));
+		float f = 0.05F*cloneClass.volume();
+		this.setSize(width*f, height*f);
 		this.setHealth(Float.MAX_VALUE);
 		this.setAlwaysRenderNameTag(true);
 		this.setCustomNameTag(cloneClass.getName());

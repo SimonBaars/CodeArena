@@ -1,7 +1,5 @@
 package nl.sandersimon.clonedetection.monster.codespider;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.model.ModelSpider;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
@@ -9,6 +7,9 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import nl.sandersimon.clonedetection.CloneDetection;
+import nl.sandersimon.clonedetection.challenge.CodeArena;
+import nl.sandersimon.clonedetection.model.CloneClass;
 
 @SideOnly(Side.CLIENT)
 public class RenderCodeSpider<T extends EntityCodeSpider> extends RenderLiving<T>
@@ -25,6 +26,24 @@ public class RenderCodeSpider<T extends EntityCodeSpider> extends RenderLiving<T
     {
         return 180.0F;
     }
+    
+    @Override
+    protected void preRenderCallback(T entitylivingbaseIn, float partialTickTime)
+    {
+    	CodeArena arena = CloneDetection.get().getArena();
+    	if(arena == null)
+    		return;
+    	
+		CloneClass c = arena.findEntity(entitylivingbaseIn);
+		
+		if(c == null)
+			return;
+		
+		float scale = c.volume()*0.05F;
+        GlStateManager.scale(scale, scale, scale);
+        //System.out.println("Scaled by "+entitylivingbaseIn.getScaleFactor()+" because of "+entitylivingbaseIn.getCustomNameTag()+", "+entitylivingbaseIn.getHealth()+", "+entitylivingbaseIn.getAbsorptionAmount());
+    }
+     
 
     @Override
     public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks){
