@@ -110,7 +110,6 @@ public class ChangesScannerThread extends Thread {
 					CloneClass loc = new CloneClass(metrics);
 					listLoc = parseList(loc, res, listLoc+1)+2;
 					locs.add(loc);
-					c.eventHandler.nextTickActions.add(() -> c.getArena().create(loc));
 				}
 			}
 		}
