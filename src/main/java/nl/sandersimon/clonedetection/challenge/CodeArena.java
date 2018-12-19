@@ -224,7 +224,7 @@ public class CodeArena extends Challenges {
 		
 		for(int i = 0; i<activeMonsters.size(); i++) {
 			CodeEntity codeEntity = activeMonsters.get(i);
-			if(codeEntity.posX == e.posX && codeEntity.posY == e.posY && codeEntity.posZ == e.posZ) {
+			if(codeEntity.getEntityId() == e.getEntityId()) {
 				//System.out.println("Found!");
 				clientServerEntityMapping.put(e, codeEntity);
 				return codeEntity.getRepresents();
