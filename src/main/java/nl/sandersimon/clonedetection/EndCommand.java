@@ -1,9 +1,7 @@
 package nl.sandersimon.clonedetection;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import com.google.common.collect.Lists;
 
@@ -13,15 +11,12 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import nl.sandersimon.clonedetection.common.Commons;
-import nl.sandersimon.clonedetection.common.SavePaths;
-import nl.sandersimon.clonedetection.thread.CloneDetectionThread;
-import scala.actors.threadpool.Arrays;
 
 public class EndCommand implements ICommand {
 
 	@Override
 	public int compareTo(ICommand arg0) {
-		return 0;
+		return 5;
 	}
 
 	@Override

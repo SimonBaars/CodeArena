@@ -1,15 +1,11 @@
 package nl.sandersimon.clonedetection.thread;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.text.TextFormatting;
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.common.Commons;
-import nl.sandersimon.clonedetection.common.SavePaths;
-import nl.sandersimon.clonedetection.common.TestingCommons;
 import nl.sandersimon.clonedetection.model.CloneClass;
 import nl.sandersimon.clonedetection.model.CloneMetrics;
 import nl.sandersimon.clonedetection.model.CloneScore;

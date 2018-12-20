@@ -16,8 +16,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
-
 public class ResourceCommons {
 	
 	private ResourceCommons() {}

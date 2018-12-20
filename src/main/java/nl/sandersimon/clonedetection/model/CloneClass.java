@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import nl.sandersimon.clonedetection.editor.CodeEditor;
 import nl.sandersimon.clonedetection.editor.CodeEditorMaker;
 
 public class CloneClass implements Comparable<CloneClass>{

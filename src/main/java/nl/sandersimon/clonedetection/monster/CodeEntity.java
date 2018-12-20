@@ -3,10 +3,7 @@ package nl.sandersimon.clonedetection.monster;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.model.CloneClass;
 
 public abstract class CodeEntity extends EntityMob {

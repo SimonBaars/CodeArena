@@ -1,7 +1,6 @@
 package nl.sandersimon.clonedetection;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -21,7 +20,7 @@ public class CloneCommand implements ICommand {
 
 	@Override
 	public int compareTo(ICommand arg0) {
-		return 0;
+		return 6;
 	}
 
 	@Override

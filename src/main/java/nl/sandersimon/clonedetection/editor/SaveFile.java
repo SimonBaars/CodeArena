@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.swing.AbstractAction;
-import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 
