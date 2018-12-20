@@ -61,6 +61,12 @@ public class CloneDetectionThread extends Thread {
 		cloneDetection.writeAllMetricsToFile();
 		cloneDetection.waitUntilExecuted();
 		cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "All clones have been successfully parsed!")));
+		CloneDetection c = CloneDetection.get();
+		CloneMetrics m = c.getMetrics();
+		if(m.getTotalNumberOfCloneClasses().getScorePoints() == 0) {
+			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "Your project contains no clones congrats!!")));
+			cloneDetection.eventHandler.nextTickActions.add(() -> c.getArena().endChallengeForAllPlayers());
+		}
 	}
 	
 	private String addIfNotEmpty(String string) {
