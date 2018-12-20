@@ -74,6 +74,7 @@ public class ChangesScannerThread extends Thread {
 				cloneDetection.getArena().increaseScore(scoreGain);
 				cloneDetection.getMetrics().getScoreByName(score.getName()).increaseScore(-scoreGain);
 			}
+			cloneDetection.calculateClonePercentage();
 			if(metrics.getTotalNumberOfCloneClasses().getScorePoints() < cloneDetection.before.getTotalNumberOfCloneClasses().getScorePoints())
 				cloneDetection.eventHandler.nextTickActions.add(() -> cloneDetection.getArena().killSpider(c));
 			cloneDetection.before = null;
