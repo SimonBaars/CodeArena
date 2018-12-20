@@ -12,12 +12,14 @@ import nl.sandersimon.clonedetection.CloneDetection;
 public class BlockPlaceHandler {
 	public static void placeBlocks(World worldIn, World serverWorld, Block block, int posx, int posy, int posz, int sizex, int sizey, int sizez){
 		BlockPos pos;
+		BlockPlacer blockPlacer = new BlockPlacer(serverWorld,false);
+		BlockPlacer blockPlacer2 = new BlockPlacer(worldIn,false);
 		for(int x = 0; x<sizex; x++){
 			for(int y =0; y<sizey; y++){
 				for(int z =0; z<sizez; z++){
 					pos= new BlockPos(posx-x,posy+y,posz-z);
-					setBlock(worldIn,pos, block.getDefaultState());
-					setBlock(serverWorld, pos, block.getDefaultState());
+					blockPlacer.add(block.getDefaultState(), pos);
+					blockPlacer2.add(block.getDefaultState(), pos);
 				}
 			}
 		}
@@ -37,7 +39,7 @@ public class BlockPlaceHandler {
 			for(int y =0; y<sizey; y++){
 				for(int z =0; z<sizez; z++){
 					pos= new BlockPos(posx+x,posy+y,posz+z);
-					//setBlock(worldIn,pos, block.getDefaultState());
+					setBlock(worldIn,pos, block.getDefaultState());
 					setBlock(serverWorld, pos, block.getDefaultState());
 				}
 			}

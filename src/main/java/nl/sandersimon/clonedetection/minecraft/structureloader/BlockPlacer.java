@@ -26,6 +26,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import nl.sandersimon.clonedetection.CloneDetection;
 
 public class BlockPlacer
 {
@@ -107,6 +108,11 @@ public class BlockPlacer
 		//this.updatePos.add(blockPos);
 		//this.updateState.add(blockState);
 		this.world.markAndNotifyBlock(blockPos, this.world.getChunkFromBlockCoords(blockPos), this.world.getBlockState(blockPos), blockState, 3);
+		if(world.isRemote){
+			CloneDetection.eventHandler.lightUpdate.addClientProcess(blockPos);
+		} else {
+			CloneDetection.eventHandler.lightUpdate.addServerProcess(blockPos);
+		}
 		return blockAdded;
 	}
 
