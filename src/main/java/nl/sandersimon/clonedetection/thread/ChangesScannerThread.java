@@ -72,6 +72,7 @@ public class ChangesScannerThread extends Thread {
 					cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(TextFormatting.RED, "Too bad! "+score.getName()+ " went from "+prevPoints+" to "+points+"! Because of this you lose "+Math.abs(scoreGain)+" points!")));
 				}
 				cloneDetection.getArena().increaseScore(scoreGain);
+				cloneDetection.getMetrics().getScoreByName(score.getName()).increaseScore(-scoreGain);
 			}
 			if(metrics.getTotalNumberOfCloneClasses().getScorePoints() < cloneDetection.before.getTotalNumberOfCloneClasses().getScorePoints())
 				cloneDetection.eventHandler.nextTickActions.add(() -> cloneDetection.getArena().killSpider(c));
