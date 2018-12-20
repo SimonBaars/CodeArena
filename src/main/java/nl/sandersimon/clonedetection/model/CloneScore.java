@@ -18,12 +18,12 @@ public class CloneScore {
 		this.name = name;
 	}
 	
-	public void increaseScore(int s) {
+	public synchronized void increaseScore(int s) {
 		scorePoints+=s;
 		if(score != null) score.increaseScore(s);
 	}
 	
-	public void incrementScore() {
+	public synchronized void incrementScore() {
 		scorePoints++;
 		if(score != null) score.incrementScore();
 	}
@@ -32,7 +32,7 @@ public class CloneScore {
 		return scorePoints;
 	}
 
-	public void setScorePoints(int scorePoints) {
+	public synchronized void setScorePoints(int scorePoints) {
 		this.scorePoints = scorePoints;
 		if(score != null) score.setScorePoints(scorePoints);
 	}
