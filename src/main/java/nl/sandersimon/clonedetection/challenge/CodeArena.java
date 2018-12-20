@@ -119,23 +119,23 @@ public class CodeArena extends Challenges {
 	
 	private EntityLiving getMonster(int monsterId, World world) {
 		switch(monsterId){
-		case 0: return new EntityZombie(world);
-		case 1: return new EntitySpider(world);
-		case 2: return new EntityBlaze(world);
-		case 3: return new EntityCaveSpider(world);
-		case 4: return new EntityCreeper(world);
-		case 5: return new EntityEnderman(world);
-		case 6: return new EntityEndermite(world);
-		case 7: return new EntityGiantZombie(world);
-		case 8: return new EntityGuardian(world);
-		case 9: return new EntityMagmaCube(world);
-		case 10: return new EntityPigZombie(world);
-		case 11: return new EntitySilverfish(world);
-		case 12: return new EntitySkeleton(world); /*skelly.setCurrentItemOrArmor(0, new ItemStack(Items.bow)); return skelly*/
-		case 13: return new EntitySlime(world);
-		case 14: return new EntityWitch(world);
-		case 15: return new EntityWolf(world);
-		case 16: EntityRabbit rabbit = new EntityRabbit(world); rabbit.setRabbitType(99); return rabbit;
+			case 0: return new EntityZombie(world);
+			case 1: return new EntitySpider(world);
+			case 2: return new EntityBlaze(world);
+			case 3: return new EntityCaveSpider(world);
+			case 4: return new EntityCreeper(world);
+			case 5: return new EntityEnderman(world);
+			case 6: return new EntityEndermite(world);
+			case 7: return new EntityGiantZombie(world);
+			case 8: return new EntityGuardian(world);
+			case 9: return new EntityMagmaCube(world);
+			case 10: return new EntityPigZombie(world);
+			case 11: return new EntitySilverfish(world);
+			case 12: return new EntitySkeleton(world); /*skelly.setCurrentItemOrArmor(0, new ItemStack(Items.bow)); return skelly*/
+			case 13: return new EntitySlime(world);
+			case 14: return new EntityWitch(world);
+			case 15: return new EntityWolf(world);
+			case 16: EntityRabbit rabbit = new EntityRabbit(world); rabbit.setRabbitType(99); return rabbit;
 		}
 		return null;
 	}
