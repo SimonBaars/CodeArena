@@ -77,6 +77,10 @@ public class ChangesScannerThread extends Thread {
 			if(metrics.getTotalNumberOfCloneClasses().getScorePoints() < cloneDetection.before.getTotalNumberOfCloneClasses().getScorePoints())
 				cloneDetection.eventHandler.nextTickActions.add(() -> cloneDetection.getArena().killSpider(c));
 			cloneDetection.before = null;
+			if(cloneDetection.getMetrics().getTotalNumberOfCloneClasses().getScorePoints() == 0) {
+				cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "Your project contains no clones congrats!!")));
+				cloneDetection.eventHandler.nextTickActions.add(() -> cloneDetection.getArena().endChallengeForAllPlayers());
+			}
 		}
 	}
 	
