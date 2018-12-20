@@ -219,6 +219,7 @@ public class CloneDetection
 	
 	public void initScoreboards() {
 		ScoreObjective scoreBoard = arena.getScoreBoard();
+		metrics.reset();
 		for(CloneScore score : metrics.getScores())
 			score.setScore(scoreBoard);
 	}

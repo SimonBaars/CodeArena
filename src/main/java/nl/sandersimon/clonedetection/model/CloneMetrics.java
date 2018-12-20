@@ -125,4 +125,9 @@ public class CloneMetrics {
 	public CloneScore getScoreByName(String name) {
 		return Arrays.stream(scores).filter(s -> s.getName().equals(name)).findAny().get();
 	}
+
+	public void reset() {
+		for(CloneScore s : scores)
+			s.setScorePoints(0);
+	}
 }
