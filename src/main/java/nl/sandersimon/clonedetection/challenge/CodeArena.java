@@ -33,6 +33,8 @@ import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.GameType;
@@ -143,6 +145,12 @@ public class CodeArena extends Challenges {
 		placeBlocks(Blocks.AIR, x+32, y,z+38,sizex,sizey,sizez);
 		for(int i = 0; i<activeMonsters.size(); i++){
 			activeMonsters.get(i).setDead();
+		}
+		for(EntityPlayerMP player : players){
+			for(int i = displayScore.getScorePoints(); i>0; i-=64) {
+				player.inventory.addItemStackToInventory(new ItemStack(Items.EMERALD, i >= 64 ? 64 : i));
+				player.inventoryContainer.detectAndSendChanges();
+			}
 		}
 	}
 	
