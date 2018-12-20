@@ -106,13 +106,13 @@ public abstract class Challenges {
 		}
 		for(EntityPlayerMP player : players){
 			player.isAirBorne=false;
-			if(player.inventory.getCurrentItem()==null || player.inventory.getCurrentItem().getItem()!=Items.BOW){
+			//if(player.inventory.getCurrentItem()==null || player.inventory.getCurrentItem().getItem()!=Items.BOW){
 				player.inventory.clear();
 				for(Item item : items){
 					player.inventory.addItemStackToInventory(new ItemStack(item, item.getItemStackLimit()));
 				};
 				player.inventoryContainer.detectAndSendChanges();
-			}
+			//}
 			/*for(int i = 0; i<Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().loadedEntityList.size(); i++){
 			if(Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().loadedEntityList.get(i) instanceof EntityWitch){
 				((Entity)Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().loadedEntityList.get(i)).setDead();
