@@ -16,7 +16,7 @@ public class EndCommand implements ICommand {
 
 	@Override
 	public int compareTo(ICommand arg0) {
-		return 5;
+		return Integer.compare(hashCode(), arg0.hashCode());
 	}
 
 	@Override
