@@ -12,6 +12,12 @@ test bool duplicateTestNoDuplicates(){
 	return(size(getDuplication(1, createAstsFromDirectory(|file:///home/sander/.clone/projects/tests/T1/WithoutDup|, false), 0.00)) == 0);
 }
 
+test bool duplicateTestComments(){
+	list[tuple[int, list[loc]]] dupList = getDuplication(1, createAstsFromDirectory(|file:///home/sander/.clone/projects/tests/T1/CheckCommentsBetweenFiles1|, false), 0.00);
+	list[tuple[int, list[loc]]] dupList2 = getDuplication(1, createAstsFromDirectory(|file:///home/sander/.clone/projects/tests/T1/CheckCommentsBetweenFiles2|, false), 0.00);
+	return(size(dupList) == size(dupList2) && size(dupList[0][1]) == size(dupList2[0][1]));
+}
+
 test bool duplicateTestDuplicatesWithinFile(){
 	list[tuple[int, list[loc]]] dupList = getDuplication(1, createAstsFromDirectory(|file:///home/sander/.clone/projects/tests/T1/DupWithinOneFile|, false), 0.00);
 	return(size(dupList) == 1 && size(dupList[0][1]) == 2);
