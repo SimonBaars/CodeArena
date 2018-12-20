@@ -59,9 +59,13 @@ public class CodeArena extends Challenges {
 	private SchematicStructure checkStructure;
 	private boolean doReplaceStuff = false;
 	int ticks = 0;
+	private final String cloneType;
+	private final String similarityPerc;
 	
-	public CodeArena(int x, int y, int z) {
+	public CodeArena(int x, int y, int z, String type, String similarityPerc) {
 		super(x,y,z,GameType.CREATIVE,EnumDifficulty.NORMAL);
+		this.cloneType = type;
+		this.similarityPerc = similarityPerc;
 		cornerx=x-15;
 		cornerz=z-20;
 		initArena();
@@ -237,5 +241,13 @@ public class CodeArena extends Challenges {
 		
 		//System.out.println("Not found "+e.getPosition()+ " for "+activeMonsters.stream().map(i -> i.getPosition().toString()).collect(Collectors.joining(",")));
 		return null;
+	}
+
+	public String getCloneType() {
+		return cloneType;
+	}
+
+	public String getSimilarityPerc() {
+		return similarityPerc;
 	}
 }

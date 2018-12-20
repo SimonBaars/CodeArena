@@ -126,7 +126,9 @@ public class CloneDetectionThread extends Thread {
 	public static void startWorker(MinecraftServer server, ICommandSender s, String[] args) {
 		//System.out.println("Spawn at pos "+s.getPosition());
 		//new StructureCreatorClient("arena", s.getPosition().getX()+95, s.getPosition().getY()-2, s.getPosition().getZ()+80	, false, 0);
-		CloneDetection.get().setArena(new CodeArena(s.getPosition().getX(), s.getPosition().getY(), s.getPosition().getZ()));
+		String cloneType = args.length > 1 ? args[1] : "";
+		String similarityPerc = args.length > 2 ? args[2] : "";
+		CloneDetection.get().setArena(new CodeArena(s.getPosition().getX(), s.getPosition().getY(), s.getPosition().getZ(),  cloneType, similarityPerc));
 		CloneDetection.get().initScoreboards();
 		if(worker!=null && worker.isAlive()) {
 			s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.RED, "Sorry, but I'm still busy detecting clones! Please wait a little longer."));
@@ -134,7 +136,7 @@ public class CloneDetectionThread extends Thread {
 		}
 		s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "Searching for clones, please wait..."));
 		
-		worker = new CloneDetectionThread(args[0], args.length > 1 ? args[1] : "", args.length > 2 ? args[2] : "", s);
+		worker = new CloneDetectionThread(args[0], cloneType, similarityPerc, s);
 	}
 
 	public static CloneDetectionThread getWorker() {

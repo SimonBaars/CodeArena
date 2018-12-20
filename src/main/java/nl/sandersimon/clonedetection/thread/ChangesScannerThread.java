@@ -5,6 +5,7 @@ import java.util.List;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.text.TextFormatting;
 import nl.sandersimon.clonedetection.CloneDetection;
+import nl.sandersimon.clonedetection.challenge.CodeArena;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.model.CloneClass;
 import nl.sandersimon.clonedetection.model.CloneMetrics;
@@ -18,12 +19,22 @@ public class ChangesScannerThread extends Thread {
 	private boolean before;
 	private CloneMetrics metrics = new CloneMetrics();
 	private final ICommandSender mySender;
+	private final String type;
+	private final String similarityPercentage;
 
-	public ChangesScannerThread(ICommandSender s, CloneClass c, boolean before) {
+	public ChangesScannerThread(ICommandSender s, String type, String similarityPercentage, CloneClass c, boolean before) {
 		this.c = c;
 		this.before = before;
 		this.mySender = s;
+		if(similarityPercentage.length()>0 && !similarityPercentage.contains("."))
+			this.similarityPercentage = similarityPercentage+".0";
+		else this.similarityPercentage = similarityPercentage;
+		this.type = type;
 		start();
+	}
+	
+	private String addIfNotEmpty(String string) {
+		return string.isEmpty() ? "" : ", "+string;
 	}
 
 	public void run() {
@@ -39,7 +50,7 @@ public class ChangesScannerThread extends Thread {
 			}
 		}
 		//System.out.println("Gonna exx rascal");
-		cloneDetection.executeRascal(cloneDetection.getScanIn(), cloneDetection.getScanOut(), "calculateCodeDuplication("+c.rascalLocList()+")", '\n');
+		cloneDetection.executeRascal(cloneDetection.getScanIn(), cloneDetection.getScanOut(), "calculateCodeDuplication("+c.rascalLocList()+addIfNotEmpty(type)+addIfNotEmpty(similarityPercentage)+")", '\n');
 		//System.out.println("populate");
 		populateResult();
 		//System.out.println("Waiting till finished...");
@@ -125,7 +136,8 @@ public class ChangesScannerThread extends Thread {
 	}
 	
 	public static void startWorker(ICommandSender s, CloneClass c, boolean before) {
-		worker = new ChangesScannerThread(s, c, before);
+		CodeArena arena = CloneDetection.get().getArena();
+		worker = new ChangesScannerThread(s, arena.getCloneType(), arena.getSimilarityPerc(), c, before);
 		
 		/*while(worker.isAlive()) {
 			try {

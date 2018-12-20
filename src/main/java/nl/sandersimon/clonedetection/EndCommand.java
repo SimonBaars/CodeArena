@@ -26,7 +26,7 @@ public class EndCommand implements ICommand {
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return "/end>";
+		return "/end (ends the current code clone arena)";
 	}
 
 	@Override
