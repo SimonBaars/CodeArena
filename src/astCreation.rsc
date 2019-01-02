@@ -12,7 +12,7 @@ import lang::java::m3::AST;
 import util::Math;
 import DateTime;
 
-int minAmountOfLines = 6;
+int MIN_AMOUNT_OF_LINES = 6;
 
 alias LineRegistry = map[str, map[int, list[value]]];
 map[str, list[int]] countedLines = ();
@@ -145,7 +145,7 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 			println(sortedDomainSize);
 		int i = 0;
 		while(i < sortedDomainSize){			
-			if(i+(minAmountOfLines-1)<sortedDomainSize && size(potentialDuplicates) == 0){
+			if(i+(MIN_AMOUNT_OF_LINES-1)<sortedDomainSize && size(potentialDuplicates) == 0){
 				tuple[int skipAmount, map[int, int] hashStartIndex] futureRes = inspectFutureDups(i, locsAtHash, curFilesHashes, hashStartIndex);
 				if(futureRes.skipAmount != -1){
 					potentialDuplicates = [];
@@ -245,7 +245,7 @@ public void printTempDupReg(list[tuple[int, list[loc]]] temp){
 }
 
 public tuple[int skipAmount, map[int, int] hashStartIndex] inspectFutureDups(int i, map[int, list[loc]] locsAtHash, map[int, int] curFilesHashes, map[int, int] hashStartIndex){
-	for(int j <- [0..minAmountOfLines]){
+	for(int j <- [0..MIN_AMOUNT_OF_LINES]){
 		int hash = curFilesHashes[i+j];
 		hashStartIndex[hash] = hashStartIndex[hash] + 1;
 		if(size(locsAtHash[hash])<=hashStartIndex[hash]){
@@ -261,7 +261,7 @@ int amountOfLines(loc location){
 
 public list[tuple[int, list[loc]]] populateBeforeRemoval(list[tuple[int, list[loc]]] currentCloneClassGroup, list[tuple[int, list[loc]]] dupList, list[loc] potentialDuplicates, list[loc] newPotentialDuplicates, str location, int i, bool isLast){
 	map[int, list[loc]] finalizedDups = ();
-	for(loc potDup <- potentialDuplicates, amountOfLines(potDup)>=minAmountOfLines){
+	for(loc potDup <- potentialDuplicates, amountOfLines(potDup)>=MIN_AMOUNT_OF_LINES){
 		int potDupLines = amountOfLines(potDup);
 		if(potDupLines notin finalizedDups){
 			loc l = |unknown:///|(0,0,<0,0>,<0,0>);
