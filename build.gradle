@@ -58,6 +58,7 @@ dependencies {
 	compile 'com.fifesoft:rstaui:2.6.1'
 compile 'com.google.code.gson:gson:2.8.2'
 compile 'com.google.guava:guava:23.0'
+compile 'com.github.javaparser:javaparser-core-serialization:3.9.0'
 }
 
 processResources {

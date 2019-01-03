@@ -21,12 +21,6 @@ public class CloneClass implements Comparable<CloneClass>{
 		super();
 	}
 
-	//public CloneClass(int lines, List<Location> locations) {
-	//	this();
-	//	this.lines = lines;
-	//	this.locations = locations;
-	//}
-
 	public int getLines() {
 		return lines;
 	}
