@@ -1,5 +1,9 @@
 package nl.sandersimon.clonedetection.ast;
 
+import java.util.List;
+
+import com.github.javaparser.ast.Node;
+
 public class CompilationUnitReg {
 	private int lastLineNumber = 0;
 
@@ -16,6 +20,6 @@ public class CompilationUnitReg {
 	}
 
 	public void visitLine(int line) {
-		lastLineNumber = line;
+		this.lastLineNumber = line;
 	}
 }
