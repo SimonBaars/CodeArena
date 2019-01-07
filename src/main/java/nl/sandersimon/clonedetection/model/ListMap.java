@@ -35,5 +35,10 @@ public class ListMap<K, V> extends HashMap<K, List<V>> {
         return super.put(key, l);
     }
 	
-	
+	@Override 
+	public List<V> get(Object key){
+		if(!super.containsKey(key))
+			super.put((K) key, new ArrayList<>());
+		return super.get(key);
+	}
 }
