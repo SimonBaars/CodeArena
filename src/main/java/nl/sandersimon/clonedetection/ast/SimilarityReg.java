@@ -7,8 +7,8 @@ import java.util.Map;
 import com.github.javaparser.ast.Node;
 
 public class SimilarityReg {
-	private final Map<Integer, List<Node>> leftBuff = new HashMap<>();
-	private final Map<Integer, List<Node>> rightBuff = new HashMap<>();
+	private final Map<Integer, Node> leftBuff = new HashMap<>();
+	private final Map<Integer, Node> rightBuff = new HashMap<>();
 	private int same = 0;
 	private int different = 0;
 	private int diffPoints = 0;
@@ -31,10 +31,10 @@ public class SimilarityReg {
 	public void setDiffPoints(int diffPoints) {
 		this.diffPoints = diffPoints;
 	}
-	public Map<Integer, List<Node>> getLeftBuff() {
+	public Map<Integer, Node> getLeftBuff() {
 		return leftBuff;
 	}
-	public Map<Integer, List<Node>> getRightBuff() {
+	public Map<Integer, Node> getRightBuff() {
 		return rightBuff;
 	}
 	public void incrementSame() {

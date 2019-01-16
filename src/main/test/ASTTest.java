@@ -19,7 +19,7 @@ public class ASTTest {
 	public void testNewAST() throws IOException {
 		String project = "ProjectWithDuplicateBetweenFiles";
 		List<File> files = new ArrayList<>();
-	Files.walkFileTree(Paths.get(SavePaths.getProjectFolder()+project+"/src/"), new SimpleFileVisitor<Path>() {
+		Files.walkFileTree(Paths.get(SavePaths.getProjectFolder()+project+"/src/"), new SimpleFileVisitor<Path>() {
 				    @Override
 				    public FileVisitResult visitFile(Path filePath, BasicFileAttributes attrs) throws IOException {
 				    	File file = filePath.toFile();
@@ -28,6 +28,6 @@ public class ASTTest {
 				    	return FileVisitResult.CONTINUE;
 				    }
 				});
-	ASTParser.parse(files.toArray(new File[0]));
+		ASTParser.parse(files.toArray(new File[0]));
 	}
 }

@@ -63,13 +63,15 @@ public class ASTParser {
 		}
 	}
 
-	private static double similarity(List<List<Node>> l, List<List<Node>> r) {
-		List<Node> left = new FlattenedList<>(l);
-		List<Node> right = new FlattenedList<>(r);
+	private static double similarity(List<List<Node>> leftClone, List<List<Node>> rightClone) {
+		List<Node> left = new FlattenedList<>(leftClone);
+		List<Node> right = new FlattenedList<>(rightClone);
 		SimilarityReg r = new SimilarityReg();
-		for(int i = 0; i<Math.max(left.size(), right.size()); i++) {
-			List<Node> leftLine = i<left.size() ? left.get(i) : null;
-			List<Node> rightLine = i<right.size() ? right.get(i): null;
+		int leftSize = left.size();
+		int rightSize = right.size();
+		for(int i = 0; i<Math.max(leftSize, rightSize); i++) {
+			Node leftLine = i<leftSize ? left.get(i) : null;
+			Node rightLine = i<rightSize ? right.get(i): null;
 			if(currentToken(r, r.getLeftBuff(), i, rightLine) || currentToken(r, r.getRightBuff(), i, leftLine) || leftLine == rightLine){
 				r.incrementSame();
 			} else {
@@ -79,8 +81,8 @@ public class ASTParser {
 		return 0;
 	}
 
-	private static boolean currentToken(SimilarityReg r, Map<Integer, List<Node>> map, int i, List<Node> rightLine) {
-		for(Entry<Integer, List<Node>> e : map.entrySet()) {
+	private static boolean currentToken(SimilarityReg r, Map<Integer, Node> map, int i, Node rightLine) {
+		for(Entry<Integer, Node> e : map.entrySet()) {
 			if(e.getValue().equals(rightLine)) {
 				r.incrementDiffPoints(i-e.getKey());
 				map.remove(e.getKey());
