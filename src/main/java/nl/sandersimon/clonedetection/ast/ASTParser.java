@@ -63,7 +63,9 @@ public class ASTParser {
 		}
 	}
 
-	private static double similarity(List<List<Node>> left, List<List<Node>> right) {
+	private static double similarity(List<List<Node>> l, List<List<Node>> r) {
+		List<Node> left = new FlattenedList<>(l);
+		List<Node> right = new FlattenedList<>(r);
 		SimilarityReg r = new SimilarityReg();
 		for(int i = 0; i<Math.max(left.size(), right.size()); i++) {
 			List<Node> leftLine = i<left.size() ? left.get(i) : null;
