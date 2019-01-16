@@ -16,12 +16,13 @@ import nl.sandersimon.clonedetection.model.ListMap;
 
 public class ASTParser {
 	private final static int AMOUNT_OF_LINES = 6;
+	private final static float SIMILARITYTHRESHOLD = 90;
 	
 	public static void parse(File[] path) {
 		final Map<File, ListMap<Integer, Node>> tokensOnLine = new HashMap<>();
 		final ListMap<File, Integer> sortedDomain = new ListMap<>();
 		// Lists in order: List of potential clone classes -> 6 lines in the potential clone class -> List of tokens on the line.
-		final List<List<List<Node>>> potentialClones = new ArrayList<>();
+		final List<CloneClass> potentialClones = new ArrayList<>();
 		final List<CloneClass> foundCloneClasses = new ArrayList<>();
 		for(File file : path) {
 			try {
@@ -39,7 +40,7 @@ public class ASTParser {
 						r.getBuffer().addToBuffer(nodes);
 						if(r.getBuffer().isValid()) {
 							scanForClones(potentialClones, foundCloneClasses, r.getBuffer());
-							potentialClones.add(new ArrayList<>(r.getBuffer().getLines()));
+							potentialClones.add(new CloneClass(r.getBuffer().getLines()));
 						}
 					}
 					r.visitLine(line);
@@ -53,8 +54,30 @@ public class ASTParser {
 		}
 	}
 
-	private static void scanForClones(List<List<List<Node>>> potentialClones, List<CloneClass> foundCloneClasses, LineBuffer buffer) {
-		// TODO Auto-generated method stub
-		
+	private static void scanForClones(List<CloneClass> potentialClones, List<CloneClass> foundCloneClasses, LineBuffer buffer) {
+		for(CloneClass potentialClone : potentialClones) {
+			if(similarity(potentialClone.getCloneClass(), buffer.getLines())>=SIMILARITYTHRESHOLD) {
+				foundCloneClasses.add(new CloneClass(buffer.getLines()));
+			}
+		}
+	}
+
+	private static double similarity(List<List<Node>> left, List<List<Node>> right) {
+		final List<List<Node>> leftBuff = new ArrayList<>();
+		final List<List<Node>> rightBuff = new ArrayList<>();
+		int same = 0;
+		int different = 0;
+		int diffPoints = 0;
+		for(int i = 0; i<Math.max(left.size(), right.size()); i++) {
+			List<Node> leftLine = i<left.size() ? left.get(i) : null;
+			List<Node> rightLine = i<right.size() ? right.get(i): null;
+			if(rightBuff.contains(leftLine)) {
+				rightBuff.remove(leftLine);
+			}
+			if(leftBuff.contains(rightLine)) {
+				leftBuff.remove(rightLine);
+			}
+		}
+		return 0;
 	}
 }

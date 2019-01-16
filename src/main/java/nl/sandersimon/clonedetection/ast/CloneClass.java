@@ -6,9 +6,17 @@ import java.util.List;
 import com.github.javaparser.ast.Node;
 
 public class CloneClass {
-	private final List<List<List<Node>>> cloneClass = new ArrayList<>();
+	private final List<List<Node>> cloneClass;
+	
+	public CloneClass(int size) {
+		cloneClass = new ArrayList<>(size);
+	}
 
-	public List<List<List<Node>>> getCloneClass() {
+	public CloneClass(List<List<Node>> lines) {
+		cloneClass = new ArrayList<>(lines);
+	}
+
+	public List<List<Node>> getCloneClass() {
 		return cloneClass;
 	}
 }
