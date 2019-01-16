@@ -1,2 +1,4 @@
-# CloneDetection
-Series 2 of Software Evolution at the University of Amsterdam
+# CodeArena
+To make programmers aware of harmful coding practises and how they can improve their code, we propose CodeArena. CodeArena is an extension to the popular 3D sandbox game called Minecraft. It allows developers to experience incremental changes in the quality of their code and gain progressive insight in the causes of hard-to-maintain code. This tool translates features of a codebase that are considered harmful to monsters in Minecraft, which can then be "fought" to improve the codebase. Fighting the monsters will trace the user back to the source code. If the developer succeeds in solving the issue, the monster will die and the developer will be rewarded in-game. This way, the developer can gradually improve the quality of the code, while learning about code quality in an engaging way.
+
+The developer can advance between different levels and gain experience points for each metric that has been improved. Each level represents a component in the codebase. The metrics to be improved consist of code duplication, unit complexity, unit size and interface size. Points are also awarded for a decrease in code volume. Points will be subtracted if the code quality is decreased.
