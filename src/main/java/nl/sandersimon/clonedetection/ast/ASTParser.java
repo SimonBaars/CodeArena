@@ -68,31 +68,23 @@ public class ASTParser {
 		for(int i = 0; i<Math.max(left.size(), right.size()); i++) {
 			List<Node> leftLine = i<left.size() ? left.get(i) : null;
 			List<Node> rightLine = i<right.size() ? right.get(i): null;
-			currentToken(r, i, rightLine);
-			/*if(rightBuff.values().contains(leftLine)) {
-				
-				same++;
-				diffPoints += 
-				rightBuff.remove(leftLine);
+			if(currentToken(r, r.getLeftBuff(), i, rightLine) || currentToken(r, r.getRightBuff(), i, leftLine) || leftLine == rightLine){
+				r.incrementSame();
+			} else {
+				r.incrementDifferent();
 			}
-			if(leftBuff.contains(rightLine)) {
-				leftBuff.remove(rightLine);
-			}
-			if(leftLine == rightLine) {
-				same++;
-			}*/
 		}
 		return 0;
 	}
 
-	private static void currentToken(SimilarityReg r, int i, List<Node> rightLine) {
-		for(Entry<Integer, List<Node>> e : r.getLeftBuff().entrySet()) {
+	private static boolean currentToken(SimilarityReg r, Map<Integer, List<Node>> map, int i, List<Node> rightLine) {
+		for(Entry<Integer, List<Node>> e : map.entrySet()) {
 			if(e.getValue().equals(rightLine)) {
-				r.incrementSame();
 				r.incrementDiffPoints(i-e.getKey());
-				r.getLeftBuff().remove(e.getKey());
-				break;
+				map.remove(e.getKey());
+				return true;
 			}
 		}
+		return false;
 	}
 }

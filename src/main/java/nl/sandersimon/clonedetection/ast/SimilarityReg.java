@@ -43,4 +43,7 @@ public class SimilarityReg {
 	public void incrementDiffPoints(int i) {
 		diffPoints+=i;
 	}
+	public void incrementDifferent() {
+		different++;
+	}
 }

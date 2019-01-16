@@ -69,7 +69,11 @@ public class FlattenedList<E> implements List<E> {
 
 	@Override
 	public boolean containsAll(Collection<?> c) {
-		return flatList().collect(Collectors.toList()).containsAll(c);
+		return combinedList().containsAll(c);
+	}
+
+	private List<E> combinedList() {
+		return flatList().collect(Collectors.toList());
 	}
 
 	@Override
@@ -99,56 +103,63 @@ public class FlattenedList<E> implements List<E> {
 
 	@Override
 	public E get(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		int total = 0;
+		for(int i = 0; i<listSize.length; i++) {
+			int size = listSize[i];
+			total+=size;
+			if(index<total) {
+				return listToFlatten.get(i).get(index-(total-size));
+			}
+		}
+		throw new IndexOutOfBoundsException();
 	}
 
 	@Override
 	public E set(int index, E element) {
-		// TODO Auto-generated method stub
-		return null;
+		int total = 0;
+		for(int i = 0; i<listSize.length; i++) {
+			int size = listSize[i];
+			total+=size;
+			if(index<total) {
+				return listToFlatten.get(i).set(index-(total-size), element);
+			}
+		}
+		throw new IndexOutOfBoundsException();
 	}
 
 	@Override
 	public void add(int index, E element) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public E remove(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public int indexOf(Object o) {
-		// TODO Auto-generated method stub
-		return 0;
+		return combinedList().indexOf(o);
 	}
 
 	@Override
 	public int lastIndexOf(Object o) {
-		// TODO Auto-generated method stub
-		return 0;
+		return combinedList().lastIndexOf(o);
 	}
 
 	@Override
 	public ListIterator<E> listIterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return combinedList().listIterator();
 	}
 
 	@Override
 	public ListIterator<E> listIterator(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		return combinedList().listIterator(index);
 	}
 
 	@Override
 	public List<E> subList(int fromIndex, int toIndex) {
-		// TODO Auto-generated method stub
-		return null;
+		return combinedList().subList(fromIndex, toIndex);
 	}
 
 }
