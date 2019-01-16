@@ -1,5 +1,8 @@
 package nl.sandersimon.clonedetection.ast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.github.javaparser.ast.Node;
 
 import nl.sandersimon.clonedetection.model.ListMap;
@@ -8,6 +11,7 @@ public class CompilationUnitReg {
 	private int lastLineNumber = 0;
 	private final ListMap<Integer, Node> thisFile = new ListMap<>();
 	private final LineBuffer buffer;
+	private final List<List<List<Node>>> potentialClones = new ArrayList<>();
 	
 	public CompilationUnitReg(int size) {
 		this.buffer = new LineBuffer(size);
@@ -35,5 +39,9 @@ public class CompilationUnitReg {
 
 	public LineBuffer getBuffer() {
 		return buffer;
+	}
+
+	public List<List<List<Node>>> getPotentialClones() {
+		return potentialClones;
 	}
 }
