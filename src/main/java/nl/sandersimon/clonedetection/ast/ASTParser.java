@@ -73,21 +73,47 @@ public class ASTParser {
 		for(int i = 0; i<Math.max(leftSize, rightSize); i++) {
 			Node leftLine = i<leftSize ? left.get(i) : null;
 			Node rightLine = i<rightSize ? right.get(i): null;
-			if(currentToken(r, r.getLeftBuff(), i, rightLine) || currentToken(r, r.getRightBuff(), i, leftLine) || leftLine == rightLine){
-				r.incrementSame();
-			} else {
-				r.incrementDifferent();
+			boolean checkEqual = true;
+			if(currentToken(r, i, leftLine, rightLine, true)) {
+				r.incrementSame(1);
+				r.incrementDifferent(1);
+				checkEqual = false;
+			}
+			if(currentToken(r, i, leftLine, rightLine, false)) {
+				r.incrementSame(1);
+				if(checkEqual)
+					r.decementDifferent();
+				else r.incrementDifferent(1);
+				checkEqual = false;
+			}
+			if(checkEqual) {
+				if(leftLine == rightLine){
+					r.incrementSame(2);
+				} else {
+					r.incrementDifferent(2); //Add 2 because on both sides (left and right) a different is found.
+					r.putLeftBuff(i, leftLine);
+					r.putRightBuff(i, rightLine);
+				}
 			}
 		}
 		//System.out.println("Same = "+r.getSame()+", Different = "+r.getDifferent()+", DiffPoints = "+r.getDiffPoints()+", percSame = "+(r.getSame()/((double)(r.getSame()+r.getDifferent()))*100D));
 		return r.getSame()/((double)(r.getSame()+r.getDifferent()))*100D;
 	}
 
-	private static boolean currentToken(SimilarityReg r, Map<Integer, Node> map, int i, Node rightLine) {
-		for(Entry<Integer, Node> e : map.entrySet()) {
-			if(e.getValue().equals(rightLine)) {
+	private static boolean currentToken(SimilarityReg r, int i, Node leftLine, Node rightLine, boolean isLeft) {
+		Map<Integer,Node> thisMap = isLeft ? r.getRightBuff() : r.getLeftBuff();
+		Node relevantLine = isLeft ? leftLine : rightLine;
+		if(relevantLine == null)
+			return false;
+		for(Entry<Integer, Node> e : thisMap.entrySet()) { // TODO: This can be replaced by map access for O(n) performance.
+			if(e.getValue().equals(relevantLine)) {
 				r.incrementDiffPoints(i-e.getKey());
-				map.remove(e.getKey());
+				thisMap.remove(e.getKey());
+				if(isLeft) {
+					r.putRightBuff(i, rightLine);
+				} else {
+					r.putLeftBuff(i, leftLine);
+				}
 				r.decementDifferent();
 				return true;
 			}

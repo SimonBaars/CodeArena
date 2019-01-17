@@ -37,16 +37,25 @@ public class SimilarityReg {
 	public Map<Integer, Node> getRightBuff() {
 		return rightBuff;
 	}
-	public void incrementSame() {
-		same++;
+	public void incrementSame(int i) {
+		same+=i;
 	}
 	public void incrementDiffPoints(int i) {
 		diffPoints+=i;
 	}
-	public void incrementDifferent() {
-		different++;
+	public void incrementDifferent(int i) {
+		different+=i;
 	}
 	public void decementDifferent() {
 		different--;
+	}
+	public void putLeftBuff(int i, Node leftLine) {
+		if(leftLine!=null)
+			leftBuff.put(i, leftLine);
+	}
+	
+	public void putRightBuff(int i, Node rightLine) {
+		if(rightLine!=null)
+			rightBuff.put(i, rightLine);
 	}
 }
