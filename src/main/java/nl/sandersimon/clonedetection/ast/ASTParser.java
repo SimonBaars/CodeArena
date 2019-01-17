@@ -14,10 +14,11 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 
 import nl.sandersimon.clonedetection.model.ListMap;
+import scala.actors.threadpool.Arrays;
 
 public class ASTParser {
-	private final static int AMOUNT_OF_LINES = 6;
-	private final static float SIMILARITYTHRESHOLD = 90;
+	private static final int AMOUNT_OF_LINES = 6;
+	private static final double SIMILARITYTHRESHOLD = 90;
 	
 	public static void parse(File[] path) {
 		final Map<File, ListMap<Integer, Node>> tokensOnLine = new HashMap<>();
@@ -49,10 +50,10 @@ public class ASTParser {
 				}
 				tokensOnLine.put(file, r.getThisFile());
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+		//System.out.println(Arrays.toString(foundCloneClasses.toArray()));
 	}
 
 	private static void scanForClones(List<CloneClass> potentialClones, List<CloneClass> foundCloneClasses, LineBuffer buffer) {
@@ -64,11 +65,11 @@ public class ASTParser {
 	}
 
 	private static double similarity(List<List<Node>> leftClone, List<List<Node>> rightClone) {
-		List<Node> left = new FlattenedList<>(leftClone);
-		List<Node> right = new FlattenedList<>(rightClone);
+		final List<Node> left = new FlattenedList<>(leftClone);
+		final List<Node> right = new FlattenedList<>(rightClone);
 		SimilarityReg r = new SimilarityReg();
-		int leftSize = left.size();
-		int rightSize = right.size();
+		final int leftSize = left.size();
+		final int rightSize = right.size();
 		for(int i = 0; i<Math.max(leftSize, rightSize); i++) {
 			Node leftLine = i<leftSize ? left.get(i) : null;
 			Node rightLine = i<rightSize ? right.get(i): null;
@@ -78,7 +79,8 @@ public class ASTParser {
 				r.incrementDifferent();
 			}
 		}
-		return 0;
+		//System.out.println("Same = "+r.getSame()+", Different = "+r.getDifferent()+", DiffPoints = "+r.getDiffPoints()+", percSame = "+(r.getSame()/((double)(r.getSame()+r.getDifferent()))*100D));
+		return r.getSame()/((double)(r.getSame()+r.getDifferent()))*100D;
 	}
 
 	private static boolean currentToken(SimilarityReg r, Map<Integer, Node> map, int i, Node rightLine) {
@@ -86,6 +88,7 @@ public class ASTParser {
 			if(e.getValue().equals(rightLine)) {
 				r.incrementDiffPoints(i-e.getKey());
 				map.remove(e.getKey());
+				r.decementDifferent();
 				return true;
 			}
 		}

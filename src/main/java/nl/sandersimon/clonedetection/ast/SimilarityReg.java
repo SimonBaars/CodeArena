@@ -46,4 +46,7 @@ public class SimilarityReg {
 	public void incrementDifferent() {
 		different++;
 	}
+	public void decementDifferent() {
+		different--;
+	}
 }

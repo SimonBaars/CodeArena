@@ -2,6 +2,7 @@ package nl.sandersimon.clonedetection.ast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.Node;
 
@@ -18,5 +19,10 @@ public class CloneClass {
 
 	public List<List<Node>> getCloneClass() {
 		return cloneClass;
+	}
+	
+	@Override
+	public String toString() {
+		return cloneClass.stream().map(e -> e.stream().map(Node::toString).collect(Collectors.joining(", "))).collect(Collectors.joining(" => "));
 	}
 }

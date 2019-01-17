@@ -1,8 +1,8 @@
 package nl.sandersimon.clonedetection.ast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import com.github.javaparser.ast.Node;
 
@@ -24,7 +24,7 @@ public class LineBuffer {
 	}
 	
 	public boolean isValid() {
-		return lines.stream().noneMatch(e -> e == null);
+		return lines.stream().noneMatch(Objects::isNull);
 	}
 
 	public int getCurrentIndex() {
