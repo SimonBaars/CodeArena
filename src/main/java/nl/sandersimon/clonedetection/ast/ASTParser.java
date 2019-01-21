@@ -72,7 +72,7 @@ public class ASTParser {
 		final int rightSize = right.size();
 		for(int i = 0; i<Math.max(leftSize, rightSize); i++) {
 			Node leftLine = i<leftSize ? left.get(i) : null;
-			Node rightLine = i<rightSize ? right.get(i): null;
+			Node rightLine = i<rightSize ? right.get(i) : null;
 			boolean checkEqual = true;
 			if(currentToken(r, i, leftLine, rightLine, true)) {
 				r.incrementSame(1);
@@ -82,8 +82,8 @@ public class ASTParser {
 			if(currentToken(r, i, leftLine, rightLine, false)) {
 				r.incrementSame(1);
 				if(checkEqual)
-					r.decementDifferent();
-				else r.incrementDifferent(1);
+					r.incrementDifferent(1);
+				else r.decementDifferent();
 				checkEqual = false;
 			}
 			if(checkEqual) {
@@ -96,7 +96,7 @@ public class ASTParser {
 				}
 			}
 		}
-		//System.out.println("Same = "+r.getSame()+", Different = "+r.getDifferent()+", DiffPoints = "+r.getDiffPoints()+", percSame = "+(r.getSame()/((double)(r.getSame()+r.getDifferent()))*100D));
+		System.out.println("Same = "+r.getSame()+", Different = "+r.getDifferent()+", DiffPoints = "+r.getDiffPoints()+", percSame = "+(r.getSame()/((double)(r.getSame()+r.getDifferent()))*100D));
 		return r.getSame()/((double)(r.getSame()+r.getDifferent()))*100D;
 	}
 
@@ -114,7 +114,6 @@ public class ASTParser {
 				} else {
 					r.putLeftBuff(i, leftLine);
 				}
-				r.decementDifferent();
 				return true;
 			}
 		}
