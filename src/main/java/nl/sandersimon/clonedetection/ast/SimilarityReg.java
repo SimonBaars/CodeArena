@@ -5,11 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.metamodel.NodeMetaModel;
 
 public class SimilarityReg {
-	private final Map<Integer, NodeMetaModel> leftBuff = new HashMap<>();
-	private final Map<Integer, NodeMetaModel> rightBuff = new HashMap<>();
+	private final Map<Integer, Node> leftBuff = new HashMap<>();
+	private final Map<Integer, Node> rightBuff = new HashMap<>();
 	private int same = 0;
 	private int different = 0;
 	private int diffPoints = 0;
@@ -32,10 +31,10 @@ public class SimilarityReg {
 	public void setDiffPoints(int diffPoints) {
 		this.diffPoints = diffPoints;
 	}
-	public Map<Integer, NodeMetaModel> getLeftBuff() {
+	public Map<Integer, Node> getLeftBuff() {
 		return leftBuff;
 	}
-	public Map<Integer, NodeMetaModel> getRightBuff() {
+	public Map<Integer, Node> getRightBuff() {
 		return rightBuff;
 	}
 	public void incrementSame(int i) {
@@ -50,12 +49,12 @@ public class SimilarityReg {
 	public void decementDifferent() {
 		different--;
 	}
-	public void putLeftBuff(int i, NodeMetaModel leftLine) {
+	public void putLeftBuff(int i, Node leftLine) {
 		if(leftLine!=null)
 			leftBuff.put(i, leftLine);
 	}
 	
-	public void putRightBuff(int i, NodeMetaModel rightLine) {
+	public void putRightBuff(int i, Node rightLine) {
 		if(rightLine!=null)
 			rightBuff.put(i, rightLine);
 	}

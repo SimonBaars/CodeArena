@@ -12,7 +12,6 @@ import java.util.Map.Entry;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.metamodel.NodeMetaModel;
 
 import nl.sandersimon.clonedetection.model.ListMap;
 import scala.actors.threadpool.Arrays;
@@ -72,8 +71,8 @@ public class ASTParser {
 		final int leftSize = left.size();
 		final int rightSize = right.size();
 		for(int i = 0; i<Math.max(leftSize, rightSize); i++) {
-			NodeMetaModel leftLine = i<leftSize ? left.get(i).getMetaModel() : null;
-			NodeMetaModel rightLine = i<rightSize ? right.get(i).getMetaModel() : null;
+			Node leftLine = i<leftSize ? left.get(i) : null;
+			Node rightLine = i<rightSize ? right.get(i) : null;
 			boolean checkEqual = true;
 			if(currentToken(r, i, leftLine, rightLine, true)) {
 				r.incrementSame(1);
@@ -88,7 +87,7 @@ public class ASTParser {
 				checkEqual = false;
 			}
 			if(checkEqual) {
-				System.out.println("Compare "+leftLine+Arrays.toString(leftLine.getAllPropertyMetaModels().toArray())+" vs "+rightLine+" = "+(leftLine == rightLine));
+				System.out.println("Compare "+leftLine+" vs "+rightLine+" = "+(leftLine == rightLine));
 				if(leftLine == rightLine){
 					r.incrementSame(2);
 				} else {
@@ -102,12 +101,12 @@ public class ASTParser {
 		return r.getSame()/((double)(r.getSame()+r.getDifferent()))*100D;
 	}
 
-	private static boolean currentToken(SimilarityReg r, int i, NodeMetaModel leftLine, NodeMetaModel rightLine, boolean isLeft) {
-		Map<Integer,NodeMetaModel> thisMap = isLeft ? r.getRightBuff() : r.getLeftBuff();
-		NodeMetaModel relevantLine = isLeft ? leftLine : rightLine;
+	private static boolean currentToken(SimilarityReg r, int i, Node leftLine, Node rightLine, boolean isLeft) {
+		Map<Integer,Node> thisMap = isLeft ? r.getRightBuff() : r.getLeftBuff();
+		Node relevantLine = isLeft ? leftLine : rightLine;
 		if(relevantLine == null)
 			return false;
-		for(Entry<Integer, NodeMetaModel> e : thisMap.entrySet()) { // TODO: This can be replaced by map access for O(n) performance.
+		for(Entry<Integer, Node> e : thisMap.entrySet()) { // TODO: This can be replaced by map access for O(n) performance.
 			if(e.getValue().equals(relevantLine)) {
 				r.incrementDiffPoints(i-e.getKey());
 				thisMap.remove(e.getKey());
