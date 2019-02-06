@@ -120,7 +120,6 @@ public map[int, list[value]] addToASTMap(int t, map[int, list[value]] astMap, no
 	if(location!=|unknown:///|){
 		list[value] values = getComparables(n, t);
 		astMap = addToMap(astMap, location.begin.line, values);
-		println(location.begin.line);
 		if(location.begin.line!=location.end.line)
 			astMap = addToMap(astMap, location.end.line, [0]);
 	}
