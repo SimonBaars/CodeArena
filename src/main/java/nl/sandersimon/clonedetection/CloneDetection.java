@@ -62,7 +62,8 @@ public class CloneDetection
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){
-		proxy.preInit(event);
+		if(proxy != null)
+			proxy.preInit(event);
 		cloneDetection = this;
 		ResourceCommons.extractResources();
 		//RenderingRegistry.registerEntityRenderingHandler(EntityCodeSpider.class, new CodeSpiderFactory());
@@ -80,7 +81,8 @@ public class CloneDetection
 
 	@EventHandler
 	public void init(FMLInitializationEvent event){
-		proxy.init(event);
+		if(proxy != null)
+			proxy.init(event);
 		try {
 			System.out.println("Starting Rascal..");
 			rascal = getProcess("java -jar "+ResourceCommons.getResource("Rascal.jar").getAbsolutePath(), ResourceCommons.getResource("rascal"));
@@ -93,7 +95,7 @@ public class CloneDetection
 		} catch (IOException e) {
 			throw new RuntimeException("Rascal could not be started!", e);
 		}
-		if(eventHandler!=null)	{
+		if(proxy!=null)	{
 			FMLCommonHandler.instance().bus().register(eventHandler);
 			MinecraftForge.EVENT_BUS.register(new nl.sandersimon.clonedetection.minecraft.ForgeEventHandler());
 		}
@@ -101,7 +103,8 @@ public class CloneDetection
 	
 	@Mod.EventHandler
     public void postInit(FMLPostInitializationEvent e) {
-        proxy.postInit(e);
+        if(proxy != null)	
+        	proxy.postInit(e);
     }
 
 	private Process getProcess(String command, File dir) throws IOException {
