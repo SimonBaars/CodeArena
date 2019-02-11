@@ -18,41 +18,7 @@ alias LineRegistry = map[str, map[int, list[value]]];
 map[str, list[int]] countedLines = ();
 
 public list[tuple[int, list[loc]]] getDuplication(int t, set[Declaration] asts, real allowedDiffPercentage) {
-	countedLines = ();
-    LineRegistry fileLineAsts = fileLineMapGeneration(t, asts);
-    set[str] filesOrder = domain(fileLineAsts);
-    tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] nodeRegs = calculateLocationsOfNodeTypes(fileLineAsts, filesOrder, t, allowedDiffPercentage);
-    map[int, list[loc]] locsAtHash = nodeRegs.locRegistries;
-    map[str, list[int]] sortedDomains = nodeRegs.sortedDomains;
-    map[int, int] hashStartIndex = nodeRegs.hashStartIndex;
-    map[str, map[int, int]] hashMap = nodeRegs.hashMap;
-    return getDupList(hashMap, locsAtHash, sortedDomains, hashStartIndex, filesOrder);
-}
-
-public tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] calculateLocationsOfNodeTypes(LineRegistry fileLineAsts, set[str] filesOrder, int t, real allowedDiffPercentage){
-	map[int, list[loc]] registry = ();
-	map[str, list[int]] sortedDomains = ();
-	map[int, int] hashStartIndex = ();
-	map[str, map[int, int]] hashMap = ();
-	for(str location <- filesOrder){
-		map[int, list[value]] fileLines = fileLineAsts[location];
-		sortedDomains[location] = sort(domain(fileLines));
-		hashMap[location] = ();
-		for(int i <- [0..size(fileLines)]){
-			list[value] stuffOnLine = fileLines[sortedDomains[location][i]];
-			loc l = |unknown:///|(0,0,<0,0>,<0,0>);
-			l.uri = location;
-			l.end.line = i;
-			l.begin.line = i;
-			int hash = makeHashOfLine(stuffOnLine);
-			if(t == 3)
-				registry = calculateType3Hash(l, location, i, fileLineAsts, hashMap, filesOrder, sortedDomains, allowedDiffPercentage, stuffOnLine, registry);
-			registry = addTo(registry, hash, l);
-			hashStartIndex[hash] = 0;
-			hashMap[location][i] = hash;
-		}
-	}
-	return <registry, sortedDomains, hashStartIndex, hashMap>;
+    return fileLineMapGeneration(t, asts, allowedDiffPercentage);
 }
 
 map[int, list[loc]] registry = ();
@@ -60,7 +26,7 @@ map[int, list[loc]] registry = ();
 	map[int, int] hashStartIndex = ();
 	map[str, map[int, int]] hashMap = ();
 
-public tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] calculateLocationsOfNodeTypes(list[value] stuffOnLine, int t, real allowedDiffPercentage){
+public void calculateLocationsOfNodeTypes(list[value] stuffOnLine, int t, real allowedDiffPercentage){
 	list[value] stuffOnLine = fileLines[sortedDomains[location][i]];
 	loc l = |unknown:///|(0,0,<0,0>,<0,0>);
 	l.uri = location;
@@ -72,7 +38,6 @@ public tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomain
 	registry = addTo(registry, hash, l);
 	hashStartIndex[hash] = 0;
 	hashMap[location][i] = hash;
-	return <registry, sortedDomains, hashStartIndex, hashMap>;
 }
 
 public map[int, list[loc]] calculateType3Hash(loc thisLoc, str location, int i, LineRegistry fileLineAsts, map[str, map[int, int]] hashMap, set[str] filesOrder, map[str, list[int]] sortedDomains, real allowedDiffPercentage, list[value] curLineContent, map[int, list[loc]] registry){
