@@ -16,17 +16,19 @@ int MIN_AMOUNT_OF_LINES = 6;
 
 alias LineRegistry = map[str, map[int, list[value]]];
 map[str, list[int]] countedLines = ();
+map[int, list[loc]] registry = ();
+	map[str, list[int]] sortedDomains = ();
+	map[int, int] hashStartIndex = ();
+	map[str, map[int, int]] hashMap = ();
+	
+	int currentLine = -1;
+	loc currentLoc = |unknown:///|(0,0,<0,0>,<0,0>);
 
 public list[tuple[int, list[loc]]] getDuplication(int t, set[Declaration] asts, real allowedDiffPercentage) {
     return fileLineMapGeneration(t, asts, allowedDiffPercentage);
 }
 
-map[int, list[loc]] registry = ();
-	map[str, list[int]] sortedDomains = ();
-	map[int, int] hashStartIndex = ();
-	map[str, map[int, int]] hashMap = ();
-
-public void calculateLocationsOfNodeTypes(list[value] stuffOnLine, int t, real allowedDiffPercentage){
+public void calculateLocationsOfNodeTypes(list[value] stuffOnLine, loc location, int t, real allowedDiffPercentage){
 	list[value] stuffOnLine = fileLines[sortedDomains[location][i]];
 	loc l = |unknown:///|(0,0,<0,0>,<0,0>);
 	l.uri = location;
@@ -83,27 +85,32 @@ public map[int, list[loc]] addTo(map[int, list[loc]] numberMap, int codeNumber, 
 	return numberMap;
 }
 
-public LineRegistry fileLineMapGeneration(int t, set[Declaration] asts) {
+public LineRegistry fileLineMapGeneration(int t, set[Declaration] asts, real a) {
 	LineRegistry fileLineAsts = ();
 	for (m <- asts)
-		fileLineAsts[m.src.uri] = getLocLineAst(t, m);
+		fileLineAsts[m.src.uri] = getLocLineAst(t, m, a);
 	return fileLineAsts;
 }
 
-public map[int, list[value]] getLocLineAst(int t, Declaration location) {
+public map[int, list[value]] getLocLineAst(int t, Declaration location, real type3Perc) {
 	map[int, list[value]] astMap = (); 
 	top-down visit (location) {
-        case Declaration d: astMap = addToASTMap(t, astMap, d);
-		case Statement s: astMap = addToASTMap(t, astMap, s);
-	 	case Expression e: astMap = addToASTMap(t, astMap, e);
+        case Declaration d: astMap = addToASTMap(t, astMap, d, type3Perc);
+		case Statement s: astMap = addToASTMap(t, astMap, s, type3Perc);
+	 	case Expression e: astMap = addToASTMap(t, astMap, e, type3Perc);
     }
 	return astMap;
 }
 
-public map[int, list[value]] addToASTMap(int t, map[int, list[value]] astMap, node n){
+public map[int, list[value]] addToASTMap(int t, map[int, list[value]] astMap, node n, real type3Perc){
 	loc location = getSrc(n);
 	if(location!=|unknown:///|){
 		list[value] values = getComparables(n, t);
+		if((currentLine!=location.begin.line || currentLoc!=location) && currentLine!=-1){
+			calculateLocationsOfNodeTypes(astMap[currentLine], currentLoc, t, type3Perc);
+			currentLine = location.begin.line;
+			currentLoc = location;
+		}
 		astMap = addToMap(astMap, location.begin.line, values);
 		if(location.begin.line!=location.end.line)
 			astMap = addToMap(astMap, location.end.line, [0]);
