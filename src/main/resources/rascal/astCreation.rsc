@@ -17,15 +17,17 @@ int MIN_AMOUNT_OF_LINES = 6;
 alias LineRegistry = map[str, map[int, list[value]]];
 map[str, list[int]] countedLines = ();
 map[int, list[loc]] registry = ();
-	map[str, list[int]] sortedDomains = ();
-	map[int, int] hashStartIndex = ();
 	map[str, map[int, int]] hashMap = ();
+	map[int, list[loc]] dupList = [];
+	int cloneId = 0;
 	
 	int currentLine = -1;
 	loc currentLoc = |unknown:///|(0,0,<0,0>,<0,0>);
 
-public list[tuple[int, list[loc]]] getDuplication(int t, set[Declaration] asts, real allowedDiffPercentage) {
-    return fileLineMapGeneration(t, asts, allowedDiffPercentage);
+public void getDuplication(int t, set[Declaration] asts, real a) {
+   LineRegistry fileLineAsts = ();
+	for (m <- asts)
+		fileLineAsts[m.src.uri] = getLocLineAst(t, m, a);
 }
 
 public void calculateLocationsOfNodeTypes(list[value] lineContents, loc location, int t, real allowedDiffPercentage){
@@ -35,8 +37,8 @@ public void calculateLocationsOfNodeTypes(list[value] lineContents, loc location
 	l.begin.line = i;
 	int hash = makeHashOfLine(lineContents);
 	registry = addTo(registry, hash, l);
-	hashStartIndex[hash] = 0;
 	hashMap[location][i] = hash;
+	getDupList(hashMap); //TODO
 }
 
 public int makeHashOfLine(list[value] lines){
@@ -65,24 +67,16 @@ public map[int, list[loc]] addTo(map[int, list[loc]] numberMap, int codeNumber, 
 	return numberMap;
 }
 
-public LineRegistry fileLineMapGeneration(int t, set[Declaration] asts, real a) {
-	LineRegistry fileLineAsts = ();
-	for (m <- asts)
-		fileLineAsts[m.src.uri] = getLocLineAst(t, m, a);
-	return fileLineAsts;
-}
-
-public map[int, list[value]] getLocLineAst(int t, Declaration location, real type3Perc) {
+public void getLocLineAst(int t, Declaration location, real type3Perc) {
 	map[int, list[value]] astMap = (); 
 	top-down visit (location) {
         case Declaration d: astMap = addToASTMap(t, astMap, d, type3Perc);
 		case Statement s: astMap = addToASTMap(t, astMap, s, type3Perc);
 	 	case Expression e: astMap = addToASTMap(t, astMap, e, type3Perc);
     }
-	return astMap;
 }
 
-public map[int, list[value]] addToASTMap(int t, map[int, list[value]] astMap, node n, real type3Perc){
+public void addToASTMap(int t, map[int, list[value]] astMap, node n, real type3Perc){
 	loc location = getSrc(n);
 	if(location!=|unknown:///|){
 		list[value] values = getComparables(n, t);
@@ -106,16 +100,7 @@ public map[int, list[value]] addToMap(map[int, list[value]] astMap, int line, li
 }
 
 public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, map[int, list[loc]] locsAtHash, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, set[str] filesOrder){
-	list[tuple[int, list[loc]]] dupList = [];
-	for(str location <- filesOrder){
-		list[tuple[int, list[loc]]] currentCloneClassGroup = [];
-		map[int,int] curFilesHashes = hashMap[location];
-		list[loc] potentialDuplicates = [];
-		list[int] sortedDomain = sortedDomains[location];
-		int sortedDomainSize = size(sortedDomain);
-		if(sortedDomainSize!=0)
-			println(sortedDomainSize);
-		int i = 0;
+		
 		while(i < sortedDomainSize){			
 			if(i+(MIN_AMOUNT_OF_LINES-1)<sortedDomainSize && size(potentialDuplicates) == 0){
 				tuple[int skipAmount, map[int, int] hashStartIndex] futureRes = inspectFutureDups(i, locsAtHash, curFilesHashes, hashStartIndex);
@@ -166,9 +151,6 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 			potentialDuplicates = newPotentialDuplicates;
 			i+=1;
 		}
-		println(0); //End of loc
-	}
-	println(0); //EOF
 	return dupList;
 }
 
