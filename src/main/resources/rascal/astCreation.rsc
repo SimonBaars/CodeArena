@@ -55,6 +55,26 @@ public tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomain
 	return <registry, sortedDomains, hashStartIndex, hashMap>;
 }
 
+map[int, list[loc]] registry = ();
+	map[str, list[int]] sortedDomains = ();
+	map[int, int] hashStartIndex = ();
+	map[str, map[int, int]] hashMap = ();
+
+public tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] calculateLocationsOfNodeTypes(list[value] stuffOnLine, int t, real allowedDiffPercentage){
+	list[value] stuffOnLine = fileLines[sortedDomains[location][i]];
+	loc l = |unknown:///|(0,0,<0,0>,<0,0>);
+	l.uri = location;
+	l.end.line = i;
+	l.begin.line = i;
+	int hash = makeHashOfLine(stuffOnLine);
+	if(t == 3)
+		registry = calculateType3Hash(l, location, i, fileLineAsts, hashMap, filesOrder, sortedDomains, allowedDiffPercentage, stuffOnLine, registry);
+	registry = addTo(registry, hash, l);
+	hashStartIndex[hash] = 0;
+	hashMap[location][i] = hash;
+	return <registry, sortedDomains, hashStartIndex, hashMap>;
+}
+
 public map[int, list[loc]] calculateType3Hash(loc thisLoc, str location, int i, LineRegistry fileLineAsts, map[str, map[int, int]] hashMap, set[str] filesOrder, map[str, list[int]] sortedDomains, real allowedDiffPercentage, list[value] curLineContent, map[int, list[loc]] registry){
 	for(str l <- filesOrder){
 		map[int, list[value]] fileLines = fileLineAsts[l];
