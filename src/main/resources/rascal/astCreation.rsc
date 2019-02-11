@@ -74,6 +74,7 @@ public void getLocLineAst(int t, Declaration location, real type3Perc) {
 		case Statement s: astMap = addToASTMap(t, astMap, s, type3Perc);
 	 	case Expression e: astMap = addToASTMap(t, astMap, e, type3Perc);
     }
+    potentialDuplicates = [];
 }
 
 public void addToASTMap(int t, map[int, list[value]] astMap, node n, real type3Perc){
@@ -99,12 +100,15 @@ public map[int, list[value]] addToMap(map[int, list[value]] astMap, int line, li
 	return astMap;
 }
 
-public void getDupList(int lineHash){	
-			int hash = curFilesHashes[i];
-			hashStartIndex[hash] = hashStartIndex[hash] + 1;
-			list[loc] dupLines = registry[hash];
+list[loc] potentialDuplicates = [];
+
+public void getDupList(int hash){
+			list[loc] dupLines = registry[hash]; // Locs for current hash (clones of current line)
 			list[loc] newPotentialDuplicates = [];
-			map[str, list[loc]] potentialDuplicateRegistry = ();
+			
+			map[str, list[loc]] potentialDuplicateRegistry = (); // Purpose: performance by key lookup
+			
+			
 			for(loc potDupOld <- potentialDuplicates){
 				str key = "<potDupOld.uri><potDupOld.end.line>";
 				if(key in potentialDuplicateRegistry){
