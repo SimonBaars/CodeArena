@@ -18,7 +18,6 @@ alias LineRegistry = map[str, map[int, list[value]]];
 map[str, list[int]] countedLines = ();
 map[int, list[loc]] registry = ();
 	map[str, map[int, int]] hashMap = ();
-	map[int, list[loc]] dupList = [];
 	int cloneId = 0;
 	
 	map[str, list[int]] sortedDomains = ();
@@ -44,7 +43,7 @@ public void calculateLocationsOfNodeTypes(list[value] lineContents, loc location
 	int hash = makeHashOfLine(lineContents);
 	registry = addTo(registry, hash, l);
 	hashMap[location][i] = hash;
-	getDupList(location, hash);
+	getDupList(location, i, hash);
 }
 
 public int makeHashOfLine(list[value] lines){
@@ -108,8 +107,9 @@ public map[int, list[value]] addToMap(map[int, list[value]] astMap, int line, li
 
 list[loc] potentialDuplicates = [];
 list[tuple[int, list[loc]]] currentCloneClassGroup = [];
+map[int, list[loc]] dupList = [];
 
-public void getDupList(loc location, int hash){
+public void getDupList(loc location, int i, int hash){
 	list[int] sortedDomain = sortedDomains[location];
 			list[loc] dupLines = registry[hash]; // Locs for current hash (clones of current line)
 			list[loc] newPotentialDuplicates = [];
@@ -130,7 +130,7 @@ public void getDupList(loc location, int hash){
 			for(int j <- [hashStartIndex[hash]..size(dupLines)]){ // Calculate chains
 				loc potDupNew = dupLines[j]; // Every duplicate of the current line is a potential duplicate
 				str searchKey = "<potDupNew.uri><potDupNew.begin.line-1>";
-				if(searchKey in potentialDuplicateRegistry){
+				if(searchKey in potentialDuplicateRegistry){ // Chain found :-)
 					list[loc] potDupOldList = potentialDuplicateRegistry[searchKey];
 					for(loc potDupOld <- potDupOldList) {
 						loc l = |unknown:///|(0,0,<0,0>,<0,0>);
