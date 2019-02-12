@@ -18,24 +18,16 @@ import nl.sandersimon.clonedetection.model.Location;
 
 public class RascalConsole {
 	@Test
-	public void startConsole() throws IOException, InterruptedException {
+	public void startConsole() {
 		CloneDetection d = new CloneDetection();
 		d.preInit(null);
 		d.init(null);
 		printExampleCommand();
 		Scanner scanner = new Scanner(System.in);
 		while(true) {
-			try {
-				d.getRascalOut().write(scanner.nextLine());
-				d.getRascalOut().newLine();
-				d.getRascalOut().flush();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			while(d.getRascalIn().ready()) {
-				int read = d.getRascalIn().read();
-				System.out.print((char)read+"");
-				Thread.sleep(10);
+			List<String> output = d.executeRascal(scanner.nextLine());
+			for(String o : output) {
+				System.out.println(o);
 			}
 		}
 	}
@@ -45,18 +37,18 @@ public class RascalConsole {
 		String project = "ProjectWithDuplicateBetweenFiles";
 		try {
 			Files.walkFileTree(Paths.get(SavePaths.getProjectFolder()+project+"/src/"), new SimpleFileVisitor<Path>() {
-				@Override
-				public FileVisitResult visitFile(Path filePath, BasicFileAttributes attrs) throws IOException {
-					File file = filePath.toFile();
+			    @Override
+			    public FileVisitResult visitFile(Path filePath, BasicFileAttributes attrs) throws IOException {
+			    	File file = filePath.toFile();
 					if(file.getName().endsWith(".java"))
-						foundLocs.getLocations().add(new Location(file.getAbsolutePath()));
-					return FileVisitResult.CONTINUE;
-				}
+			    		foundLocs.getLocations().add(new Location(file.getAbsolutePath()));
+			    	return FileVisitResult.CONTINUE;
+			    }
 			});
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		return "calculateCodeDuplication("+foundLocs.rascalLocList()+")";
+		
+		System.out.println("calculateCodeDuplication("+foundLocs.rascalLocList()+")");
 	}
 }
