@@ -21,7 +21,8 @@ map[int, list[loc]] registry = ();
 	map[int, list[loc]] dupList = [];
 	int cloneId = 0;
 	
-	int currentLine = -1;
+	map[str, list[int]] sortedDomains = ();
+	
 	loc currentLoc = |unknown:///|(0,0,<0,0>,<0,0>);
 
 public void getDuplication(int t, set[Declaration] asts, real a) {
@@ -30,15 +31,20 @@ public void getDuplication(int t, set[Declaration] asts, real a) {
 		fileLineAsts[m.src.uri] = getLocLineAst(t, m, a);
 }
 
-public void calculateLocationsOfNodeTypes(list[value] lineContents, loc location){
+public void calculateLocationsOfNodeTypes(list[value] lineContents, loc location, int lineNumber){
 	loc l = |unknown:///|(0,0,<0,0>,<0,0>);
+	if(location notin sortedDomains){
+		sortedDomains[location]=[];
+	}
+	sortedDomains[location]+=lineNumber;
+	int i = size(sortedDomains[location])-1;
 	l.uri = location;
 	l.end.line = i;
 	l.begin.line = i;
 	int hash = makeHashOfLine(lineContents);
 	registry = addTo(registry, hash, l);
 	hashMap[location][i] = hash;
-	getDupList(location);
+	getDupList(location, hash);
 }
 
 public int makeHashOfLine(list[value] lines){
@@ -75,15 +81,15 @@ public void getLocLineAst(int t, Declaration location, real type3Perc) {
 	 	case Expression e: astMap = addToASTMap(t, astMap, e, type3Perc);
     }
     potentialDuplicates = [];
+    currentCloneClassGroup = [];
 }
 
 public void addToASTMap(int t, map[int, list[value]] astMap, node n, real type3Perc){
 	loc location = getSrc(n);
 	if(location!=|unknown:///|){
 		list[value] values = getComparables(n, t);
-		if((currentLine!=location.begin.line || currentLoc!=location) && currentLine!=-1){
-			calculateLocationsOfNodeTypes(astMap[currentLine], currentLoc);
-			currentLine = location.begin.line;
+		if(currentLoc!=|unknown:///|(0,0,<0,0>,<0,0>) && (currentLoc.begin.line!=location.begin.line || currentLoc.uri!=location.uri)){
+			calculateLocationsOfNodeTypes(astMap[currentLoc.begin.line], currentLoc);
 			currentLoc = location;
 		}
 		astMap = addToMap(astMap, location.begin.line, values);
@@ -101,15 +107,17 @@ public map[int, list[value]] addToMap(map[int, list[value]] astMap, int line, li
 }
 
 list[loc] potentialDuplicates = [];
+list[tuple[int, list[loc]]] currentCloneClassGroup = [];
 
-public void getDupList(int hash){
+public void getDupList(loc location, int hash){
+	list[int] sortedDomain = sortedDomains[location];
 			list[loc] dupLines = registry[hash]; // Locs for current hash (clones of current line)
 			list[loc] newPotentialDuplicates = [];
 			
 			map[str, list[loc]] potentialDuplicateRegistry = (); // Purpose: performance by key lookup
 			
 			
-			for(loc potDupOld <- potentialDuplicates){
+			for(loc potDupOld <- potentialDuplicates){  // Create keys for every potential duplicate
 				str key = "<potDupOld.uri><potDupOld.end.line>";
 				if(key in potentialDuplicateRegistry){
 					potentialDuplicateRegistry[key]+=potDupOld;
@@ -119,9 +127,8 @@ public void getDupList(int hash){
 				
 			}
 
-			for(int j <- [hashStartIndex[hash]..size(dupLines)]){
-				loc potDupNew = dupLines[j];
-				list[int] thisDomain = sortedDomains[potDupNew.uri];
+			for(int j <- [hashStartIndex[hash]..size(dupLines)]){ // Calculate chains
+				loc potDupNew = dupLines[j]; // Every duplicate of the current line is a potential duplicate
 				str searchKey = "<potDupNew.uri><potDupNew.begin.line-1>";
 				if(searchKey in potentialDuplicateRegistry){
 					list[loc] potDupOldList = potentialDuplicateRegistry[searchKey];
@@ -136,6 +143,7 @@ public void getDupList(int hash){
 				}
 				newPotentialDuplicates+=potDupNew;
 			}
+			
 			currentCloneClassGroup = populateBeforeRemoval(currentCloneClassGroup, dupList, potentialDuplicates, newPotentialDuplicates, location, i, i == size(sortedDomain)-1);
 			if(newPotentialDuplicates == [] || i == size(sortedDomain)-1){
 				dupList = addActualClones(currentCloneClassGroup, dupList, sortedDomains);
