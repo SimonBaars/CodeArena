@@ -16,80 +16,34 @@ int MIN_AMOUNT_OF_LINES = 6;
 
 alias LineRegistry = map[str, map[int, list[value]]];
 map[str, list[int]] countedLines = ();
-
-public list[tuple[int, list[loc]]] getDuplication(int t, set[Declaration] asts, real allowedDiffPercentage) {
-	countedLines = ();
-    LineRegistry fileLineAsts = fileLineMapGeneration(t, asts);
-    set[str] filesOrder = domain(fileLineAsts);
-    tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] nodeRegs = calculateLocationsOfNodeTypes(fileLineAsts, filesOrder, t, allowedDiffPercentage);
-    map[int, list[loc]] locsAtHash = nodeRegs.locRegistries;
-    map[str, list[int]] sortedDomains = nodeRegs.sortedDomains;
-    map[int, int] hashStartIndex = nodeRegs.hashStartIndex;
-    map[str, map[int, int]] hashMap = nodeRegs.hashMap;
-    return getDupList(hashMap, locsAtHash, sortedDomains, hashStartIndex, filesOrder);
-}
-
-public tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] calculateLocationsOfNodeTypes(LineRegistry fileLineAsts, set[str] filesOrder, int t, real allowedDiffPercentage){
-	map[int, list[loc]] registry = ();
-	map[str, list[int]] sortedDomains = ();
-	map[int, int] hashStartIndex = ();
-	map[str, map[int, int]] hashMap = ();
-	for(str location <- filesOrder){
-		map[int, list[value]] fileLines = fileLineAsts[location];
-		sortedDomains[location] = sort(domain(fileLines));
-		hashMap[location] = ();
-		for(int i <- [0..size(fileLines)]){
-			list[value] stuffOnLine = fileLines[sortedDomains[location][i]];
-			loc l = |unknown:///|(0,0,<0,0>,<0,0>);
-			l.uri = location;
-			l.end.line = i;
-			l.begin.line = i;
-			int hash = makeHashOfLine(stuffOnLine);
-			if(t == 3)
-				registry = calculateType3Hash(l, location, i, fileLineAsts, hashMap, filesOrder, sortedDomains, allowedDiffPercentage, stuffOnLine, registry);
-			registry = addTo(registry, hash, l);
-			hashStartIndex[hash] = 0;
-			hashMap[location][i] = hash;
-		}
-	}
-	return <registry, sortedDomains, hashStartIndex, hashMap>;
-}
-
 map[int, list[loc]] registry = ();
-	map[str, list[int]] sortedDomains = ();
-	map[int, int] hashStartIndex = ();
 	map[str, map[int, int]] hashMap = ();
+	int cloneId = 0;
+	
+	map[str, list[int]] sortedDomains = ();
+	
+	loc currentLoc = |unknown:///|(0,0,<0,0>,<0,0>);
 
-public tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] calculateLocationsOfNodeTypes(list[value] stuffOnLine, int t, real allowedDiffPercentage){
-	list[value] stuffOnLine = fileLines[sortedDomains[location][i]];
+public void getDuplication(int t, set[Declaration] asts, real a) {
+   LineRegistry fileLineAsts = ();
+	for (m <- asts)
+		fileLineAsts[m.src.uri] = getLocLineAst(t, m, a);
+}
+
+public void calculateLocationsOfNodeTypes(list[value] lineContents, loc location, int lineNumber){
 	loc l = |unknown:///|(0,0,<0,0>,<0,0>);
+	if(location notin sortedDomains){
+		sortedDomains[location]=[];
+	}
+	sortedDomains[location]+=lineNumber;
+	int i = size(sortedDomains[location])-1;
 	l.uri = location;
 	l.end.line = i;
 	l.begin.line = i;
-	int hash = makeHashOfLine(stuffOnLine);
-	if(t == 3)
-		registry = calculateType3Hash(l, location, i, fileLineAsts, hashMap, filesOrder, sortedDomains, allowedDiffPercentage, stuffOnLine, registry);
+	int hash = makeHashOfLine(lineContents);
 	registry = addTo(registry, hash, l);
-	hashStartIndex[hash] = 0;
 	hashMap[location][i] = hash;
-	return <registry, sortedDomains, hashStartIndex, hashMap>;
-}
-
-public map[int, list[loc]] calculateType3Hash(loc thisLoc, str location, int i, LineRegistry fileLineAsts, map[str, map[int, int]] hashMap, set[str] filesOrder, map[str, list[int]] sortedDomains, real allowedDiffPercentage, list[value] curLineContent, map[int, list[loc]] registry){
-	for(str l <- filesOrder){
-		map[int, list[value]] fileLines = fileLineAsts[l];
-		for(int j <- [0..size(fileLines)]){
-			if(l == location && i == j)
-				return registry;
-			list[value] stuffOnLine = fileLines[sortedDomains[l][j]];
-			real difference = calculateDifference(curLineContent, stuffOnLine);
-			if(difference<=allowedDiffPercentage && allowedDiffPercentage != 0.00){
-				int hash = hashMap[l][j];
-				registry = addTo(registry, hash, thisLoc);
-			}
-		}
-	}
-	return registry;
+	getDupList(location, i, hash);
 }
 
 public int makeHashOfLine(list[value] lines){
@@ -118,27 +72,25 @@ public map[int, list[loc]] addTo(map[int, list[loc]] numberMap, int codeNumber, 
 	return numberMap;
 }
 
-public LineRegistry fileLineMapGeneration(int t, set[Declaration] asts) {
-	LineRegistry fileLineAsts = ();
-	for (m <- asts)
-		fileLineAsts[m.src.uri] = getLocLineAst(t, m);
-	return fileLineAsts;
-}
-
-public map[int, list[value]] getLocLineAst(int t, Declaration location) {
+public void getLocLineAst(int t, Declaration location, real type3Perc) {
 	map[int, list[value]] astMap = (); 
 	top-down visit (location) {
-        case Declaration d: astMap = addToASTMap(t, astMap, d);
-		case Statement s: astMap = addToASTMap(t, astMap, s);
-	 	case Expression e: astMap = addToASTMap(t, astMap, e);
+        case Declaration d: astMap = addToASTMap(t, astMap, d, type3Perc);
+		case Statement s: astMap = addToASTMap(t, astMap, s, type3Perc);
+	 	case Expression e: astMap = addToASTMap(t, astMap, e, type3Perc);
     }
-	return astMap;
+    potentialDuplicates = [];
+    currentCloneClassGroup = [];
 }
 
-public map[int, list[value]] addToASTMap(int t, map[int, list[value]] astMap, node n){
+public void addToASTMap(int t, map[int, list[value]] astMap, node n, real type3Perc){
 	loc location = getSrc(n);
 	if(location!=|unknown:///|){
 		list[value] values = getComparables(n, t);
+		if(currentLoc!=|unknown:///|(0,0,<0,0>,<0,0>) && (currentLoc.begin.line!=location.begin.line || currentLoc.uri!=location.uri)){
+			calculateLocationsOfNodeTypes(astMap[currentLoc.begin.line], currentLoc);
+			currentLoc = location;
+		}
 		astMap = addToMap(astMap, location.begin.line, values);
 		if(location.begin.line!=location.end.line)
 			astMap = addToMap(astMap, location.end.line, [0]);
@@ -153,33 +105,19 @@ public map[int, list[value]] addToMap(map[int, list[value]] astMap, int line, li
 	return astMap;
 }
 
-public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, map[int, list[loc]] locsAtHash, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, set[str] filesOrder){
-	list[tuple[int, list[loc]]] dupList = [];
-	for(str location <- filesOrder){
-		list[tuple[int, list[loc]]] currentCloneClassGroup = [];
-		map[int,int] curFilesHashes = hashMap[location];
-		list[loc] potentialDuplicates = [];
-		list[int] sortedDomain = sortedDomains[location];
-		int sortedDomainSize = size(sortedDomain);
-		if(sortedDomainSize!=0)
-			println(sortedDomainSize);
-		int i = 0;
-		while(i < sortedDomainSize){			
-			if(i+(MIN_AMOUNT_OF_LINES-1)<sortedDomainSize && size(potentialDuplicates) == 0){
-				tuple[int skipAmount, map[int, int] hashStartIndex] futureRes = inspectFutureDups(i, locsAtHash, curFilesHashes, hashStartIndex);
-				if(futureRes.skipAmount != -1){
-					potentialDuplicates = [];
-					i+=futureRes.skipAmount+1;
-					hashStartIndex = futureRes.hashStartIndex;
-					continue;
-				}
-			}
-			int hash = curFilesHashes[i];
-			hashStartIndex[hash] = hashStartIndex[hash] + 1;
-			list[loc] dupLines = locsAtHash[hash];
+list[loc] potentialDuplicates = [];
+list[tuple[int, list[loc]]] currentCloneClassGroup = [];
+map[int, list[loc]] dupList = [];
+
+public void getDupList(loc location, int i, int hash){
+	list[int] sortedDomain = sortedDomains[location];
+			list[loc] dupLines = registry[hash]; // Locs for current hash (clones of current line)
 			list[loc] newPotentialDuplicates = [];
-			map[str, list[loc]] potentialDuplicateRegistry = ();
-			for(loc potDupOld <- potentialDuplicates){
+			
+			map[str, list[loc]] potentialDuplicateRegistry = (); // Purpose: performance by key lookup
+			
+			
+			for(loc potDupOld <- potentialDuplicates){  // Create keys for every potential duplicate
 				str key = "<potDupOld.uri><potDupOld.end.line>";
 				if(key in potentialDuplicateRegistry){
 					potentialDuplicateRegistry[key]+=potDupOld;
@@ -189,11 +127,10 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 				
 			}
 
-			for(int j <- [hashStartIndex[hash]..size(dupLines)]){
-				loc potDupNew = dupLines[j];
-				list[int] thisDomain = sortedDomains[potDupNew.uri];
+			for(int j <- [hashStartIndex[hash]..size(dupLines)]){ // Calculate chains
+				loc potDupNew = dupLines[j]; // Every duplicate of the current line is a potential duplicate
 				str searchKey = "<potDupNew.uri><potDupNew.begin.line-1>";
-				if(searchKey in potentialDuplicateRegistry){
+				if(searchKey in potentialDuplicateRegistry){ // Chain found :-)
 					list[loc] potDupOldList = potentialDuplicateRegistry[searchKey];
 					for(loc potDupOld <- potDupOldList) {
 						loc l = |unknown:///|(0,0,<0,0>,<0,0>);
@@ -206,6 +143,7 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 				}
 				newPotentialDuplicates+=potDupNew;
 			}
+			
 			currentCloneClassGroup = populateBeforeRemoval(currentCloneClassGroup, dupList, potentialDuplicates, newPotentialDuplicates, location, i, i == size(sortedDomain)-1);
 			if(newPotentialDuplicates == [] || i == size(sortedDomain)-1){
 				dupList = addActualClones(currentCloneClassGroup, dupList, sortedDomains);
@@ -213,11 +151,6 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 			}
 			potentialDuplicates = newPotentialDuplicates;
 			i+=1;
-		}
-		println(0); //End of loc
-	}
-	println(0); //EOF
-	return dupList;
 }
 
 public list[tuple[int, list[loc]]] addActualClones(list[tuple[int, list[loc]]] currentCloneClassGroup, list[tuple[int, list[loc]]] dupList, map[str, list[int]] sortedDomains){
@@ -264,11 +197,11 @@ public void printTempDupReg(list[tuple[int, list[loc]]] temp){
 	}
 }
 
-public tuple[int skipAmount, map[int, int] hashStartIndex] inspectFutureDups(int i, map[int, list[loc]] locsAtHash, map[int, int] curFilesHashes, map[int, int] hashStartIndex){
+public tuple[int skipAmount, map[int, int] hashStartIndex] inspectFutureDups(int i, map[int, list[loc]] registry, map[int, int] curFilesHashes, map[int, int] hashStartIndex){
 	for(int j <- [0..MIN_AMOUNT_OF_LINES]){
 		int hash = curFilesHashes[i+j];
 		hashStartIndex[hash] = hashStartIndex[hash] + 1;
-		if(size(locsAtHash[hash])<=hashStartIndex[hash]){
+		if(size(registry[hash])<=hashStartIndex[hash]){
 			return <j, hashStartIndex>;
 		}
 	}
