@@ -8,7 +8,9 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.scoreboard.ScoreObjective;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -18,6 +20,8 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.network.IGuiHandler;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import nl.sandersimon.clonedetection.challenge.CodeArena;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.ResourceCommons;
@@ -25,6 +29,8 @@ import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.common.TestingCommons;
 import nl.sandersimon.clonedetection.editor.CodeEditor;
 import nl.sandersimon.clonedetection.minecraft.CDEventHandler;
+import nl.sandersimon.clonedetection.minecraft.gui.CloneMenuKey;
+import nl.sandersimon.clonedetection.minecraft.gui.GUISetupCloneFinding;
 import nl.sandersimon.clonedetection.minecraft.proxy.CommonProxy;
 import nl.sandersimon.clonedetection.model.CloneClass;
 import nl.sandersimon.clonedetection.model.CloneMetrics;
@@ -81,8 +87,13 @@ public class CloneDetection
 
 	@EventHandler
 	public void init(FMLInitializationEvent event){
-		if(proxy != null)
+		if(proxy != null) {
 			proxy.init(event);
+			FMLCommonHandler.instance().bus().register(eventHandler);
+			MinecraftForge.EVENT_BUS.register(new nl.sandersimon.clonedetection.minecraft.ForgeEventHandler());
+			NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
+			new CloneMenuKey().registerRenderers();
+		}
 		try {
 			System.out.println("Starting Rascal..");
 			rascal = getProcess("java -jar "+ResourceCommons.getResource("Rascal.jar").getAbsolutePath(), ResourceCommons.getResource("rascal"));
@@ -94,10 +105,6 @@ public class CloneDetection
 			System.out.println("Rascal Started!");
 		} catch (IOException e) {
 			throw new RuntimeException("Rascal could not be started!", e);
-		}
-		if(proxy!=null)	{
-			FMLCommonHandler.instance().bus().register(eventHandler);
-			MinecraftForge.EVENT_BUS.register(new nl.sandersimon.clonedetection.minecraft.ForgeEventHandler());
 		}
 	}
 	
@@ -274,5 +281,22 @@ public class CloneDetection
 
 	public CloneMetrics getMetrics() {
 		return metrics;
+	}
+	
+	public static class GuiHandler implements IGuiHandler {
+
+		@Override
+		public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
+			if (id == GUISetupCloneFinding.GUIID)
+				return new GUISetupCloneFinding.GuiContainerMod(world, x, y, z, player);
+			return null;
+		}
+
+		@Override
+		public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
+			if (id == GUISetupCloneFinding.GUIID)
+				return new GUISetupCloneFinding.GuiWindow(world, x, y, z, player);
+			return null;
+		}
 	}
 }
