@@ -13,12 +13,13 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import nl.sandersimon.clonedetection.minecraft.item.CheckMark;
+import nl.sandersimon.clonedetection.minecraft.item.CrossMark;
 
 public class GUISetupCloneFinding {
 	public static int GUIID = 1;
@@ -40,47 +41,47 @@ public class GUISetupCloneFinding {
 			this.z = z;
 			CloneType = new InventoryBasic("CloneType", true, 3);
 			guiinventory.put("CloneType", CloneType);
-			this.addSlotToContainer(new Slot(CloneType, 0, 23, 35) {
-
-				public void onSlotChanged() {
-					super.onSlotChanged();
-					MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-					World world = server.getWorld(entity.dimension);
-					if (getHasStack()) {
-						cloneType = 1;
-					}
-				}
-				
+			this.addSlotToContainer(new Slot(CloneType, 0, 23, 35) {				
+				@Override
 				public ItemStack onTake(EntityPlayer thePlayer, ItemStack stack)
 			    {
-					if(stack.getItem()) {
-						
+					if(stack.getItem() instanceof CrossMark.ItemCustom) {
+						this.inventory.setInventorySlotContents(0, new ItemStack(new CheckMark.ItemCustom()));
+						this.inventory.setInventorySlotContents(1, new ItemStack(new CrossMark.ItemCustom()));
+						this.inventory.setInventorySlotContents(2, new ItemStack(new CrossMark.ItemCustom()));
+						cloneType = 1;
 					}
 			        this.onSlotChanged();
-			        return stack;
+			        return ItemStack.EMPTY;
 			    }
 			});
-			this.addSlotToContainer(new Slot(CloneType, 1, 101, 34) {
-
-				public void onSlotChanged() {
-					super.onSlotChanged();
-					MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-					World world = server.getWorld(entity.dimension);
-					if (getHasStack()) {
+			this.addSlotToContainer(new Slot(CloneType, 1, 101, 35) {
+				@Override
+				public ItemStack onTake(EntityPlayer thePlayer, ItemStack stack)
+			    {
+					if(stack.getItem() instanceof CrossMark.ItemCustom) {
+						this.inventory.setInventorySlotContents(0, new ItemStack(new CrossMark.ItemCustom()));
+						this.inventory.setInventorySlotContents(1, new ItemStack(new CheckMark.ItemCustom()));
+						this.inventory.setInventorySlotContents(2, new ItemStack(new CrossMark.ItemCustom()));
 						cloneType = 2;
 					}
-				}
+			        this.onSlotChanged();
+			        return ItemStack.EMPTY;
+			    }
 			});
 			this.addSlotToContainer(new Slot(CloneType, 2, 183, 35) {
-
-				public void onSlotChanged() {
-					super.onSlotChanged();
-					MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-					World world = server.getWorld(entity.dimension);
-					if (getHasStack()) {
+				@Override
+				public ItemStack onTake(EntityPlayer thePlayer, ItemStack stack)
+			    {
+					if(stack.getItem() instanceof CrossMark.ItemCustom) {
+						this.inventory.setInventorySlotContents(0, new ItemStack(new CrossMark.ItemCustom()));
+						this.inventory.setInventorySlotContents(1, new ItemStack(new CrossMark.ItemCustom()));
+						this.inventory.setInventorySlotContents(2, new ItemStack(new CheckMark.ItemCustom()));
 						cloneType = 3;
 					}
-				}
+			        this.onSlotChanged();
+			        return ItemStack.EMPTY;
+			    }
 			});
 			int si;
 			int sj;
@@ -234,10 +235,7 @@ public class GUISetupCloneFinding {
 			MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
 			World world = server.getWorld(entity.dimension);
 			if (button.id == 0) {
-				{
-					java.util.HashMap<String, Object> $_dependencies = new java.util.HashMap<>();
-					mcreator_generateArena.executeProcedure($_dependencies);
-				}
+				// TODO: START GENERATION
 			}
 		}
 

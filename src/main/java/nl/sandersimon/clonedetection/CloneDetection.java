@@ -31,6 +31,8 @@ import nl.sandersimon.clonedetection.editor.CodeEditor;
 import nl.sandersimon.clonedetection.minecraft.CDEventHandler;
 import nl.sandersimon.clonedetection.minecraft.gui.CloneMenuKey;
 import nl.sandersimon.clonedetection.minecraft.gui.GUISetupCloneFinding;
+import nl.sandersimon.clonedetection.minecraft.item.CheckMark;
+import nl.sandersimon.clonedetection.minecraft.item.CrossMark;
 import nl.sandersimon.clonedetection.minecraft.proxy.CommonProxy;
 import nl.sandersimon.clonedetection.model.CloneClass;
 import nl.sandersimon.clonedetection.model.CloneMetrics;
@@ -93,6 +95,8 @@ public class CloneDetection
 			MinecraftForge.EVENT_BUS.register(new nl.sandersimon.clonedetection.minecraft.ForgeEventHandler());
 			NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
 			new CloneMenuKey().registerRenderers();
+			CheckMark.load(event);
+			CrossMark.load(event);
 		}
 		try {
 			System.out.println("Starting Rascal..");
