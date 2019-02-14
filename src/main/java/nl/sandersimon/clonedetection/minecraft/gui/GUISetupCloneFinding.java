@@ -1,25 +1,31 @@
 package nl.sandersimon.clonedetection.minecraft.gui;
 
+import java.io.File;
 import java.util.HashMap;
+
+import javax.swing.JOptionPane;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import nl.sandersimon.clonedetection.minecraft.item.CheckMark;
-import nl.sandersimon.clonedetection.minecraft.item.CrossMark;
+import nl.sandersimon.clonedetection.common.SavePaths;
+import nl.sandersimon.clonedetection.thread.CloneDetectionThread;
 
 public class GUISetupCloneFinding {
 	public static int GUIID = 1;
@@ -41,17 +47,23 @@ public class GUISetupCloneFinding {
 			this.z = z;
 			CloneType = new InventoryBasic("CloneType", true, 3);
 			guiinventory.put("CloneType", CloneType);
+			CloneType.setInventorySlotContents(0, new ItemStack(Blocks.WOOL, 1, 13));
+			CloneType.setInventorySlotContents(1, new ItemStack(Blocks.REDSTONE_BLOCK, 1));
+			CloneType.setInventorySlotContents(2, new ItemStack(Blocks.REDSTONE_BLOCK, 1));
 			this.addSlotToContainer(new Slot(CloneType, 0, 23, 35) {				
 				@Override
 				public ItemStack onTake(EntityPlayer thePlayer, ItemStack stack)
 			    {
-					if(stack.getItem() instanceof CrossMark.ItemCustom) {
-						this.inventory.setInventorySlotContents(0, new ItemStack(new CheckMark.ItemCustom()));
-						this.inventory.setInventorySlotContents(1, new ItemStack(new CrossMark.ItemCustom()));
-						this.inventory.setInventorySlotContents(2, new ItemStack(new CrossMark.ItemCustom()));
+					if(((ItemBlock)stack.getItem()).getBlock() == Blocks.REDSTONE_BLOCK) {
+						this.inventory.setInventorySlotContents(0, new ItemStack(Blocks.WOOL, 1, 13));
+						this.inventory.setInventorySlotContents(1, new ItemStack(Blocks.REDSTONE_BLOCK, 1));
+						this.inventory.setInventorySlotContents(2, new ItemStack(Blocks.REDSTONE_BLOCK, 1));
 						cloneType = 1;
+					} else {
+						this.inventory.setInventorySlotContents(0, new ItemStack(Blocks.WOOL, 1, 13));
 					}
 			        this.onSlotChanged();
+			        thePlayer.inventory.setItemStack(ItemStack.EMPTY);
 			        return ItemStack.EMPTY;
 			    }
 			});
@@ -59,13 +71,16 @@ public class GUISetupCloneFinding {
 				@Override
 				public ItemStack onTake(EntityPlayer thePlayer, ItemStack stack)
 			    {
-					if(stack.getItem() instanceof CrossMark.ItemCustom) {
-						this.inventory.setInventorySlotContents(0, new ItemStack(new CrossMark.ItemCustom()));
-						this.inventory.setInventorySlotContents(1, new ItemStack(new CheckMark.ItemCustom()));
-						this.inventory.setInventorySlotContents(2, new ItemStack(new CrossMark.ItemCustom()));
+					if(((ItemBlock)stack.getItem()).getBlock() == Blocks.REDSTONE_BLOCK) {
+						this.inventory.setInventorySlotContents(0, new ItemStack(Blocks.REDSTONE_BLOCK, 1));
+						this.inventory.setInventorySlotContents(1, new ItemStack(Blocks.WOOL, 1, 13));
+						this.inventory.setInventorySlotContents(2, new ItemStack(Blocks.REDSTONE_BLOCK, 1));
 						cloneType = 2;
+					} else {
+						this.inventory.setInventorySlotContents(1, new ItemStack(Blocks.WOOL, 1, 13));
 					}
 			        this.onSlotChanged();
+			        thePlayer.inventory.setItemStack(ItemStack.EMPTY);
 			        return ItemStack.EMPTY;
 			    }
 			});
@@ -73,23 +88,26 @@ public class GUISetupCloneFinding {
 				@Override
 				public ItemStack onTake(EntityPlayer thePlayer, ItemStack stack)
 			    {
-					if(stack.getItem() instanceof CrossMark.ItemCustom) {
-						this.inventory.setInventorySlotContents(0, new ItemStack(new CrossMark.ItemCustom()));
-						this.inventory.setInventorySlotContents(1, new ItemStack(new CrossMark.ItemCustom()));
-						this.inventory.setInventorySlotContents(2, new ItemStack(new CheckMark.ItemCustom()));
+					if(((ItemBlock)stack.getItem()).getBlock() == Blocks.REDSTONE_BLOCK) {
+						this.inventory.setInventorySlotContents(0, new ItemStack(Blocks.REDSTONE_BLOCK, 1));
+						this.inventory.setInventorySlotContents(1, new ItemStack(Blocks.REDSTONE_BLOCK, 1));
+						this.inventory.setInventorySlotContents(2, new ItemStack(Blocks.WOOL, 1, 13));
 						cloneType = 3;
+					} else {
+						this.inventory.setInventorySlotContents(2, new ItemStack(Blocks.WOOL, 1, 13));
 					}
 			        this.onSlotChanged();
+			        thePlayer.inventory.setItemStack(ItemStack.EMPTY);
 			        return ItemStack.EMPTY;
 			    }
 			});
-			int si;
+			/*int si;
 			int sj;
 			for (si = 0; si < 3; ++si)
 				for (sj = 0; sj < 9; ++sj)
 					this.addSlotToContainer(new Slot(player.inventory, sj + (si + 1) * 9, 37 + 8 + sj * 18, 17 + 84 + si * 18));
 			for (si = 0; si < 9; ++si)
-				this.addSlotToContainer(new Slot(player.inventory, si, 37 + 8 + si * 18, 17 + 142));
+				this.addSlotToContainer(new Slot(player.inventory, si, 37 + 8 + si * 18, 17 + 142));*/
 		}
 
 		@Override
@@ -218,6 +236,7 @@ public class GUISetupCloneFinding {
 			Keyboard.enableRepeatEvents(true);
 			this.buttonList.clear();
 			this.buttonList.add(new GuiButton(0, this.guiLeft + 127, this.guiTop + 170, 118, 20, "Start Battle!"));
+			this.buttonList.add(new GuiButton(1, this.guiLeft + 147, this.guiTop + 82, 72, 20, "Choose"));
 			InputProject = new GuiTextField(0, this.fontRenderer, 21, 83, 120, 20);
 			guiinventory.put("text:InputProject", InputProject);
 			InputProject.setMaxStringLength(32767);
@@ -226,7 +245,7 @@ public class GUISetupCloneFinding {
 			MinLines = new GuiTextField(1, this.fontRenderer, 23, 136, 120, 20);
 			guiinventory.put("text:MinLines", MinLines);
 			MinLines.setMaxStringLength(32767);
-			MinLines.setFocused(true);
+			MinLines.setFocused(false);
 			MinLines.setText("6");
 		}
 
@@ -235,7 +254,19 @@ public class GUISetupCloneFinding {
 			MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
 			World world = server.getWorld(entity.dimension);
 			if (button.id == 0) {
-				// TODO: START GENERATION
+				CloneDetectionThread.startWorker(server, Minecraft.getMinecraft().player, new String[] {InputProject.getText(), Integer.toString(cloneType)});
+				Minecraft.getMinecraft().player.closeScreen();
+			}
+			if (button.id == 1) {
+				String[] choices = new File(SavePaths.getProjectFolder()).list();
+				String input = (String) JOptionPane.showInputDialog(null, "Here you can choose a Java projects from your file system.\n"
+						+ "These projects are read from the following location: "+SavePaths.getProjectFolder()+"\n"
+								+ "Please choose a project down below:",
+				        "Choose project", JOptionPane.QUESTION_MESSAGE, null, // Use default icon
+				        choices, // Array of choices
+				        choices[0]); // Initial choice
+				if(input!=null)
+					InputProject.setText(input);
 			}
 		}
 
