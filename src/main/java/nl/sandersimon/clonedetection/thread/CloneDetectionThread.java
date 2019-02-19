@@ -28,10 +28,12 @@ public class CloneDetectionThread extends Thread {
 	private final String project;
 	private final String type;
 	private final String similarityPercentage;
+	private final String nLines;
 	
-	public CloneDetectionThread(String project, String type, String similarityPercentage, ICommandSender s) {
+	public CloneDetectionThread(String project, String type, String similarityPercentage, ICommandSender s, String nLines) {
 		this.project = project;
 		this.type = type;
+		this.nLines = nLines;
 		if(similarityPercentage.length()>0 && !similarityPercentage.contains("."))
 			this.similarityPercentage = similarityPercentage+".0";
 		else this.similarityPercentage = similarityPercentage;
@@ -56,7 +58,7 @@ public class CloneDetectionThread extends Thread {
 			e.printStackTrace();
 		}
 		
-		cloneDetection.executeTill("calculateCodeDuplication("+foundLocs.rascalLocList()+addIfNotEmpty(type)+addIfNotEmpty(similarityPercentage)+")", '\n');
+		cloneDetection.executeTill("calculateCodeDuplication("+foundLocs.rascalLocList()+addIfNotEmpty(type)+addIfNotEmpty(similarityPercentage)+addIfNotEmpty(nLines)+")", '\n');
 		populateResult();
 		cloneDetection.writeAllMetricsToFile();
 		cloneDetection.waitUntilExecuted();
@@ -134,6 +136,7 @@ public class CloneDetectionThread extends Thread {
 		//new StructureCreatorClient("arena", s.getPosition().getX()+95, s.getPosition().getY()-2, s.getPosition().getZ()+80	, false, 0);
 		String cloneType = args.length > 1 ? args[1] : "";
 		String similarityPerc = args.length > 2 ? args[2] : "";
+		String nLines = args.length > 3 ? args[3] : "";
 		CloneDetection.get().setArena(new CodeArena(s.getPosition().getX(), s.getPosition().getY(), s.getPosition().getZ(),  cloneType, similarityPerc));
 		CloneDetection.get().initScoreboards();
 		if(worker!=null && worker.isAlive()) {
@@ -142,7 +145,7 @@ public class CloneDetectionThread extends Thread {
 		}
 		s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "Searching for clones, please wait..."));
 		
-		worker = new CloneDetectionThread(args[0], cloneType, similarityPerc, s);
+		worker = new CloneDetectionThread(args[0], cloneType, similarityPerc, s, nLines);
 	}
 
 	public static CloneDetectionThread getWorker() {
