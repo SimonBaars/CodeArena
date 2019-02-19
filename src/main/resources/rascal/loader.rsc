@@ -16,12 +16,12 @@ void calculateCodeDuplication(list[loc] partialScanList){
 }
 
 void calculateCodeDuplication(list[loc] partialScanList, int cloneType){
-	calculateCodeDuplication(partialScanList, cloneType, 0.00);
+	calculateCodeDuplication(partialScanList, cloneType, 0.00, 6);
 }
 
-void calculateCodeDuplication(list[loc] partialScanList, int cloneType, real similarityPercentage){
+void calculateCodeDuplication(list[loc] partialScanList, int cloneType, real similarityPercentage, int nLines){
 	set[Declaration] asts = {};
 	for (loc m <- partialScanList)
 		asts += createAstFromFile(m, true);
-	getDuplication(cloneType, asts, similarityPercentage);
+	getDuplication(cloneType, asts, similarityPercentage, nLines);
 }

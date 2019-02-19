@@ -17,7 +17,8 @@ int MIN_AMOUNT_OF_LINES = 6;
 alias LineRegistry = map[str, map[int, list[value]]];
 map[str, list[int]] countedLines = ();
 
-public list[tuple[int, list[loc]]] getDuplication(int t, set[Declaration] asts, real allowedDiffPercentage) {
+public list[tuple[int, list[loc]]] getDuplication(int t, set[Declaration] asts, real allowedDiffPercentage, int nLines) {
+	MIN_AMOUNT_OF_LINES = nLines;
 	countedLines = ();
     LineRegistry fileLineAsts = fileLineMapGeneration(t, asts);
     set[str] filesOrder = domain(fileLineAsts);
