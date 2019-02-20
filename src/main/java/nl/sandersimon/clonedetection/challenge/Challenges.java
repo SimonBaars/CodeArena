@@ -141,13 +141,18 @@ public abstract class Challenges {
 				return true;
 			}
 		}
-		if(Minecraft.getMinecraft().player.inventory.getCurrentItem()==null || Minecraft.getMinecraft().player.inventory.getCurrentItem().getItem()!=Items.BOW){
+		/*if(Minecraft.getMinecraft().player.inventory.getCurrentItem()==null || Minecraft.getMinecraft().player.inventory.getCurrentItem().getItem()!=Items.BOW){
 			Minecraft.getMinecraft().player.inventory.clear();
 			for(Item item : items){
 				Minecraft.getMinecraft().player.inventory.addItemStackToInventory(new ItemStack(item, item.getItemStackLimit()));
-			};
+			}
 			Minecraft.getMinecraft().player.inventoryContainer.detectAndSendChanges();
-		}
+		}*/
+		Minecraft.getMinecraft().player.inventory.clear();
+		ItemStack itemStackIn = new ItemStack(Items.DIAMOND, 1);
+		itemStackIn.setStackDisplayName("Show All Packages");
+		Minecraft.getMinecraft().player.inventory.addItemStackToInventory(itemStackIn);
+		Minecraft.getMinecraft().player.inventoryContainer.detectAndSendChanges();
 		if(numberOfPlayers!=Minecraft.getMinecraft().getIntegratedServer().getCurrentPlayerCount()){
 			Minecraft.getMinecraft().player.sendChatMessage("No players may leave or join the game while a challenge is running.");
 			removeThisChallenge();

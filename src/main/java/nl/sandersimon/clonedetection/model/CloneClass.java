@@ -1,10 +1,15 @@
 package nl.sandersimon.clonedetection.model;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.editor.CodeEditorMaker;
 
 public class CloneClass implements Comparable<CloneClass>{
@@ -15,6 +20,13 @@ public class CloneClass implements Comparable<CloneClass>{
 	public CloneClass(CloneMetrics metrics) {
 		super();
 		metrics.getTotalNumberOfCloneClasses().incrementScore();
+		final String myPackage = getPackage();
+		if(!CloneDetection.packages.contains(myPackage)) {
+			CloneDetection.packages.add(myPackage);
+			ItemStack itemStackIn = new ItemStack(Items.DIAMOND, 1);
+			itemStackIn.setStackDisplayName(myPackage);
+			Minecraft.getMinecraft().player.inventory.addItemStackToInventory(itemStackIn);
+		}
 	}
 	
 	public CloneClass() {
@@ -86,5 +98,15 @@ public class CloneClass implements Comparable<CloneClass>{
 
 	public String rascalLocList() {
 		return "["+locations.stream().map(Location::rascalFile).collect(Collectors.joining(","))+"]";
+	}
+	
+	public String getPackage() {
+		String fileName = locations.get(0).file;
+		final String javaSrc = "src/main/java";
+		final String folderIn = new File(fileName).getParent();
+		int javaSrcPath = folderIn.indexOf(javaSrc);
+		if(javaSrcPath == -1) 
+			return folderIn.replace(File.pathSeparatorChar, '.');
+		return folderIn.substring(javaSrcPath+javaSrc.length()).replace(File.pathSeparatorChar, '.');
 	}
 }

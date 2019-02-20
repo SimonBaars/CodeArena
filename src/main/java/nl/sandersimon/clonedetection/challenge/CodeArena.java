@@ -71,13 +71,14 @@ public class CodeArena extends Challenges {
 		cornerx=x-15;
 		cornerz=z-20;
 		initArena();
+		Minecraft.getMinecraft().player.inventory.currentItem = 0;
 		for(EntityPlayerMP player : players){
 			player.setPosition(x, y+3,z);
 			player.setHealth(20);
-			items.add(Items.DIAMOND_SWORD);
-			items.add(Items.BOW);
-			for(int i = 0; i<3; i++)
-				items.add(Items.ARROW);
+			//items.add(Items.DIAMOND_SWORD);
+			//items.add(Items.BOW);
+			//for(int i = 0; i<3; i++)
+			//	items.add(Items.ARROW);
 		}
 		resetPlayer();
 	}
@@ -146,8 +147,9 @@ public class CodeArena extends Challenges {
 		for(int i = 0; i<activeMonsters.size(); i++){
 			activeMonsters.get(i).setDead();
 		}
+		int amountOfEmeralds = displayScore.getScorePoints()/10; //The amount of emeralds awarded is the score divided by 10.
 		for(EntityPlayerMP player : players){
-			for(int i = displayScore.getScorePoints(); i>0; i-=64) {
+			for(int i = amountOfEmeralds; i>0; i-=64) {
 				player.inventory.addItemStackToInventory(new ItemStack(Items.EMERALD, i >= 64 ? 64 : i));
 				player.inventoryContainer.detectAndSendChanges();
 			}

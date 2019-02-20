@@ -67,6 +67,7 @@ public class CloneDetection
 	public CloneMetrics before = null;
 	
 	public static int dialoge;
+	public static final List<String> packages = new ArrayList<>();
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){

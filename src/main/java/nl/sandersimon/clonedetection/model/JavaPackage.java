@@ -5,7 +5,7 @@ import java.util.List;
 
 public class JavaPackage implements Comparable<JavaPackage> {
 	private String packagePath;
-	private List<JavaClass> classes = new ArrayList<JavaClass>();
+	private List<JavaClass> classes = new ArrayList<>();
 	
 	public JavaPackage() {
 	}
