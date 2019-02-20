@@ -137,7 +137,7 @@ public class CloneDetectionThread extends Thread {
 		String cloneType = args.length > 1 ? args[1] : "";
 		String similarityPerc = args.length > 2 ? args[2] : "";
 		String nLines = args.length > 3 ? args[3] : "";
-		CloneDetection.get().setArena(new CodeArena(s.getPosition().getX(), s.getPosition().getY(), s.getPosition().getZ(),  cloneType, similarityPerc));
+		CloneDetection.get().eventHandler.nextTickActions.add(() -> CloneDetection.get().setArena(new CodeArena(s.getPosition().getX(), s.getPosition().getY(), s.getPosition().getZ(),  cloneType, similarityPerc)));
 		CloneDetection.get().initScoreboards();
 		if(worker!=null && worker.isAlive()) {
 			s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.RED, "Sorry, but I'm still busy detecting clones! Please wait a little longer."));
