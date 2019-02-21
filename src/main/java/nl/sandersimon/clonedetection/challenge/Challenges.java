@@ -43,6 +43,8 @@ public abstract class Challenges {
 	ArrayList<ItemStack> oldInventory = new ArrayList<>();
 	Score displayScore;
 	ScoreObjective scoreBoard;
+	
+	protected static String SHOW_ALL = "Show All Packages";
 
 	public Challenges(int x, int y, int z, GameType defGameType, EnumDifficulty defDifficulty){
 		this.defGameType=defGameType;
@@ -150,7 +152,7 @@ public abstract class Challenges {
 		}*/
 		Minecraft.getMinecraft().player.inventory.clear();
 		ItemStack itemStackIn = new ItemStack(Items.DIAMOND, 1);
-		itemStackIn.setStackDisplayName("Show All Packages");
+		itemStackIn.setStackDisplayName(SHOW_ALL);
 		Minecraft.getMinecraft().player.inventory.addItemStackToInventory(itemStackIn);
 		Minecraft.getMinecraft().player.inventoryContainer.detectAndSendChanges();
 		if(numberOfPlayers!=Minecraft.getMinecraft().getIntegratedServer().getCurrentPlayerCount()){

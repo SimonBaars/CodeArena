@@ -63,6 +63,8 @@ public class CodeArena extends Challenges {
 	int ticks = 0;
 	private final String cloneType;
 	private final String similarityPerc;
+	private String currentFilter;
+	
 	
 	public CodeArena(int x, int y, int z, String type, String similarityPerc) {
 		super(x,y,z,GameType.CREATIVE,EnumDifficulty.NORMAL);
@@ -165,6 +167,18 @@ public class CodeArena extends Challenges {
 	}
 	
 	public boolean run() {
+		ItemStack heldItem = Minecraft.getMinecraft().player.getHeldItemMainhand();
+		if(heldItem.getItem() == Items.DIAMOND && !currentFilter.equals(heldItem.getDisplayName())) {
+			currentFilter = heldItem.getDisplayName();
+			for(CodeEntity e : activeMonsters) {
+				/*if(currentFilter.equals(SHOW_ALL) || e.getRepresents().getPackage().equals(currentFilter)) {
+					e.setInvisible(false);
+				} else {
+					e.setInvisible(true);
+				}*/
+				e.setInvisible(!currentFilter.equals(SHOW_ALL) && !e.getRepresents().getPackage().equals(currentFilter));
+			}
+		}
 		return true;
 	}
 	
