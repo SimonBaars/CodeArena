@@ -149,7 +149,7 @@ public class CodeArena extends Challenges {
 		for(int i = 0; i<activeMonsters.size(); i++){
 			activeMonsters.get(i).setDead();
 		}
-		int amountOfEmeralds = displayScore.getScorePoints()/10; //The amount of emeralds awarded is the score divided by 10.
+		int amountOfEmeralds = getCurrentReward();
 		for(EntityPlayerMP player : players){
 			for(int i = amountOfEmeralds; i>0; i-=64) {
 				player.inventory.addItemStackToInventory(new ItemStack(Items.EMERALD, i >= 64 ? 64 : i));
@@ -273,5 +273,9 @@ public class CodeArena extends Challenges {
 
 	public String getSimilarityPerc() {
 		return similarityPerc;
+	}
+
+	public int getCurrentReward() {
+		return displayScore.getScorePoints()/10; //The amount of emeralds awarded is the score divided by 10.
 	}
 }

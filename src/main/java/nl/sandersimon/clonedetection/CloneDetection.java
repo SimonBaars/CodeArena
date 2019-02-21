@@ -30,6 +30,7 @@ import nl.sandersimon.clonedetection.common.TestingCommons;
 import nl.sandersimon.clonedetection.editor.CodeEditor;
 import nl.sandersimon.clonedetection.minecraft.CDEventHandler;
 import nl.sandersimon.clonedetection.minecraft.gui.CloneMenuKey;
+import nl.sandersimon.clonedetection.minecraft.gui.EndChallengeGUI;
 import nl.sandersimon.clonedetection.minecraft.gui.GUISetupCloneFinding;
 import nl.sandersimon.clonedetection.minecraft.proxy.CommonProxy;
 import nl.sandersimon.clonedetection.model.CloneClass;
@@ -290,6 +291,8 @@ public class CloneDetection
 		public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
 			if (id == GUISetupCloneFinding.GUIID)
 				return new GUISetupCloneFinding.GuiContainerMod(world, x, y, z, player);
+			else if (id == EndChallengeGUI.GUIID)
+				return new EndChallengeGUI.GuiContainerMod(world, x, y, z, player);
 			return null;
 		}
 
@@ -297,6 +300,8 @@ public class CloneDetection
 		public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
 			if (id == GUISetupCloneFinding.GUIID)
 				return new GUISetupCloneFinding.GuiWindow(world, x, y, z, player);
+			else if (id == EndChallengeGUI.GUIID)
+				return new EndChallengeGUI.GuiWindow(world, x, y, z, player);
 			return null;
 		}
 	}
