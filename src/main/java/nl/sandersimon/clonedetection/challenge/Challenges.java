@@ -153,6 +153,8 @@ public abstract class Challenges {
 		Minecraft.getMinecraft().player.inventory.clear();
 		ItemStack itemStackIn = new ItemStack(Items.DIAMOND, 1);
 		itemStackIn.setStackDisplayName(SHOW_ALL);
+		Minecraft.getMinecraft().player.inventory.addItemStackToInventory(new ItemStack(Items.BOW, 1));
+		Minecraft.getMinecraft().player.inventory.addItemStackToInventory(new ItemStack(Items.ARROW, 64));
 		Minecraft.getMinecraft().player.inventory.addItemStackToInventory(itemStackIn);
 		Minecraft.getMinecraft().player.inventoryContainer.detectAndSendChanges();
 		if(numberOfPlayers!=Minecraft.getMinecraft().getIntegratedServer().getCurrentPlayerCount()){
