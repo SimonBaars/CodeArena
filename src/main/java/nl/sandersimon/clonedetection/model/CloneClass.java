@@ -104,11 +104,15 @@ public class CloneClass implements Comparable<CloneClass>{
 	
 	public String getPackage() {
 		String fileName = locations.get(0).file;
-		final String javaSrc = "src/main/java";
+		String javaSrc = "src/main/java";
 		final String folderIn = new File(fileName).getParent();
-		int javaSrcPath = folderIn.indexOf(javaSrc);
-		if(javaSrcPath == -1) 
-			return folderIn.replace(File.pathSeparatorChar, '.');
-		return folderIn.substring(javaSrcPath+javaSrc.length()).replace(File.pathSeparatorChar, '.');
+		int javaSrcPath = folderIn.lastIndexOf(javaSrc);
+		if(javaSrcPath == -1) {
+			javaSrc = "src";
+			javaSrcPath = folderIn.lastIndexOf(javaSrc);
+			if(javaSrcPath == -1)
+				return folderIn.replace('/', '.');
+		}
+		return folderIn.substring(javaSrcPath+javaSrc.length()+1).replace('/', '.');
 	}
 }
