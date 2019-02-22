@@ -12,6 +12,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.inventory.Container;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 
 import java.util.HashMap;
@@ -128,8 +129,8 @@ public class EndChallengeGUI {
 			MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
 			World world = server.getWorld(entity.dimension);
 			if (button.id == 0) {
-				CloneDetection c = CloneDetection.get();
-				c.getArena().endChallengeForAllPlayers();
+				Minecraft.getMinecraft().player.closeScreen();
+				CloneDetection.get().eventHandler.nextTickActions.add(() -> CloneDetection.get().getArena().endChallengeForAllPlayers());
 			}
 		}
 

@@ -63,7 +63,7 @@ public class CodeArena extends Challenges {
 	int ticks = 0;
 	private final String cloneType;
 	private final String similarityPerc;
-	private String currentFilter;
+	private String currentFilter = SHOW_ALL;
 	
 	
 	public CodeArena(int x, int y, int z, String type, String similarityPerc) {

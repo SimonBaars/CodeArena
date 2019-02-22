@@ -20,13 +20,6 @@ public class CloneClass implements Comparable<CloneClass>{
 	public CloneClass(CloneMetrics metrics) {
 		super();
 		metrics.getTotalNumberOfCloneClasses().incrementScore();
-		final String myPackage = getPackage();
-		if(!CloneDetection.packages.contains(myPackage)) {
-			CloneDetection.packages.add(myPackage);
-			ItemStack itemStackIn = new ItemStack(Items.DIAMOND, 1);
-			itemStackIn.setStackDisplayName(myPackage);
-			Minecraft.getMinecraft().player.inventory.addItemStackToInventory(itemStackIn);
-		}
 	}
 	
 	public CloneClass() {
@@ -67,6 +60,15 @@ public class CloneClass implements Comparable<CloneClass>{
 		CloneScore highestVolume = metrics.getBiggestCloneClass();
 		if(volume() > highestVolume.getScorePoints())
 			highestVolume.setScorePoints(volume());
+		if(locations.size() == 1) {
+			final String myPackage = getPackage();
+			if(!CloneDetection.packages.contains(myPackage)) {
+				CloneDetection.packages.add(myPackage);
+				ItemStack itemStackIn = new ItemStack(Items.DIAMOND, 1);
+				itemStackIn.setStackDisplayName(myPackage);
+				Minecraft.getMinecraft().player.inventory.addItemStackToInventory(itemStackIn);
+			}
+		}
 	}
 	
 	public int size() {

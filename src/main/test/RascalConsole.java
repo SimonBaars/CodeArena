@@ -19,17 +19,17 @@ import nl.sandersimon.clonedetection.model.Location;
 public class RascalConsole {
 	@Test
 	public void startConsole() {
-		CloneDetection d = new CloneDetection();
-		d.preInit(null);
-		d.init(null);
+		//CloneDetection d = new CloneDetection();
+		//d.preInit(null);
+		//d.init(null);
 		printExampleCommand();
-		Scanner scanner = new Scanner(System.in);
+		/*Scanner scanner = new Scanner(System.in);
 		while(true) {
 			List<String> output = d.executeRascal(scanner.nextLine());
 			for(String o : output) {
 				System.out.println(o);
 			}
-		}
+		}*/
 	}
 
 	private void printExampleCommand() {
