@@ -42,7 +42,6 @@ public class CloneDetectionThread extends Thread {
 	}
 
 	public void run() {
-		System.out.println("Worker started!");
 		CloneDetection cloneDetection = CloneDetection.get();
 		CloneClass foundLocs = new CloneClass();
 		try {
@@ -59,7 +58,6 @@ public class CloneDetectionThread extends Thread {
 			e.printStackTrace();
 		}
 		
-		System.out.println("do calculateCodeDuplication("+foundLocs.rascalLocList()+addIfNotEmpty(type)+addIfNotEmpty(similarityPercentage)+addIfNotEmpty(nLines)+")");
 		cloneDetection.executeTill("calculateCodeDuplication("+foundLocs.rascalLocList()+addIfNotEmpty(type)+addIfNotEmpty(similarityPercentage)+addIfNotEmpty(nLines)+")", '\n');
 		populateResult();
 		cloneDetection.writeAllMetricsToFile();
@@ -71,7 +69,6 @@ public class CloneDetectionThread extends Thread {
 			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "Your project contains no clones congrats!!")));
 			cloneDetection.eventHandler.nextTickActions.add(() -> c.getArena().endChallengeForAllPlayers());
 		}
-		System.out.println("DONE!");
 	}
 	
 	private String addIfNotEmpty(String string) {
@@ -135,13 +132,13 @@ public class CloneDetectionThread extends Thread {
 	}
 	
 	public static void startWorker(MinecraftServer server, ICommandSender s, String[] args) {
-		System.out.println("Spawn at pos "+s.getPosition());
+		//System.out.println("Spawn at pos "+s.getPosition());
 		//new StructureCreatorClient("arena", s.getPosition().getX()+95, s.getPosition().getY()-2, s.getPosition().getZ()+80	, false, 0);
-		String cloneType = args.length > 1 ? args[1] : "";
-		String similarityPerc = args.length > 2 ? args[2] : "";
-		String nLines = args.length > 3 ? args[3] : "";
+		String cloneType = args.length > 1 ? args[1] : "1";
+		String similarityPerc = args.length > 2 ? args[2] : "0.0";
+		String nLines = args.length > 3 ? args[3] : "6";
 		CloneDetection.get().packages.clear();
-		CloneDetection.get().setArena(new CodeArena(s.getPosition().getX(), s.getPosition().getY(), s.getPosition().getZ(),  cloneType, similarityPerc));
+		CloneDetection.get().setArena(new CodeArena(s.getPosition().getX(), s.getPosition().getY(), s.getPosition().getZ(),  cloneType, similarityPerc, nLines));
 		CloneDetection.get().initScoreboards();
 		if(worker!=null && worker.isAlive()) {
 			s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.RED, "Sorry, but I'm still busy detecting clones! Please wait a little longer."));

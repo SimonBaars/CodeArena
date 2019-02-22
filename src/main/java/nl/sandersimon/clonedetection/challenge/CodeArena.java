@@ -64,12 +64,14 @@ public class CodeArena extends Challenges {
 	private final String cloneType;
 	private final String similarityPerc;
 	private String currentFilter = SHOW_ALL;
+	private final String nLines;
 	
 	
-	public CodeArena(int x, int y, int z, String type, String similarityPerc) {
+	public CodeArena(int x, int y, int z, String type, String similarityPerc, String nLines) {
 		super(x,y,z,GameType.CREATIVE,EnumDifficulty.NORMAL);
 		this.cloneType = type;
 		this.similarityPerc = similarityPerc;
+		this.nLines = nLines;
 		cornerx=x-15;
 		cornerz=z-20;
 		initArena();
@@ -277,5 +279,9 @@ public class CodeArena extends Challenges {
 
 	public int getCurrentReward() {
 		return displayScore.getScorePoints()/10; //The amount of emeralds awarded is the score divided by 10.
+	}
+
+	public String getNLines() {
+		return nLines;
 	}
 }

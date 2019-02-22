@@ -21,11 +21,13 @@ public class ChangesScannerThread extends Thread {
 	private final ICommandSender mySender;
 	private final String type;
 	private final String similarityPercentage;
+	private final String nLines;
 
-	public ChangesScannerThread(ICommandSender s, String type, String similarityPercentage, CloneClass c, boolean before) {
+	public ChangesScannerThread(ICommandSender s, String type, String similarityPercentage, String nLines, CloneClass c, boolean before) {
 		this.c = c;
 		this.before = before;
 		this.mySender = s;
+		this.nLines = nLines;
 		if(similarityPercentage.length()>0 && !similarityPercentage.contains("."))
 			this.similarityPercentage = similarityPercentage+".0";
 		else this.similarityPercentage = similarityPercentage;
@@ -50,7 +52,7 @@ public class ChangesScannerThread extends Thread {
 			}
 		}
 		//System.out.println("Gonna exx rascal");
-		cloneDetection.executeRascal(cloneDetection.getScanIn(), cloneDetection.getScanOut(), "calculateCodeDuplication("+c.rascalLocList()+addIfNotEmpty(type)+addIfNotEmpty(similarityPercentage)+")", '\n');
+		cloneDetection.executeRascal(cloneDetection.getScanIn(), cloneDetection.getScanOut(), "calculateCodeDuplication("+c.rascalLocList()+addIfNotEmpty(type)+addIfNotEmpty(similarityPercentage)+addIfNotEmpty(nLines)+")", '\n');
 		//System.out.println("populate");
 		populateResult();
 		//System.out.println("Waiting till finished...");
@@ -143,7 +145,7 @@ public class ChangesScannerThread extends Thread {
 	
 	public static void startWorker(ICommandSender s, CloneClass c, boolean before) {
 		CodeArena arena = CloneDetection.get().getArena();
-		worker = new ChangesScannerThread(s, arena.getCloneType(), arena.getSimilarityPerc(), c, before);
+		worker = new ChangesScannerThread(s, arena.getCloneType(), arena.getSimilarityPerc(), arena.getNLines(), c, before);
 		
 		/*while(worker.isAlive()) {
 			try {
