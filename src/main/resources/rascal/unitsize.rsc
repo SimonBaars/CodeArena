@@ -1,4 +1,4 @@
-module metrics::unitsize
+module unitsize
 
 import IO;
 import Set;

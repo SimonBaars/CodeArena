@@ -1,4 +1,4 @@
-module astCreation
+module clones
 
 import IO;
 import Set;
@@ -11,6 +11,7 @@ import lang::java::m3::Core;
 import lang::java::m3::AST;
 import util::Math;
 import DateTime;
+import metricscommons;
 
 int MIN_AMOUNT_OF_LINES = 6;
 
@@ -258,10 +259,7 @@ public void printTempDupReg(list[tuple[int, list[loc]]] temp){
 				}
 			}
 		}
-		str buffer = toString(temp);
-		println(size(buffer));
-		println(duplicateLines);
-		println(buffer);
+		signalProblems(temp, duplicateLines);
 	}
 }
 

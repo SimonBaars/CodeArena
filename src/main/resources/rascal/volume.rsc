@@ -1,4 +1,4 @@
-module metrics::volume
+module volume
 
 import IO;
 import Set;

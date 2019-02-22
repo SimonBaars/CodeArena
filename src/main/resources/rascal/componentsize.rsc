@@ -1,4 +1,4 @@
-module metrics::componentsize
+module componentsize
 
 import IO;
 import Set;

@@ -1,4 +1,4 @@
-module metrics::duplicate
+module duplicate
 
 import IO;
 import Set;

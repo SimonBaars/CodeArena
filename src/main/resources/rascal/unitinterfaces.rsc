@@ -1,4 +1,4 @@
-module metrics::unitinterfaces
+module unitinterfaces
 
 import IO;
 import Set;

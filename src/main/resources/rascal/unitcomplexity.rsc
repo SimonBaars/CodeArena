@@ -1,4 +1,4 @@
-module metrics::unitcomplexity
+module unitcomplexity
 
 import IO;
 import Set;

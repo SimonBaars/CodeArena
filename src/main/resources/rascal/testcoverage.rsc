@@ -1,4 +1,4 @@
-module metrics::testcoverage
+module testcoverage
 
 import IO;
 import Set;

@@ -5,11 +5,8 @@ import Set;
 import List;
 import lang::java::m3::Core;
 import lang::java::m3::AST;
-import astCreation;
+import clones;
 import String;
-import tests::typeOne;
-import tests::typeTwo;
-import tests::typeThree;
 
 void calculateCodeDuplication(list[loc] partialScanList){
 	calculateCodeDuplication(partialScanList, 1);
