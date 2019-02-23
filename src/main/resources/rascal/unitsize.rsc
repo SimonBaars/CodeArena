@@ -9,7 +9,7 @@ import sigscore;
 import unitcomplexity;
 import metricsCommons;
 
-public void getUnitSize(set[Declaration] model){
+public void calcProblem(set[Declaration] asts){
 	list[int] locs = [];
 	for (ast <- asts){
 		visit(ast){
