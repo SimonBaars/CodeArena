@@ -5,41 +5,33 @@ import Set;
 import List;
 import lang::java::m3::Core;
 import lang::java::m3::AST;
-import lang::java::jdt::m3::Core;
-import lang::java::jdt::m3::AST;
 import sigscore;
 import util::Math;
-import metrics::unitcomplexity;
+import unitcomplexity;
+import metricscommons;
 
-public SIGScore getParamSizeScore(list[Declaration] asts){
-	return getSIGForPercentages(calculateParams(asts), checkThreeParm, checkFiveParm, checkSevenParm);
-}
-
-public list[int] calculateParams(list[Declaration] asts) {
-    list[int] params = [];
+public void getParamSizeScore(set[Declaration] asts){
 	for (m <- asts)
-		params += calcParametersForAST(m);
-	return params;
+		calcParametersForAST(m);
 }
 
-bool checkThreeParm(int param){
-	return param >= 3 && param<=4;
-}
-
-bool checkFiveParm(int param){
-	return param >= 5 && param<=6;
-}
-
-bool checkSevenParm(int param){
-	return param >= 7;
-}
-
-list[int] calcParametersForAST(Declaration dec){
-	list[int] paramsSizes = [];
+void calcParametersForAST(Declaration dec){
 	visit(dec){
-		case \method(_,_,list[Declaration] parameters,_,_,_): paramsSizes += size(parameters);
-		case \method(_,_,list[Declaration] parameters,_,_): paramsSizes += size(parameters);
-		case \constructor(_, list[Declaration] parameters, _, _): paramsSizes += size(parameters);
+		case Declaration d: checkType(d);
 	}
-	return paramsSizes;
+}
+
+void checkType(Declaration dec){
+	switch(dec){
+		case \method(_,_,list[Declaration] parameters,_,_,_): checkTooBig(dec, parameters);
+		case \method(_,_,list[Declaration] parameters,_,_): checkTooBig(dec, parameters);
+		case \constructor(_, list[Declaration] parameters, _, _): checkTooBig(dec, parameters);
+	}
+}
+
+void checkTooBig(Declaration dec, list[Declaration] params){
+	int nParam = size(params);
+	if(nParam>=6){
+		signalProblemDec(dec, nParam);
+	}
 }

@@ -68,7 +68,6 @@ list[int] calcCCForAST(Declaration dec){
 	return size;
 }
 
-// Based on: https://stackoverflow.com/questions/40064886/obtaining-cyclomatic-complexity
 int calcCC(Statement impl) {
     int result = 1;
     visit (impl) {

@@ -20,6 +20,10 @@ void signalProblemLoc(loc location, int problemSize){
 	signalProblem([problemSize, location], problemSize);
 }
 
+void signalProblemDec(Declaration d, int problemSize){
+	signalProblem(d.src, problemSize);
+}
+
 public int getLinesOfCode(Declaration location) {
 	set[int] sourceLocations = {};
 	visit (location) {

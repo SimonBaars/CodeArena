@@ -18,7 +18,7 @@ int MIN_AMOUNT_OF_LINES = 6;
 alias LineRegistry = map[str, map[int, list[value]]];
 map[str, list[int]] countedLines = ();
 
-public list[tuple[int, list[loc]]] getDuplication(set[Declaration] asts) {
+public list[tuple[int, list[loc]]] calcProblem(set[Declaration] asts) {
 	MIN_AMOUNT_OF_LINES = nLines;
 	countedLines = ();
     LineRegistry fileLineAsts = fileLineMapGeneration(t, asts);
