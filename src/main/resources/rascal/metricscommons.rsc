@@ -4,6 +4,7 @@ import IO;
 import Set;
 import List;
 
+// problemSize = totalProblemSize (total of all problems in the list
 void signalProblems(list[tuple[int, list[loc]]] problemLocs, int problemSize){
 	str buffer = toString(problemLocs);
 	println(size(buffer));
@@ -13,4 +14,34 @@ void signalProblems(list[tuple[int, list[loc]]] problemLocs, int problemSize){
 
 void signalProblem(tuple[int, list[loc]] problemLocs, int problemSize){
 	signalProblem([problemLocs], problemSize);
+}
+
+void signalProblemLoc(loc location, int problemSize){
+	signalProblem([problemSize, location], problemSize);
+}
+
+public int getLinesOfCode(Declaration location) {
+	set[int] sourceLocations = {};
+	visit (location) {
+		case \expressionStatement(_):;
+        case Declaration d: {
+	        try{
+		        sourceLocations+=d.src.begin.line;
+		        sourceLocations+=d.src.end.line;
+	        } catch RuntimeException:;
+		}
+		case Statement d: {
+	        try{
+	        	sourceLocations+=d.src.begin.line;
+	        	sourceLocations+=d.src.end.line;
+	        } catch RuntimeException:;
+		}
+	 	case Expression d: {
+	        try{
+	    	    sourceLocations+=d.src.begin.line;
+	        	sourceLocations+=d.src.end.line;
+	        } catch RuntimeException:;
+		}
+    }
+	return size(sourceLocations);
 }
