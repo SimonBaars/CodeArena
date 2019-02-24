@@ -41,7 +41,7 @@ import net.minecraft.world.GameType;
 import net.minecraft.world.World;
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.minecraft.structureloader.SchematicStructure;
-import nl.sandersimon.clonedetection.model.CloneClass;
+import nl.sandersimon.clonedetection.model.MetricProblem;
 import nl.sandersimon.clonedetection.monster.CodeEntity;
 import nl.sandersimon.clonedetection.monster.codespider.EntityCodeSpider;
 
@@ -108,7 +108,7 @@ public class CodeArena extends Challenges {
 		//}
 	}
 	
-	public void create(CloneClass cloneClass) {
+	public void create(MetricProblem cloneClass) {
 		CodeEntity monster = getMonster(serverWorld, cloneClass);
 		//System.out.println("Created "+monster.getRepresents());
 		monster.setLocationAndAngles(cornerx+((int)(Math.random()*(fieldx-2)))+1, y+3, cornerz+((int)(Math.random()*(fieldz-2)))+1, 0, 0);
@@ -118,7 +118,7 @@ public class CodeArena extends Challenges {
 		activeMonsters.add(monster);
 	}
 
-	private CodeEntity getMonster(World world, CloneClass cloneClass) {
+	private CodeEntity getMonster(World world, MetricProblem cloneClass) {
 		return new EntityCodeSpider(world, cloneClass);
 	}
 	
@@ -226,7 +226,7 @@ public class CodeArena extends Challenges {
 		}
 	}
 
-	public void killSpider(CloneClass cloneClass) {
+	public void killSpider(MetricProblem cloneClass) {
 		for(int i = 0; i<activeMonsters.size(); i++) {
 			if(activeMonsters.get(i).getRepresents().equals(cloneClass)) {
 				activeMonsters.get(i).setDead();
@@ -236,7 +236,7 @@ public class CodeArena extends Challenges {
 		}
 	}
 
-	public CloneClass getSpiderByPos(BlockPos pos) {
+	public MetricProblem getSpiderByPos(BlockPos pos) {
 		for(int i = 0; i<activeMonsters.size(); i++) {
 			if(activeMonsters.get(i).getPosition().equals(pos)) {
 				return activeMonsters.get(i).getRepresents();
@@ -247,7 +247,7 @@ public class CodeArena extends Challenges {
 		return null;
 	}
 
-	public CloneClass findEntity(EntityCodeSpider e) {
+	public MetricProblem findEntity(EntityCodeSpider e) {
 		if(clientServerEntityMapping.containsKey(e)) {
 			return clientServerEntityMapping.get(e).getRepresents();
 		}

@@ -33,7 +33,7 @@ import nl.sandersimon.clonedetection.minecraft.gui.CloneMenuKey;
 import nl.sandersimon.clonedetection.minecraft.gui.EndChallengeGUI;
 import nl.sandersimon.clonedetection.minecraft.gui.GUISetupCloneFinding;
 import nl.sandersimon.clonedetection.minecraft.proxy.CommonProxy;
-import nl.sandersimon.clonedetection.model.CloneClass;
+import nl.sandersimon.clonedetection.model.MetricProblem;
 import nl.sandersimon.clonedetection.model.CloneMetrics;
 import nl.sandersimon.clonedetection.model.CloneScore;
 
@@ -54,7 +54,7 @@ public class CloneDetection
 	private InputStreamReader scanIn = null;
 	@Mod.Instance
 	private static CloneDetection cloneDetection;
-	private List<CloneClass> clones = new ArrayList<>();
+	private List<MetricProblem> clones = new ArrayList<>();
 	
 	private final CloneMetrics metrics = new CloneMetrics();
 	
@@ -213,11 +213,11 @@ public class CloneDetection
 		return readBuffer(rascalIn, bufferSize);
 	}
 
-	public List<CloneClass> getClones() {
+	public List<MetricProblem> getClones() {
 		return clones;
 	}
 
-	public void setClones(List<CloneClass> clones) {
+	public void setClones(List<MetricProblem> clones) {
 		this.clones = clones;
 	}
 
@@ -245,10 +245,6 @@ public class CloneDetection
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public void calculateClonePercentage() {
-		metrics.getPercentageOfProjectCloned().setScorePoints(perc(metrics.getTotalAmountOfLinesInProject().getScorePoints(), metrics.getTotalAmountOfClonedLinesInProject().getScorePoints()));
 	}
 	
 	public int perc(int total, int partOfTotal) {

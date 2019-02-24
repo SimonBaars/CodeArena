@@ -9,7 +9,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.challenge.CodeArena;
-import nl.sandersimon.clonedetection.model.CloneClass;
+import nl.sandersimon.clonedetection.model.MetricProblem;
 
 @SideOnly(Side.CLIENT)
 public class RenderCodeSpider<T extends EntityCodeSpider> extends RenderLiving<T>
@@ -30,7 +30,7 @@ public class RenderCodeSpider<T extends EntityCodeSpider> extends RenderLiving<T
     @Override
     protected void preRenderCallback(T entitylivingbaseIn, float partialTickTime)
     {
-    	CloneClass c = entitylivingbaseIn.getRepresents();
+    	MetricProblem c = entitylivingbaseIn.getRepresents();
     	if(c == null) {
 	    	CodeArena arena = CloneDetection.get().getArena();
 	    	if(arena == null)

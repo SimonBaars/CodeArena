@@ -12,14 +12,14 @@ import java.nio.file.attribute.BasicFileAttributes;
 import org.junit.Test;
 
 import nl.sandersimon.clonedetection.common.SavePaths;
-import nl.sandersimon.clonedetection.model.CloneClass;
+import nl.sandersimon.clonedetection.model.MetricProblem;
 import nl.sandersimon.clonedetection.model.Location;
 
 public class ProjectParseTest {
 
 	@Test
 	public void test() {
-		CloneClass foundLocs = new CloneClass();
+		MetricProblem foundLocs = new MetricProblem();
 		try {
 			Files.walkFileTree(Paths.get(SavePaths.getProjectFolder()+"smallsql0.21_src"+"/src/"), new SimpleFileVisitor<Path>() {
 			    @Override

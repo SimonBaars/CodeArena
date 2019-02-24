@@ -1,4 +1,4 @@
-package nl.sandersimon.clonedetection.model;
+/*package nl.sandersimon.clonedetection.model;
 
 import java.util.Arrays;
 
@@ -130,4 +130,4 @@ public class CloneMetrics {
 		for(CloneScore s : scores)
 			s.setScorePoints(0);
 	}
-}
+}*/

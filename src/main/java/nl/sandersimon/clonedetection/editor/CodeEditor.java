@@ -53,7 +53,7 @@ import org.fife.ui.rtextarea.SearchResult;
 import net.minecraft.client.Minecraft;
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.common.TestingCommons;
-import nl.sandersimon.clonedetection.model.CloneClass;
+import nl.sandersimon.clonedetection.model.MetricProblem;
 import nl.sandersimon.clonedetection.thread.ChangesScannerThread;
 
 
@@ -76,9 +76,9 @@ public class CodeEditor extends JFrame implements SearchListener {
 	private ReplaceToolBar replaceToolBar;
 	private StatusBar statusBar;
 	private final File file;
-	private final CloneClass cloneClass;
+	private final MetricProblem cloneClass;
 
-	public CodeEditor(CloneClass cloneClass, File file, int markedRangeStart, int markedRangeEnd, int pos, int amount) {
+	public CodeEditor(MetricProblem cloneClass, File file, int markedRangeStart, int markedRangeEnd, int pos, int amount) {
 		this.file = file;
 		this.cloneClass = cloneClass;
 		String content;

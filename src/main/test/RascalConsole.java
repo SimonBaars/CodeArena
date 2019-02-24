@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.common.SavePaths;
-import nl.sandersimon.clonedetection.model.CloneClass;
+import nl.sandersimon.clonedetection.model.MetricProblem;
 import nl.sandersimon.clonedetection.model.Location;
 
 public class RascalConsole {
@@ -33,7 +33,7 @@ public class RascalConsole {
 	}
 
 	private void printExampleCommand() {
-		CloneClass foundLocs = new CloneClass();
+		MetricProblem foundLocs = new MetricProblem();
 		//String project = "ProjectWithDuplicateBetweenFiles";
 		String project = "demoProject";
 		try {

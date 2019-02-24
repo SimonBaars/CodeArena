@@ -12,17 +12,12 @@ import net.minecraft.item.ItemStack;
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.editor.CodeEditorMaker;
 
-public class CloneClass implements Comparable<CloneClass>{
+public class MetricProblem implements Comparable<MetricProblem>{
 
 	private int lines;
 	private List<Location> locations = new ArrayList<>();
 	
-	public CloneClass(CloneMetrics metrics) {
-		super();
-		metrics.getTotalNumberOfCloneClasses().incrementScore();
-	}
-	
-	public CloneClass() {
+	public MetricProblem() {
 		super();
 	}
 
@@ -43,23 +38,12 @@ public class CloneClass implements Comparable<CloneClass>{
 	}
 
 	@Override
-	public int compareTo(CloneClass o) {
+	public int compareTo(MetricProblem o) {
 		return Integer.compare(volume(), o.volume());
 	}
 
-	public void add(CloneMetrics metrics, Location construct) {
+	public void add(Location construct) {
 		locations.add(construct);
-		metrics.getTotalNumberOfClones().incrementScore();
-		metrics.getTotalCloneVolume().increaseScore(lines);
-		CloneScore mostLines = metrics.getMostLinesCloneClass();
-		if(lines > mostLines.getScorePoints())
-			mostLines.setScorePoints(lines);
-		CloneScore mostOccurrent = metrics.getMostOccurrentClone();
-		if(size() > mostOccurrent.getScorePoints())
-			mostOccurrent.setScorePoints(size());
-		CloneScore highestVolume = metrics.getBiggestCloneClass();
-		if(volume() > highestVolume.getScorePoints())
-			highestVolume.setScorePoints(volume());
 		if(locations.size() == 1) {
 			final String myPackage = getPackage();
 			if(!CloneDetection.packages.contains(myPackage)) {

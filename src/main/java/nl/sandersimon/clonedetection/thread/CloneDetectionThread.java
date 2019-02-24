@@ -17,7 +17,7 @@ import nl.sandersimon.clonedetection.challenge.CodeArena;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.common.TestingCommons;
-import nl.sandersimon.clonedetection.model.CloneClass;
+import nl.sandersimon.clonedetection.model.MetricProblem;
 import nl.sandersimon.clonedetection.model.CloneMetrics;
 import nl.sandersimon.clonedetection.model.Location;
 
@@ -43,7 +43,7 @@ public class CloneDetectionThread extends Thread {
 
 	public void run() {
 		CloneDetection cloneDetection = CloneDetection.get();
-		CloneClass foundLocs = new CloneClass();
+		MetricProblem foundLocs = new MetricProblem();
 		try {
 			Files.walkFileTree(Paths.get(SavePaths.getProjectFolder()+project+"/src/"), new SimpleFileVisitor<Path>() {
 			    @Override
@@ -77,49 +77,40 @@ public class CloneDetectionThread extends Thread {
 
 	public void populateResult(){
 		CloneDetection c = CloneDetection.get();
-		CloneMetrics m = c.getMetrics();
-		List<CloneClass> locs = c.getClones();
+		List<MetricProblem> locs = c.getClones();
+
 		while(true) {
-			String unitSizeString = c.waitUntilExecuted('\n').get(0);
-			int unitSize = Integer.parseInt(unitSizeString);
-			if(unitSize == 0)
+			String bufferSizeString = c.waitUntilExecuted('\n').get(0);
+			int bufferSize = Integer.parseInt(bufferSizeString);
+			if(bufferSize == 0)
 				break;
-			m.getTotalAmountOfLinesInProject().increaseScore(unitSize);
-			c.calculateClonePercentage();
-			while(true) {
-				String bufferSizeString = c.waitUntilExecuted('\n').get(0);
-				int bufferSize = Integer.parseInt(bufferSizeString);
-				if(bufferSize == 0)
-					break;
-				
-				String dupLinesString = c.waitUntilExecuted('\n').get(0);
-				int dupLines = Integer.parseInt(dupLinesString);
-				m.getTotalAmountOfClonedLinesInProject().increaseScore(dupLines);
-				
-				
-				String res = c.readBuffer(bufferSize);
-				
-				//System.out.println(res+", "+bufferSizeString);
-				c.waitUntilExecuted('\n');
-				
-				int listLoc = 1;
-				while (listLoc < res.length() && res.charAt(listLoc) == '<') {
-					CloneClass loc = new CloneClass(CloneDetection.get().getMetrics());
-					listLoc = parseList(loc, res, listLoc+1)+2;
-					locs.add(loc);
-					c.eventHandler.nextTickActions.add(() -> c.getArena().create(loc));
-					try {
-						TestingCommons.writeStringToFile(new File(SavePaths.createDirectoryIfNotExists(SavePaths.getSaveFolder())+"clone-"+loc.hashCode()+".txt"), loc.toString());
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+
+			String dupLinesString = c.waitUntilExecuted('\n').get(0);
+			int dupLines = Integer.parseInt(dupLinesString);
+
+
+			String res = c.readBuffer(bufferSize);
+
+			//System.out.println(res+", "+bufferSizeString);
+			c.waitUntilExecuted('\n');
+
+			int listLoc = 1;
+			while (listLoc < res.length() && res.charAt(listLoc) == '<') {
+				MetricProblem loc = new MetricProblem(CloneDetection.get().getMetrics());
+				listLoc = parseList(loc, res, listLoc+1)+2;
+				locs.add(loc);
+				c.eventHandler.nextTickActions.add(() -> c.getArena().create(loc));
+				try {
+					TestingCommons.writeStringToFile(new File(SavePaths.createDirectoryIfNotExists(SavePaths.getSaveFolder())+"clone-"+loc.hashCode()+".txt"), loc.toString());
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
 		}
 	}
 
-	private int parseList(CloneClass loc, String res, int elementLoc) {
-		elementLoc = Location.parseNumber(res, CloneClass::setLines, loc, elementLoc)+1;
+	private int parseList(MetricProblem loc, String res, int elementLoc) {
+		elementLoc = Location.parseNumber(res, MetricProblem::setLines, loc, elementLoc)+1;
 		while(res.charAt(elementLoc) == '|') {
 			int indexOf = res.indexOf(')', elementLoc+1);
 			if(indexOf == -1)

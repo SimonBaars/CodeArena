@@ -4,14 +4,14 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
-import nl.sandersimon.clonedetection.model.CloneClass;
+import nl.sandersimon.clonedetection.model.MetricProblem;
 
 public abstract class CodeEntity extends EntityMob {
 	
-	CloneClass represents;
+	MetricProblem represents;
 	private boolean isServer = false;
 
-	public CodeEntity(World worldIn, CloneClass cloneClass) {
+	public CodeEntity(World worldIn, MetricProblem cloneClass) {
 		super(worldIn);
 		this.represents = cloneClass;
 		float f = 0.03F*cloneClass.volume();
@@ -46,11 +46,11 @@ public abstract class CodeEntity extends EntityMob {
         return super.attackEntityFrom(source, amount);
     }
 
-	public CloneClass getRepresents() {
+	public MetricProblem getRepresents() {
 		return represents;
 	}
 
-	public void setRepresents(CloneClass represents) {
+	public void setRepresents(MetricProblem represents) {
 		this.represents = represents;
 	}
 	

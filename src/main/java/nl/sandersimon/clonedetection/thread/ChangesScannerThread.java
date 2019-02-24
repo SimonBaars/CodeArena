@@ -7,7 +7,7 @@ import net.minecraft.util.text.TextFormatting;
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.challenge.CodeArena;
 import nl.sandersimon.clonedetection.common.Commons;
-import nl.sandersimon.clonedetection.model.CloneClass;
+import nl.sandersimon.clonedetection.model.MetricProblem;
 import nl.sandersimon.clonedetection.model.CloneMetrics;
 import nl.sandersimon.clonedetection.model.CloneScore;
 import nl.sandersimon.clonedetection.model.Location;
@@ -15,7 +15,7 @@ import nl.sandersimon.clonedetection.model.Location;
 public class ChangesScannerThread extends Thread {
 	
 	private static ChangesScannerThread worker;
-	private CloneClass c;
+	private MetricProblem c;
 	private boolean before;
 	private CloneMetrics metrics = new CloneMetrics();
 	private final ICommandSender mySender;
@@ -23,7 +23,7 @@ public class ChangesScannerThread extends Thread {
 	private final String similarityPercentage;
 	private final String nLines;
 
-	public ChangesScannerThread(ICommandSender s, String type, String similarityPercentage, String nLines, CloneClass c, boolean before) {
+	public ChangesScannerThread(ICommandSender s, String type, String similarityPercentage, String nLines, MetricProblem c, boolean before) {
 		this.c = c;
 		this.before = before;
 		this.mySender = s;
@@ -89,7 +89,7 @@ public class ChangesScannerThread extends Thread {
 	
 	public void populateResult(){
 		CloneDetection c = CloneDetection.get();
-		List<CloneClass> locs = c.getClones();
+		List<MetricProblem> locs = c.getClones();
 		while(true) {
 			//System.out.println("UNIT SIZE");
 			String unitSizeString = c.waitUntilExecuted(c.getScanIn(), '\n').get(0);
@@ -122,7 +122,7 @@ public class ChangesScannerThread extends Thread {
 				
 				int listLoc = 1;
 				while (listLoc < res.length() && res.charAt(listLoc) == '<') {
-					CloneClass loc = new CloneClass(metrics);
+					MetricProblem loc = new MetricProblem(metrics);
 					listLoc = parseList(loc, res, listLoc+1)+2;
 					locs.add(loc);
 				}
@@ -130,8 +130,8 @@ public class ChangesScannerThread extends Thread {
 		}
 	}
 
-	private int parseList(CloneClass loc, String res, int elementLoc) {
-		elementLoc = Location.parseNumber(res, CloneClass::setLines, loc, elementLoc)+1;
+	private int parseList(MetricProblem loc, String res, int elementLoc) {
+		elementLoc = Location.parseNumber(res, MetricProblem::setLines, loc, elementLoc)+1;
 		while(res.charAt(elementLoc) == '|') {
 			int indexOf = res.indexOf(')', elementLoc+1);
 			if(indexOf == -1)
@@ -143,7 +143,7 @@ public class ChangesScannerThread extends Thread {
 		return elementLoc;
 	}
 	
-	public static void startWorker(ICommandSender s, CloneClass c, boolean before) {
+	public static void startWorker(ICommandSender s, MetricProblem c, boolean before) {
 		CodeArena arena = CloneDetection.get().getArena();
 		worker = new ChangesScannerThread(s, arena.getCloneType(), arena.getSimilarityPerc(), arena.getNLines(), c, before);
 		

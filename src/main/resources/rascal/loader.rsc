@@ -14,6 +14,7 @@ set[Declaration] getAsts(list[loc] partialScanList){
 	return asts;
 }
 
-void calculateCodeDuplication(void (set[Declaration]) metricFunction, set[Declaration] asts){
+void calcMetric(void (set[Declaration]) metricFunction, set[Declaration] asts){
 	metricFunction(asts);
+	println(0);
 }
