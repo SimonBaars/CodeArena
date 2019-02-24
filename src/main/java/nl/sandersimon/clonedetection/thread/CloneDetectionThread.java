@@ -1,6 +1,7 @@
 package nl.sandersimon.clonedetection.thread;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -8,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.command.ICommandSender;
@@ -17,26 +19,18 @@ import nl.sandersimon.clonedetection.challenge.CodeArena;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.common.TestingCommons;
-import nl.sandersimon.clonedetection.model.MetricProblem;
-import nl.sandersimon.clonedetection.model.CloneMetrics;
 import nl.sandersimon.clonedetection.model.Location;
+import nl.sandersimon.clonedetection.model.MetricProblem;
 
 public class CloneDetectionThread extends Thread {
 	
 	private static CloneDetectionThread worker;
 	private final ICommandSender mySender;
 	private final String project;
-	private final String type;
-	private final String similarityPercentage;
-	private final String nLines;
+	public static final String[] NO_METRICS = {"loader.rsc", "metricscommons.rsc"};
 	
 	public CloneDetectionThread(String project, String type, String similarityPercentage, ICommandSender s, String nLines) {
 		this.project = project;
-		this.type = type;
-		this.nLines = nLines;
-		if(similarityPercentage.length()>0 && !similarityPercentage.contains("."))
-			this.similarityPercentage = similarityPercentage+".0";
-		else this.similarityPercentage = similarityPercentage;
 		this.mySender = s;
 		start();
 	}
@@ -58,9 +52,18 @@ public class CloneDetectionThread extends Thread {
 			e.printStackTrace();
 		}
 		
-		cloneDetection.executeTill("calculateCodeDuplication("+foundLocs.rascalLocList()+addIfNotEmpty(type)+addIfNotEmpty(similarityPercentage)+addIfNotEmpty(nLines)+")", '\n');
-		populateResult();
-		cloneDetection.waitUntilExecuted();
+		cloneDetection.executeTill("getAsts("+foundLocs.rascalLocList()+");", '>');
+		System.out.println("ASTS RETRIEVED");
+		
+		String[] metrics = new File(SavePaths.getRascalFolder()).list((dir, name) -> Arrays.stream(NO_METRICS).noneMatch(e -> e.equals(name)));
+		for(String metric : metrics) {
+			String metricName = metric.replace(".rsc", "");
+			cloneDetection.executeTill("import "+metricName+";", '>');
+			cloneDetection.executeTill("calcMetric("+metricName+");", '\n');
+			System.out.println("Metric "+metric+" retrieved");
+			populateResult(metric);
+			cloneDetection.waitUntilExecuted();
+		}
 		cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "All clones have been successfully parsed!")));
 	}
 	
@@ -68,7 +71,7 @@ public class CloneDetectionThread extends Thread {
 		return string.isEmpty() ? "" : ", "+string;
 	}
 
-	public void populateResult(){
+	public void populateResult(String metric){
 		CloneDetection c = CloneDetection.get();
 		List<MetricProblem> locs = c.getClones();
 

@@ -7,14 +7,15 @@ import lang::java::m3::Core;
 import lang::java::m3::AST;
 import String;
 
-set[Declaration] getAsts(list[loc] partialScanList){
-	set[Declaration] asts = {};
+set[Declaration] asts = {};
+
+void getAsts(list[loc] partialScanList){
+	asts = {};
 	for (loc m <- partialScanList)
 		asts += createAstFromFile(m, true);
-	return asts;
 }
 
-void calcMetric(void (set[Declaration]) metricFunction, set[Declaration] asts){
+void calcMetric(void (set[Declaration]) metricFunction){
 	metricFunction(asts);
 	println(0);
 }
