@@ -46,11 +46,8 @@ public class CloneDetection
 	public final CDEventHandler eventHandler = new CDEventHandler();
 
 	private Process rascal;
-	private Process partialScan;
 	private BufferedWriter rascalOut = null;
 	private InputStreamReader rascalIn = null;
-	private BufferedWriter scanOut = null;
-	private InputStreamReader scanIn = null;
 	@Mod.Instance
 	private static CloneDetection cloneDetection;
 	private final Map<String, List<MetricProblem>> problems = new HashMap<>();
@@ -105,11 +102,8 @@ public class CloneDetection
 		try {
 			System.out.println("Starting Rascal..");
 			rascal = getProcess("java -jar "+ResourceCommons.getResource("Rascal.jar").getAbsolutePath(), ResourceCommons.getResource("rascal"));
-			partialScan = getProcess("java -jar "+ResourceCommons.getResource("Rascal.jar").getAbsolutePath(), ResourceCommons.getResource("rascal"));
 			waitUntilExecuted(rascalIn, getRascalReadyState());
 			executeRascal("import loader;");
-			waitUntilExecuted(scanIn, getRascalReadyState());
-			executeRascal(scanIn, scanOut, "import loader;", getRascalReadyState());
 			System.out.println("Rascal Started!");
 		} catch (IOException e) {
 			throw new RuntimeException("Rascal could not be started!", e);
@@ -131,10 +125,8 @@ public class CloneDetection
 		ProcessBuilder prb = new ProcessBuilder(com);
 		prb.directory(dir);
 		Process pr = prb.start();
-		if(rascalOut == null) rascalOut = new BufferedWriter(new OutputStreamWriter(pr.getOutputStream()));
-		else scanOut = new BufferedWriter(new OutputStreamWriter(pr.getOutputStream()));
-		if(rascalIn == null) rascalIn = new InputStreamReader(pr.getInputStream());
-		else scanIn = new InputStreamReader(pr.getInputStream());
+		rascalOut = new BufferedWriter(new OutputStreamWriter(pr.getOutputStream()));
+		rascalIn = new InputStreamReader(pr.getInputStream());
 		return pr;
 	}
 
@@ -255,14 +247,6 @@ public class CloneDetection
 
 	public InputStreamReader getRascalIn() {
 		return rascalIn;
-	}
-
-	public BufferedWriter getScanOut() {
-		return scanOut;
-	}
-
-	public InputStreamReader getScanIn() {
-		return scanIn;
 	}
 	
 	public static class GuiHandler implements IGuiHandler {
