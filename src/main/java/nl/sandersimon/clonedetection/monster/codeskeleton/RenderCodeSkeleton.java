@@ -2,6 +2,8 @@ package nl.sandersimon.clonedetection.monster.codeskeleton;
 
 import net.minecraft.client.model.ModelSkeleton;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.RenderBiped;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
 import net.minecraft.client.renderer.entity.layers.LayerHeldItem;
 import net.minecraft.entity.monster.AbstractSkeleton;
@@ -10,11 +12,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderSkeleton extends RenderBiped<AbstractSkeleton>
+public class RenderCodeSkeleton extends RenderBiped<AbstractSkeleton>
 {
     private static final ResourceLocation SKELETON_TEXTURES = new ResourceLocation("textures/entity/skeleton/skeleton.png");
 
-    public RenderSkeleton(RenderManager renderManagerIn)
+    public RenderCodeSkeleton(RenderManager renderManagerIn)
     {
         super(renderManagerIn, new ModelSkeleton(), 0.5F);
         this.addLayer(new LayerHeldItem(this));

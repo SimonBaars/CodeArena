@@ -10,11 +10,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderZombie extends RenderBiped<EntityZombie>
+public class RenderCodeZombie extends RenderBiped<EntityCodeZombie>
 {
     private static final ResourceLocation ZOMBIE_TEXTURES = new ResourceLocation("textures/entity/zombie/zombie.png");
 
-    public RenderZombie(RenderManager renderManagerIn)
+    public RenderCodeZombie(RenderManager renderManagerIn)
     {
         super(renderManagerIn, new ModelZombie(), 0.5F);
         LayerBipedArmor layerbipedarmor = new LayerBipedArmor(this)
@@ -31,7 +31,7 @@ public class RenderZombie extends RenderBiped<EntityZombie>
     /**
      * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.
      */
-    protected ResourceLocation getEntityTexture(EntityZombie entity)
+    protected ResourceLocation getEntityTexture(EntityCodeZombie entity)
     {
         return ZOMBIE_TEXTURES;
     }
