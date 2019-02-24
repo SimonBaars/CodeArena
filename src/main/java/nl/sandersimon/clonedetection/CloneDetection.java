@@ -61,6 +61,10 @@ public class CloneDetection
 
 	private final List<ProblemScore> problemScores = new ArrayList<>();
 	
+	public List<ProblemScore> getProblemScores() {
+		return problemScores;
+	}
+
 	@SidedProxy(clientSide = "nl.sandersimon.clonedetection.minecraft.proxy.ClientProxy", serverSide = "nl.sandersimon.clonedetection.minecraft.proxy.ServerProxy")
 	public static CommonProxy proxy;
 	

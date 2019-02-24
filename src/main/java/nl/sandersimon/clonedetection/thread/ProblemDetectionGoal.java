@@ -1,5 +1,5 @@
 package nl.sandersimon.clonedetection.thread;
 
-public enum CloneDetectionGoal {
+public enum ProblemDetectionGoal {
 	DETECTION, SCANBEFORE, SCANAFTER
 }

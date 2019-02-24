@@ -52,7 +52,7 @@ public abstract class Challenges {
 		this.y=y;
 		this.z=z;
 		this.defDifficulty=defDifficulty;
-		CloneDetection.eventHandler.challenge=this;
+		CloneDetection.get().eventHandler.challenge=this;
 		Minecraft.getMinecraft().getIntegratedServer().setDifficultyForAllWorlds(defDifficulty);
 		//Challenge.eventHandler.previousTick = System.currentTimeMillis();
 		this.worldIn=Minecraft.getMinecraft().world;
@@ -198,7 +198,7 @@ public abstract class Challenges {
 			Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().getGameRules().setOrCreateGameRule("doMobSpawning", "true");
 			destroy();
 		}
-		CloneDetection.eventHandler.challenge=null;
+		CloneDetection.get().eventHandler.challenge=null;
 	}
 
 	abstract void destroy();

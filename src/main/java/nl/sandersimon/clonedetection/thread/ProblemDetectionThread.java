@@ -1,7 +1,10 @@
 package nl.sandersimon.clonedetection.thread;
 
+import static nl.sandersimon.clonedetection.thread.ProblemDetectionGoal.DETECTION;
+import static nl.sandersimon.clonedetection.thread.ProblemDetectionGoal.SCANBEFORE;
+import static nl.sandersimon.clonedetection.thread.ProblemDetectionGoal.SCANAFTER;
+
 import java.io.File;
-import static nl.sandersimon.clonedetection.thread.CloneDetectionGoal.*;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -13,27 +16,36 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import akka.japi.Pair;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.TextFormatting;
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.challenge.CodeArena;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.model.Location;
 import nl.sandersimon.clonedetection.model.MetricProblem;
+import scala.collection.generic.BitOperations.Int;
 
 public class ProblemDetectionThread extends Thread {
 	
 	private static ProblemDetectionThread worker;
 	private final ICommandSender mySender;
 	private final String project;
-	private CloneDetectionGoal goal;
+	private ProblemDetectionGoal goal;
+	private MetricProblem scanProblem;
 	public static final String[] NO_METRICS = {"loader.rsc", "metricscommons.rsc"};
+	private static int beforeMetric = 0;
+	private static int beforeProblemSize = 0;
 	
-	public ProblemDetectionThread(CloneDetectionGoal g, ICommandSender s, String project) {
+	public ProblemDetectionThread(ProblemDetectionGoal g, ICommandSender s, MetricProblem p, String project) {
 		this.project = project;
 		this.mySender = s;
 		this.goal = g;
+		this.scanProblem = p;
+		if(g == SCANBEFORE)
+			beforeProblemSize = 0;
 		start();
 	}
 
@@ -42,9 +54,29 @@ public class ProblemDetectionThread extends Thread {
 		if(goal == DETECTION) {
 			retrieveAsts(cloneDetection);
 			findAllProblems(cloneDetection);
-		}
-		
-		cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "All clones have been successfully parsed!")));
+			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "All clones have been successfully parsed!")));
+		} else {
+			cloneDetection.executeTill("calcMetric("+scanProblem.getMetric()+");", '\n');
+			System.out.println("Metric "+scanProblem.getMetric()+" retrieved");
+			Pair<Integer, Integer> amount = populateResult(scanProblem.getMetric());
+			int amountOfProblemsFound = amount.first();
+			int problemSize = amount.second();
+			if(goal == SCANBEFORE) {
+				beforeMetric = amountOfProblemsFound;
+				beforeProblemSize = problemSize;
+			}else {
+				if(amountOfProblemsFound<beforeMetric) {
+					CloneDetection.get().getArena().increaseScore(5);
+					cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(TextFormatting.DARK_GREEN, "Well done on improving the metric! You are awarded 5 emeralds!")));
+					cloneDetection.eventHandler.nextTickActions.add(() -> cloneDetection.getArena().killSpider(scanProblem));
+				} else if(problemSize<beforeProblemSize){
+					CloneDetection.get().getArena().increaseScore(1);
+					cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(TextFormatting.YELLOW, "Your fix did not fix the entire issue, but did improve upon it. You are awarded 1 emerald!")));
+				} else {
+					cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(TextFormatting.RED, "The problem was not fixed! No emeralds for you!")));
+				}
+			}
+		}		
 	}
 
 	private void findAllProblems(CloneDetection cloneDetection) {
@@ -83,8 +115,9 @@ public class ProblemDetectionThread extends Thread {
 		return string.isEmpty() ? "" : ", "+string;
 	}
 
-	public int populateResult(String metric){
+	public Pair<Integer, Integer> populateResult(String metric){
 		int amountOfProblemsFound = 0;
+		int problemSize = 0;
 		CloneDetection c = CloneDetection.get();
 		List<MetricProblem> locs = goal == DETECTION ? c.makeProblem(metric) : new ArrayList<>();
 		
@@ -102,9 +135,10 @@ public class ProblemDetectionThread extends Thread {
 				if(goal == DETECTION)
 					c.eventHandler.nextTickActions.add(() -> c.getArena().create(metric, loc));
 				amountOfProblemsFound++;
+				problemSize+=loc.size();
 			}
 		}
-		return amountOfProblemsFound;
+		return new Pair<>(amountOfProblemsFound, problemSize);
 	}
 
 	private int parseNumberFromRascal() {
@@ -140,7 +174,7 @@ public class ProblemDetectionThread extends Thread {
 		}
 		s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "Searching for clones, please wait..."));
 		
-		worker = new ProblemDetectionThread(args[0], cloneType, similarityPerc, s, nLines);
+		worker = new ProblemDetectionThread(DETECTION, s, null, args[0]);
 	}
 
 	public static ProblemDetectionThread getWorker() {

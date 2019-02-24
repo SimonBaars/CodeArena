@@ -277,10 +277,14 @@ public class CodeArena extends Challenges {
 	}
 
 	public int getCurrentReward() {
-		return displayScore.getScorePoints()/10; //The amount of emeralds awarded is the score divided by 10.
+		return displayScore.getScorePoints(); 
 	}
 
 	public String getNLines() {
 		return nLines;
+	}
+
+	public void increaseScore() {
+		increaseScore(1);
 	}
 }
