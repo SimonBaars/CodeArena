@@ -54,7 +54,6 @@ import net.minecraft.client.Minecraft;
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.common.TestingCommons;
 import nl.sandersimon.clonedetection.model.MetricProblem;
-import nl.sandersimon.clonedetection.thread.ChangesScannerThread;
 import nl.sandersimon.clonedetection.thread.ProblemDetectionThread;
 
 

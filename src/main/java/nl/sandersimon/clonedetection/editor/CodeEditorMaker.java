@@ -7,14 +7,14 @@ import net.minecraft.client.Minecraft;
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.model.Location;
 import nl.sandersimon.clonedetection.model.MetricProblem;
-import nl.sandersimon.clonedetection.thread.ChangesScannerThread;
+import nl.sandersimon.clonedetection.thread.ProblemDetectionThread;
 
 public class CodeEditorMaker {
 
 	private CodeEditorMaker() {}
 
 	public static void create(MetricProblem cloneClass) {
-		ChangesScannerThread.startWorker(Minecraft.getMinecraft().player, cloneClass, true);
+		ProblemDetectionThread.startWorker(Minecraft.getMinecraft().player, cloneClass, true);
 		for(int i = 0; i<cloneClass.size(); i++) {
 			final int j = i;
 			SwingUtilities.invokeLater(() -> {

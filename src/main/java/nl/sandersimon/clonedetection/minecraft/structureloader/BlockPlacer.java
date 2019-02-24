@@ -109,9 +109,9 @@ public class BlockPlacer
 		//this.updateState.add(blockState);
 		this.world.markAndNotifyBlock(blockPos, this.world.getChunkFromBlockCoords(blockPos), this.world.getBlockState(blockPos), blockState, 3);
 		if(world.isRemote){
-			CloneDetection.eventHandler.lightUpdate.addClientProcess(blockPos);
+			CloneDetection.get().eventHandler.lightUpdate.addClientProcess(blockPos);
 		} else {
-			CloneDetection.eventHandler.lightUpdate.addServerProcess(blockPos);
+			CloneDetection.get().eventHandler.lightUpdate.addServerProcess(blockPos);
 		}
 		return blockAdded;
 	}

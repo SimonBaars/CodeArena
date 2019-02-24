@@ -53,7 +53,7 @@ public class DropFuncBlock
 			//if(world.isRemote){
 			//	IMSM.eventHandler.lightUpdate.addClientProcess(pos);
 			//} else {
-			CloneDetection.eventHandler.lightUpdate.addServerProcess(pos);
+			CloneDetection.get().eventHandler.lightUpdate.addServerProcess(pos);
 				//IMSM.eventHandler.lightUpdate.addClientProcess(pos);
 			//}
 			/*if(world.isDaytime()){

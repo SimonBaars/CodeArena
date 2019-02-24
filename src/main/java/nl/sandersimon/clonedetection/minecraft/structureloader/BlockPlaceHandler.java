@@ -64,9 +64,9 @@ public class BlockPlaceHandler {
 				//IBlockState oldState = world.getBlockState(pos);
 				storageArray.set(pos.getX() & 15, pos.getY() & 15, pos.getZ() & 15, state);
 				if(world.isRemote){
-					CloneDetection.eventHandler.lightUpdate.addClientProcess(pos);
+					CloneDetection.get().eventHandler.lightUpdate.addClientProcess(pos);
 				} else {
-					CloneDetection.eventHandler.lightUpdate.addServerProcess(pos);
+					CloneDetection.get().eventHandler.lightUpdate.addServerProcess(pos);
 				}
 				//world.checkLightFor(EnumSkyBlock.SKY, pos);
 				//world.markBlockForUpdate(pos);

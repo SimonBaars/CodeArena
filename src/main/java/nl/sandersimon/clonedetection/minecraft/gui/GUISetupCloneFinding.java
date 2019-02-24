@@ -256,7 +256,7 @@ public class GUISetupCloneFinding {
 			World world = server.getWorld(entity.dimension);
 			if (button.id == 0) {
 				Minecraft.getMinecraft().player.closeScreen();
-				CloneDetection.get().eventHandler.nextTickActions.add(() -> ProblemDetectionThread.startWorker(server, Minecraft.getMinecraft().player, new String[] {InputProject.getText(), Integer.toString(cloneType), "0.0", MinLines.getText()}));
+				CloneDetection.get().eventHandler.nextTickActions.add(() -> ProblemDetectionThread.startWorker( Minecraft.getMinecraft().player, InputProject.getText()));
 			}
 			if (button.id == 1) {
 				String[] choices = new File(SavePaths.getProjectFolder()).list();
