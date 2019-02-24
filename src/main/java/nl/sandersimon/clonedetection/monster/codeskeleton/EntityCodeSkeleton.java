@@ -15,6 +15,7 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
+import nl.sandersimon.clonedetection.model.MetricProblem;
 
 public class EntityCodeSkeleton extends AbstractCodeSkeleton
 {
@@ -23,7 +24,11 @@ public class EntityCodeSkeleton extends AbstractCodeSkeleton
         super(worldIn);
     }
 
-    public static void registerFixesSkeleton(DataFixer fixer)
+    public EntityCodeSkeleton(World world, MetricProblem cloneClass) {
+		super(world, cloneClass);
+	}
+
+	public static void registerFixesSkeleton(DataFixer fixer)
     {
         EntityLiving.registerFixesMob(fixer, EntityCodeSkeleton.class);
     }

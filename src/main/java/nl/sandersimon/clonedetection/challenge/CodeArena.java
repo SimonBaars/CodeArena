@@ -42,7 +42,10 @@ import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.minecraft.structureloader.SchematicStructure;
 import nl.sandersimon.clonedetection.model.MetricProblem;
 import nl.sandersimon.clonedetection.monster.CodeEntity;
+import nl.sandersimon.clonedetection.monster.codecreeper.EntityCodeCreeper;
+import nl.sandersimon.clonedetection.monster.codeskeleton.EntityCodeSkeleton;
 import nl.sandersimon.clonedetection.monster.codespider.EntityCodeSpider;
+import nl.sandersimon.clonedetection.monster.codezombie.EntityCodeZombie;
 
 public class CodeArena extends Challenges {
 	int sizex;
@@ -112,7 +115,12 @@ public class CodeArena extends Challenges {
 	}
 
 	private CodeEntity getMonster(World world, MetricProblem cloneClass, String metric) {
-		return new EntityCodeSpider(world, cloneClass);
+		switch(metric) {
+			case "clones": return new EntityCodeSpider(world, cloneClass);
+			case "unitcomplexity": return new EntityCodeZombie(world, cloneClass);
+			case "unitinterfaces": return new EntityCodeSkeleton(world, cloneClass);
+			default: return new EntityCodeCreeper(world, cloneClass);
+		}
 	}
 	
 	private EntityLiving getMonster(int monsterId, World world) {

@@ -56,6 +56,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import nl.sandersimon.clonedetection.model.MetricProblem;
 import nl.sandersimon.clonedetection.monster.CodeEntity;
 import nl.sandersimon.clonedetection.monster.codecreeper.EntityCodeCreeper;
 
@@ -85,7 +86,11 @@ public class EntityCodeZombie extends CodeEntity
         this.setSize(0.6F, 1.95F);
     }
 
-    protected void initEntityAI()
+    public EntityCodeZombie(World world, MetricProblem cloneClass) {
+		super(world, cloneClass);
+	}
+
+	protected void initEntityAI()
     {
         this.tasks.addTask(0, new EntityAISwimming(this));
         //this.tasks.addTask(2, new EntityAIZombieAttack(this, 1.0D, false));

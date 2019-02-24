@@ -45,6 +45,7 @@ import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import nl.sandersimon.clonedetection.model.MetricProblem;
 import nl.sandersimon.clonedetection.monster.CodeEntity;
 
 public abstract class AbstractCodeSkeleton extends CodeEntity implements IRangedAttackMob
@@ -78,7 +79,11 @@ public abstract class AbstractCodeSkeleton extends CodeEntity implements IRanged
         this.setCombatTask();
     }
 
-    protected void initEntityAI()
+    public AbstractCodeSkeleton(World world, MetricProblem cloneClass) {
+		super(world, cloneClass);
+	}
+
+	protected void initEntityAI()
     {
         this.tasks.addTask(1, new EntityAISwimming(this));
         this.tasks.addTask(2, new EntityAIRestrictSun(this));

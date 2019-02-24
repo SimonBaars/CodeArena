@@ -11,8 +11,8 @@ public abstract class CodeEntity extends EntityMob {
 	MetricProblem represents;
 	private boolean isServer = false;
 
-	public CodeEntity(World worldIn, MetricProblem cloneClass) {
-		super(worldIn);
+	public CodeEntity(World world, MetricProblem cloneClass) {
+		super(world);
 		this.represents = cloneClass;
 		float f = 0.03F*cloneClass.volume();
 		//double boundingX = getEntityBoundingBox().maxX-getEntityBoundingBox().minX*3;

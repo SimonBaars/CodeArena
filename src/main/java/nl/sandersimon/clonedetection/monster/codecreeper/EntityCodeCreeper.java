@@ -39,6 +39,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import nl.sandersimon.clonedetection.model.MetricProblem;
 import nl.sandersimon.clonedetection.monster.CodeEntity;
 
 public class EntityCodeCreeper extends CodeEntity
@@ -64,7 +65,11 @@ public class EntityCodeCreeper extends CodeEntity
         this.setSize(0.6F, 1.7F);
     }
 
-    protected void initEntityAI()
+    public EntityCodeCreeper(World world, MetricProblem cloneClass) {
+		super(world, cloneClass);
+	}
+
+	protected void initEntityAI()
     {
         this.tasks.addTask(1, new EntityAISwimming(this));
        // this.tasks.addTask(2, new EntityAICreeperSwell(this));
