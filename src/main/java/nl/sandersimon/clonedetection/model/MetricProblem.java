@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.RenderZombie;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import nl.sandersimon.clonedetection.CloneDetection;
@@ -14,9 +15,16 @@ import nl.sandersimon.clonedetection.editor.CodeEditorMaker;
 
 public class MetricProblem implements Comparable<MetricProblem>{
 
+	private String metric;
 	private int lines;
 	private List<Location> locations = new ArrayList<>();
 	
+	public MetricProblem(String metric, int lines) {
+		super();
+		this.metric = metric;
+		this.lines = lines;
+	}
+
 	public MetricProblem() {
 		super();
 	}
@@ -98,5 +106,13 @@ public class MetricProblem implements Comparable<MetricProblem>{
 				return folderIn.replace('/', '.');
 		}
 		return folderIn.substring(javaSrcPath+javaSrc.length()+1).replace('/', '.');
+	}
+
+	public String getMetric() {
+		return metric;
+	}
+
+	public void setMetric(String metric) {
+		this.metric = metric;
 	}
 }

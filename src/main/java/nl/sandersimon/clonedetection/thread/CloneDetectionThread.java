@@ -75,13 +75,13 @@ public class CloneDetectionThread extends Thread {
 		
 		int bufferSize;
 		while((bufferSize = parseNumberFromRascal()) != 0 ) {
-			parseNumberFromRascal(); //Currently unused, might remove later
+			int nLines = parseNumberFromRascal(); //Currently unused, might remove later
 
 			String res = c.readBuffer(bufferSize);
 			c.waitUntilExecuted('\n');
 			int listLoc = 1;
 			while (listLoc < res.length() && res.charAt(listLoc) == '<') {
-				MetricProblem loc = new MetricProblem();
+				MetricProblem loc = new MetricProblem(metric, nLines);
 				listLoc = parseList(loc, res, listLoc+1)+2;
 				locs.add(loc);
 				c.eventHandler.nextTickActions.add(() -> c.getArena().create(metric, loc));

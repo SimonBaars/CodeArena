@@ -3,7 +3,9 @@ package nl.sandersimon.clonedetection.monster.codezombie;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
+
 import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -25,6 +27,9 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
+import net.minecraft.entity.monster.EntityIronGolem;
+import net.minecraft.entity.monster.EntityPigZombie;
+import net.minecraft.entity.monster.EntityZombieVillager;
 import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -51,20 +56,22 @@ import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import nl.sandersimon.clonedetection.monster.CodeEntity;
+import nl.sandersimon.clonedetection.monster.codecreeper.EntityCodeCreeper;
 
-public class EntityZombie extends CodeEntity
+public class EntityCodeZombie extends CodeEntity
 {
     /** The attribute which determines the chance that this mob will spawn reinforcements */
     protected static final IAttribute SPAWN_REINFORCEMENTS_CHANCE = (new RangedAttribute((IAttribute)null, "zombie.spawnReinforcements", 0.0D, 0.0D, 1.0D)).setDescription("Spawn Reinforcements Chance");
     private static final UUID BABY_SPEED_BOOST_ID = UUID.fromString("B9766B59-9566-4402-BC1F-2EE2A276D836");
     private static final AttributeModifier BABY_SPEED_BOOST = new AttributeModifier(BABY_SPEED_BOOST_ID, "Baby speed boost", 0.5D, 1);
-    private static final DataParameter<Boolean> IS_CHILD = EntityDataManager.<Boolean>createKey(EntityZombie.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> IS_CHILD = EntityDataManager.<Boolean>createKey(EntityCodeZombie.class, DataSerializers.BOOLEAN);
     /**
      * Was the type of villager for zombie villagers prior to 1.11. Now unused. Use {@link
      * EntityZombieVillager#PROFESSION} instead.
      */
-    private static final DataParameter<Integer> VILLAGER_TYPE = EntityDataManager.<Integer>createKey(EntityZombie.class, DataSerializers.VARINT);
-    private static final DataParameter<Boolean> ARMS_RAISED = EntityDataManager.<Boolean>createKey(EntityZombie.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Integer> VILLAGER_TYPE = EntityDataManager.<Integer>createKey(EntityCodeZombie.class, DataSerializers.VARINT);
+    private static final DataParameter<Boolean> ARMS_RAISED = EntityDataManager.<Boolean>createKey(EntityCodeZombie.class, DataSerializers.BOOLEAN);
     private final EntityAIBreakDoor breakDoor = new EntityAIBreakDoor(this);
     private boolean isBreakDoorsTaskSet;
     /** The width of the entity */
@@ -72,7 +79,7 @@ public class EntityZombie extends CodeEntity
     /** The height of the the entity. */
     private float zombieHeight;
 
-    public EntityZombie(World worldIn)
+    public EntityCodeZombie(World worldIn)
     {
         super(worldIn);
         this.setSize(0.6F, 1.95F);
@@ -81,7 +88,7 @@ public class EntityZombie extends CodeEntity
     protected void initEntityAI()
     {
         this.tasks.addTask(0, new EntityAISwimming(this));
-        this.tasks.addTask(2, new EntityAIZombieAttack(this, 1.0D, false));
+        //this.tasks.addTask(2, new EntityAIZombieAttack(this, 1.0D, false));
         this.tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.0D));
         this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 1.0D));
         this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
@@ -265,54 +272,9 @@ public class EntityZombie extends CodeEntity
                 entitylivingbase = (EntityLivingBase)source.getTrueSource();
             }
 
-            int i = MathHelper.floor(this.posX);
-            int j = MathHelper.floor(this.posY);
-            int k = MathHelper.floor(this.posZ);
-            net.minecraftforge.event.entity.living.ZombieEvent.SummonAidEvent summonAid = net.minecraftforge.event.ForgeEventFactory.fireZombieSummonAid(this, world, i, j, k, entitylivingbase, this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).getAttributeValue());
-            if (summonAid.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.DENY) return true;
-
-            if (summonAid.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW  ||
-                entitylivingbase != null && this.world.getDifficulty() == EnumDifficulty.HARD && (double)this.rand.nextFloat() < this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).getAttributeValue() && this.world.getGameRules().getBoolean("doMobSpawning"))
-            {
-                EntityZombie entityzombie;
-                if (summonAid.getCustomSummonedAid() != null && summonAid.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW)
-                {
-                    entityzombie = summonAid.getCustomSummonedAid();
-                }
-                else
-                {
-                    entityzombie = new EntityZombie(this.world);
-                }
-
-                for (int l = 0; l < 50; ++l)
-                {
-                    int i1 = i + MathHelper.getInt(this.rand, 7, 40) * MathHelper.getInt(this.rand, -1, 1);
-                    int j1 = j + MathHelper.getInt(this.rand, 7, 40) * MathHelper.getInt(this.rand, -1, 1);
-                    int k1 = k + MathHelper.getInt(this.rand, 7, 40) * MathHelper.getInt(this.rand, -1, 1);
-
-                    if (this.world.getBlockState(new BlockPos(i1, j1 - 1, k1)).isSideSolid(this.world, new BlockPos(i1, j1 - 1, k1), net.minecraft.util.EnumFacing.UP) && this.world.getLightFromNeighbors(new BlockPos(i1, j1, k1)) < 10)
-                    {
-                        entityzombie.setPosition((double)i1, (double)j1, (double)k1);
-
-                        if (!this.world.isAnyPlayerWithinRangeAt((double)i1, (double)j1, (double)k1, 7.0D) && this.world.checkNoEntityCollision(entityzombie.getEntityBoundingBox(), entityzombie) && this.world.getCollisionBoxes(entityzombie, entityzombie.getEntityBoundingBox()).isEmpty() && !this.world.containsAnyLiquid(entityzombie.getEntityBoundingBox()))
-                        {
-                            this.world.spawnEntity(entityzombie);
-                            if (entitylivingbase != null) entityzombie.setAttackTarget(entitylivingbase);
-                            entityzombie.onInitialSpawn(this.world.getDifficultyForLocation(new BlockPos(entityzombie)), (IEntityLivingData)null);
-                            this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).applyModifier(new AttributeModifier("Zombie reinforcement caller charge", -0.05000000074505806D, 0));
-                            entityzombie.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).applyModifier(new AttributeModifier("Zombie reinforcement callee charge", -0.05000000074505806D, 0));
-                            break;
-                        }
-                    }
-                }
-            }
-
             return true;
         }
-        else
-        {
-            return false;
-        }
+        else return false;
     }
 
     public boolean attackEntityAsMob(Entity entityIn)
@@ -395,7 +357,7 @@ public class EntityZombie extends CodeEntity
 
     public static void registerFixesZombie(DataFixer fixer)
     {
-        EntityLiving.registerFixesMob(fixer, EntityZombie.class);
+        EntityLiving.registerFixesMob(fixer, EntityCodeZombie.class);
     }
 
     /**
@@ -446,7 +408,7 @@ public class EntityZombie extends CodeEntity
             EntityZombieVillager entityzombievillager = new EntityZombieVillager(this.world);
             entityzombievillager.copyLocationAndAnglesFrom(entityvillager);
             this.world.removeEntity(entityvillager);
-            entityzombievillager.onInitialSpawn(this.world.getDifficultyForLocation(new BlockPos(entityzombievillager)), new EntityZombie.GroupData(false));
+            entityzombievillager.onInitialSpawn(this.world.getDifficultyForLocation(new BlockPos(entityzombievillager)), new EntityCodeZombie.GroupData(false));
             entityzombievillager.setProfession(entityvillager.getProfession());
             entityzombievillager.setChild(entityvillager.isChild());
             entityzombievillager.setNoAI(entityvillager.isAIDisabled());
@@ -492,12 +454,12 @@ public class EntityZombie extends CodeEntity
 
         if (livingdata == null)
         {
-            livingdata = new EntityZombie.GroupData(this.world.rand.nextFloat() < net.minecraftforge.common.ForgeModContainer.zombieBabyChance);
+            livingdata = new EntityCodeZombie.GroupData(this.world.rand.nextFloat() < net.minecraftforge.common.ForgeModContainer.zombieBabyChance);
         }
 
-        if (livingdata instanceof EntityZombie.GroupData)
+        if (livingdata instanceof EntityCodeZombie.GroupData)
         {
-            EntityZombie.GroupData entityzombie$groupdata = (EntityZombie.GroupData)livingdata;
+            EntityCodeZombie.GroupData entityzombie$groupdata = (EntityCodeZombie.GroupData)livingdata;
 
             if (entityzombie$groupdata.isChild)
             {

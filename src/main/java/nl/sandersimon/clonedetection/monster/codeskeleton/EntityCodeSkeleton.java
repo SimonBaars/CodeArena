@@ -60,17 +60,6 @@ public class EntityCodeSkeleton extends AbstractSkeleton
     public void onDeath(DamageSource cause)
     {
         super.onDeath(cause);
-
-        if (cause.getTrueSource() instanceof EntityCodeCreeper)
-        {
-            EntityCodeCreeper entitycreeper = (EntityCodeCreeper)cause.getTrueSource();
-
-            if (entitycreeper.getPowered() && entitycreeper.ableToCauseSkullDrop())
-            {
-                entitycreeper.incrementDroppedSkulls();
-                this.entityDropItem(new ItemStack(Items.SKULL, 1, 0), 0.0F);
-            }
-        }
     }
 
     protected EntityArrow getArrow(float p_190726_1_)
