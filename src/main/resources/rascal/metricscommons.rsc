@@ -16,15 +16,15 @@ void signalProblems(list[tuple[int, list[loc]]] problemLocs, int problemSize){
 }
 
 void signalProblem(tuple[int, list[loc]] problemLocs, int problemSize){
-	signalProblem([problemLocs], problemSize);
+	signalProblems([problemLocs], problemSize);
 }
 
 void signalProblemLoc(loc location, int problemSize){
-	signalProblem([problemSize, location], problemSize);
+	signalProblem(<problemSize, [location]>, problemSize);
 }
 
 void signalProblemDec(Declaration d, int problemSize){
-	signalProblem(d.src, problemSize);
+	signalProblemLoc(d.src, problemSize);
 }
 
 public int getLinesOfCode(Declaration location) {

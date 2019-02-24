@@ -34,7 +34,8 @@ public class RascalConsole {
 
 	private void printExampleCommand() {
 		CloneClass foundLocs = new CloneClass();
-		String project = "ProjectWithDuplicateBetweenFiles";
+		//String project = "ProjectWithDuplicateBetweenFiles";
+		String project = "demoProject";
 		try {
 			Files.walkFileTree(Paths.get(SavePaths.getProjectFolder()+project+"/src/"), new SimpleFileVisitor<Path>() {
 			    @Override
