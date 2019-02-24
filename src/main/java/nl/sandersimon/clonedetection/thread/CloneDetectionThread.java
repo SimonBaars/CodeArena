@@ -60,7 +60,6 @@ public class CloneDetectionThread extends Thread {
 		
 		cloneDetection.executeTill("calculateCodeDuplication("+foundLocs.rascalLocList()+addIfNotEmpty(type)+addIfNotEmpty(similarityPercentage)+addIfNotEmpty(nLines)+")", '\n');
 		populateResult();
-		cloneDetection.writeAllMetricsToFile();
 		cloneDetection.waitUntilExecuted();
 		cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "All clones have been successfully parsed!")));
 	}

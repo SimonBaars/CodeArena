@@ -25,8 +25,6 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import nl.sandersimon.clonedetection.challenge.CodeArena;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.ResourceCommons;
-import nl.sandersimon.clonedetection.common.SavePaths;
-import nl.sandersimon.clonedetection.common.TestingCommons;
 import nl.sandersimon.clonedetection.editor.CodeEditor;
 import nl.sandersimon.clonedetection.minecraft.CDEventHandler;
 import nl.sandersimon.clonedetection.minecraft.gui.CloneMenuKey;
@@ -34,7 +32,6 @@ import nl.sandersimon.clonedetection.minecraft.gui.EndChallengeGUI;
 import nl.sandersimon.clonedetection.minecraft.gui.GUISetupCloneFinding;
 import nl.sandersimon.clonedetection.minecraft.proxy.CommonProxy;
 import nl.sandersimon.clonedetection.model.MetricProblem;
-import nl.sandersimon.clonedetection.model.CloneMetrics;
 import nl.sandersimon.clonedetection.model.ProblemScore;
 
 @Mod(modid = CloneDetection.MODID, name = CloneDetection.NAME, version = CloneDetection.VERSION, dependencies = "required-after:forge@[13.19.0.2129,)", useMetadata = true)
@@ -56,14 +53,13 @@ public class CloneDetection
 	private static CloneDetection cloneDetection;
 	private List<MetricProblem> clones = new ArrayList<>();
 	
-	private final List<ProblemScore> problemScores = new List<ProblemScore>();
+	private final List<ProblemScore> problemScores = new ArrayList<>();
 	
 	@SidedProxy(clientSide = "nl.sandersimon.clonedetection.minecraft.proxy.ClientProxy", serverSide = "nl.sandersimon.clonedetection.minecraft.proxy.ServerProxy")
 	public static CommonProxy proxy;
 	
 	private CodeArena arena;
 	public List<CodeEditor> openEditors = new ArrayList<>();
-	public CloneMetrics before = null;
 	
 	public static int dialoge;
 	public static final List<String> packages = new ArrayList<>();
@@ -231,22 +227,12 @@ public class CloneDetection
 	
 	public void initScoreboards() {
 		ScoreObjective scoreBoard = arena.getScoreBoard();
-		metrics.reset();
-		for(ProblemScore score : metrics.getScores())
+		for(ProblemScore s : problemScores)
+			s.setScorePoints(0);
+		for(ProblemScore score : problemScores)
 			score.setScore(scoreBoard);
 	}
-	
-	public void writeAllMetricsToFile() {
-		StringBuilder builder = new StringBuilder();
-		for(ProblemScore score : metrics.getScores())
-			builder.append(score.getScore().getPlayerName()+": "+score.getScorePoints()+System.lineSeparator());
-		try {
-			TestingCommons.writeStringToFile(new File(SavePaths.createDirectoryIfNotExists(SavePaths.getSaveFolder())+"clone_metrics.txt"), builder.toString());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
+
 	public int perc(int total, int partOfTotal) {
 		return (int) Math.round((((double)partOfTotal / (double)total) * 100.0));
 	}
