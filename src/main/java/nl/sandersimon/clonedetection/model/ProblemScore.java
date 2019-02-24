@@ -3,17 +3,17 @@ package nl.sandersimon.clonedetection.model;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 
-public class CloneScore {
+public class ProblemScore {
 	private Score score;
 	private int scorePoints = 0;
 	private final String name;
 	
-	public CloneScore (String name) {
+	public ProblemScore (String name) {
 		this.score = null;
 		this.name = name;
 	}
 	
-	public CloneScore (String name, Score score) {
+	public ProblemScore (String name, Score score) {
 		this.score = score;
 		this.name = name;
 	}

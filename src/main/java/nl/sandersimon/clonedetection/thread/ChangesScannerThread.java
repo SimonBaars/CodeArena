@@ -9,7 +9,7 @@ import nl.sandersimon.clonedetection.challenge.CodeArena;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.model.MetricProblem;
 import nl.sandersimon.clonedetection.model.CloneMetrics;
-import nl.sandersimon.clonedetection.model.CloneScore;
+import nl.sandersimon.clonedetection.model.ProblemScore;
 import nl.sandersimon.clonedetection.model.Location;
 
 public class ChangesScannerThread extends Thread {
@@ -62,7 +62,7 @@ public class ChangesScannerThread extends Thread {
 			cloneDetection.before = metrics;
 		} else {
 			mySender.sendMessage(Commons.format(TextFormatting.AQUA, "Clone fix results (counted only over the edited files:"));
-			for(CloneScore score : metrics.getScores()) {
+			for(ProblemScore score : metrics.getScores()) {
 				int points = score.getScorePoints();
 				int prevPoints = cloneDetection.before.getScoreByName(score.getName()).getScorePoints();
 				int scoreGain = prevPoints - points;

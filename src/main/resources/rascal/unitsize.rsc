@@ -28,6 +28,7 @@ public bool isMethod(Declaration d){
 	switch(d){
 		case \method(_,_,_,_,_): return true;
 		case \method(_,_,_,_): return true;
+		case \constructor(_, _, _, _): return true;
 	}
 	return false;
 }

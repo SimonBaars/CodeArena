@@ -35,7 +35,7 @@ import nl.sandersimon.clonedetection.minecraft.gui.GUISetupCloneFinding;
 import nl.sandersimon.clonedetection.minecraft.proxy.CommonProxy;
 import nl.sandersimon.clonedetection.model.MetricProblem;
 import nl.sandersimon.clonedetection.model.CloneMetrics;
-import nl.sandersimon.clonedetection.model.CloneScore;
+import nl.sandersimon.clonedetection.model.ProblemScore;
 
 @Mod(modid = CloneDetection.MODID, name = CloneDetection.NAME, version = CloneDetection.VERSION, dependencies = "required-after:forge@[13.19.0.2129,)", useMetadata = true)
 public class CloneDetection
@@ -56,7 +56,7 @@ public class CloneDetection
 	private static CloneDetection cloneDetection;
 	private List<MetricProblem> clones = new ArrayList<>();
 	
-	private final CloneMetrics metrics = new CloneMetrics();
+	private final List<ProblemScore> problemScores = new List<ProblemScore>();
 	
 	@SidedProxy(clientSide = "nl.sandersimon.clonedetection.minecraft.proxy.ClientProxy", serverSide = "nl.sandersimon.clonedetection.minecraft.proxy.ServerProxy")
 	public static CommonProxy proxy;
@@ -232,13 +232,13 @@ public class CloneDetection
 	public void initScoreboards() {
 		ScoreObjective scoreBoard = arena.getScoreBoard();
 		metrics.reset();
-		for(CloneScore score : metrics.getScores())
+		for(ProblemScore score : metrics.getScores())
 			score.setScore(scoreBoard);
 	}
 	
 	public void writeAllMetricsToFile() {
 		StringBuilder builder = new StringBuilder();
-		for(CloneScore score : metrics.getScores())
+		for(ProblemScore score : metrics.getScores())
 			builder.append(score.getScore().getPlayerName()+": "+score.getScorePoints()+System.lineSeparator());
 		try {
 			TestingCommons.writeStringToFile(new File(SavePaths.createDirectoryIfNotExists(SavePaths.getSaveFolder())+"clone_metrics.txt"), builder.toString());
@@ -275,10 +275,6 @@ public class CloneDetection
 
 	public InputStreamReader getScanIn() {
 		return scanIn;
-	}
-
-	public CloneMetrics getMetrics() {
-		return metrics;
 	}
 	
 	public static class GuiHandler implements IGuiHandler {

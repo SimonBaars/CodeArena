@@ -63,12 +63,6 @@ public class CloneDetectionThread extends Thread {
 		cloneDetection.writeAllMetricsToFile();
 		cloneDetection.waitUntilExecuted();
 		cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "All clones have been successfully parsed!")));
-		CloneDetection c = CloneDetection.get();
-		CloneMetrics m = c.getMetrics();
-		if(m.getTotalNumberOfCloneClasses().getScorePoints() == 0) {
-			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "Your project contains no clones congrats!!")));
-			cloneDetection.eventHandler.nextTickActions.add(() -> c.getArena().endChallengeForAllPlayers());
-		}
 	}
 	
 	private String addIfNotEmpty(String string) {
@@ -96,7 +90,7 @@ public class CloneDetectionThread extends Thread {
 
 			int listLoc = 1;
 			while (listLoc < res.length() && res.charAt(listLoc) == '<') {
-				MetricProblem loc = new MetricProblem(CloneDetection.get().getMetrics());
+				MetricProblem loc = new MetricProblem();
 				listLoc = parseList(loc, res, listLoc+1)+2;
 				locs.add(loc);
 				c.eventHandler.nextTickActions.add(() -> c.getArena().create(loc));
@@ -116,7 +110,7 @@ public class CloneDetectionThread extends Thread {
 			if(indexOf == -1)
 				break; // Not a valid location
 			String stringRep = res.substring(elementLoc+1, indexOf);
-			loc.add(CloneDetection.get().getMetrics(), Location.construct(stringRep));
+			loc.add(Location.construct(stringRep));
 			elementLoc += stringRep.length()+3;
 		}
 		return elementLoc;
