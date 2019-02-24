@@ -58,8 +58,8 @@ public class CloneDetectionThread extends Thread {
 			String metricName = metric.replace(".rsc", "");
 			cloneDetection.executeTill("import "+metricName+";", '>');
 			cloneDetection.executeTill("calcMetric("+metricName+");", '\n');
-			System.out.println("Metric "+metric+" retrieved");
-			populateResult(metric);
+			System.out.println("Metric "+metricName+" retrieved");
+			populateResult(metricName);
 			cloneDetection.waitUntilExecuted();
 		}
 		cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "All clones have been successfully parsed!")));
@@ -84,7 +84,7 @@ public class CloneDetectionThread extends Thread {
 				MetricProblem loc = new MetricProblem();
 				listLoc = parseList(loc, res, listLoc+1)+2;
 				locs.add(loc);
-				c.eventHandler.nextTickActions.add(() -> c.getArena().create(loc));
+				c.eventHandler.nextTickActions.add(() -> c.getArena().create(metric, loc));
 			}
 		}
 	}

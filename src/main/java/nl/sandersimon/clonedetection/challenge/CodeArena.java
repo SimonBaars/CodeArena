@@ -107,8 +107,8 @@ public class CodeArena extends Challenges {
 		//}
 	}
 	
-	public void create(MetricProblem cloneClass) {
-		CodeEntity monster = getMonster(serverWorld, cloneClass);
+	public void create(String metric, MetricProblem cloneClass) {
+		CodeEntity monster = getMonster(serverWorld, cloneClass, metric);
 		//System.out.println("Created "+monster.getRepresents());
 		monster.setLocationAndAngles(cornerx+((int)(Math.random()*(fieldx-2)))+1, y+3, cornerz+((int)(Math.random()*(fieldz-2)))+1, 0, 0);
 		monster.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(monster)), (IEntityLivingData)null);
@@ -117,7 +117,7 @@ public class CodeArena extends Challenges {
 		activeMonsters.add(monster);
 	}
 
-	private CodeEntity getMonster(World world, MetricProblem cloneClass) {
+	private CodeEntity getMonster(World world, MetricProblem cloneClass, String metric) {
 		return new EntityCodeSpider(world, cloneClass);
 	}
 	
