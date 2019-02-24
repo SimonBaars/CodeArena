@@ -16,7 +16,7 @@ import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
 
-public class EntityCodeSkeleton extends AbstractSkeleton
+public class EntityCodeSkeleton extends AbstractCodeSkeleton
 {
     public EntityCodeSkeleton(World worldIn)
     {

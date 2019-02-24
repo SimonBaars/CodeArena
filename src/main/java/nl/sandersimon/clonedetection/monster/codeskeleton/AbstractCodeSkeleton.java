@@ -47,10 +47,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import nl.sandersimon.clonedetection.monster.CodeEntity;
 
-public abstract class AbstractSkeleton extends CodeEntity implements IRangedAttackMob
+public abstract class AbstractCodeSkeleton extends CodeEntity implements IRangedAttackMob
 {
-    private static final DataParameter<Boolean> SWINGING_ARMS = EntityDataManager.<Boolean>createKey(AbstractSkeleton.class, DataSerializers.BOOLEAN);
-    private final EntityAIAttackRangedBow<AbstractSkeleton> aiArrowAttack = new EntityAIAttackRangedBow<>(this, 1.0D, 20, 15.0F);
+    private static final DataParameter<Boolean> SWINGING_ARMS = EntityDataManager.<Boolean>createKey(AbstractCodeSkeleton.class, DataSerializers.BOOLEAN);
+    private final EntityAIAttackRangedBow<AbstractCodeSkeleton> aiArrowAttack = new EntityAIAttackRangedBow<>(this, 1.0D, 20, 15.0F);
     private final EntityAIAttackMelee aiAttackOnCollide = new EntityAIAttackMelee(this, 1.2D, false)
     {
         /**
@@ -59,7 +59,7 @@ public abstract class AbstractSkeleton extends CodeEntity implements IRangedAtta
         public void resetTask()
         {
             super.resetTask();
-            AbstractSkeleton.this.setSwingingArms(false);
+            AbstractCodeSkeleton.this.setSwingingArms(false);
         }
         /**
          * Execute a one shot task or start executing a continuous task
@@ -67,11 +67,11 @@ public abstract class AbstractSkeleton extends CodeEntity implements IRangedAtta
         public void startExecuting()
         {
             super.startExecuting();
-            AbstractSkeleton.this.setSwingingArms(true);
+            AbstractCodeSkeleton.this.setSwingingArms(true);
         }
     };
 
-    public AbstractSkeleton(World worldIn)
+    public AbstractCodeSkeleton(World worldIn)
     {
         super(worldIn);
         this.setSize(0.6F, 1.99F);

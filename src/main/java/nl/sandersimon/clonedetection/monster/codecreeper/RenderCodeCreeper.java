@@ -10,6 +10,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import nl.sandersimon.clonedetection.CloneDetection;
+import nl.sandersimon.clonedetection.challenge.CodeArena;
+import nl.sandersimon.clonedetection.model.MetricProblem;
 
 @SideOnly(Side.CLIENT)
 public class RenderCodeCreeper extends RenderLiving<EntityCodeCreeper>
@@ -19,12 +22,12 @@ public class RenderCodeCreeper extends RenderLiving<EntityCodeCreeper>
     public RenderCodeCreeper(RenderManager renderManagerIn)
     {
         super(renderManagerIn, new ModelCreeper(), 0.5F);
-        this.addLayer(new LayerCreeperCharge(this));
+        //this.addLayer(new LayerCreeperCharge(this));
     }
 
     /**
      * Allows the render to do state modifications necessary before the model is rendered.
-     */
+     
     protected void preRenderCallback(EntityCodeCreeper entitylivingbaseIn, float partialTickTime)
     {
         float f = entitylivingbaseIn.getCreeperFlashIntensity(partialTickTime);
@@ -35,7 +38,7 @@ public class RenderCodeCreeper extends RenderLiving<EntityCodeCreeper>
         float f2 = (1.0F + f * 0.4F) * f1;
         float f3 = (1.0F + f * 0.1F) / f1;
         GlStateManager.scale(f2, f3, f2);
-    }
+    }*/
 
     /**
      * Gets an RGBA int color multiplier to apply.
@@ -62,5 +65,25 @@ public class RenderCodeCreeper extends RenderLiving<EntityCodeCreeper>
     protected ResourceLocation getEntityTexture(EntityCodeCreeper entity)
     {
         return CREEPER_TEXTURES;
+    }
+    
+    @Override
+    protected void preRenderCallback(EntityCodeCreeper entitylivingbaseIn, float partialTickTime)
+    {
+    	MetricProblem c = entitylivingbaseIn.getRepresents();
+    	if(c == null) {
+	    	CodeArena arena = CloneDetection.get().getArena();
+	    	if(arena == null)
+	    		return;
+	    	
+			c = arena.findEntity(entitylivingbaseIn);
+			
+			if(c == null)
+				return;
+    	}
+		float scale = c.volume()*0.03F;
+		
+        GlStateManager.scale(scale, scale, scale);
+        //System.out.println("Scaled by "+entitylivingbaseIn.getScaleFactor()+" because of "+entitylivingbaseIn.getCustomNameTag()+", "+entitylivingbaseIn.getHealth()+", "+entitylivingbaseIn.getAbsorptionAmount());
     }
 }

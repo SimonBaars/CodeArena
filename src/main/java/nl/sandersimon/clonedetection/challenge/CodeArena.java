@@ -246,7 +246,7 @@ public class CodeArena extends Challenges {
 		return null;
 	}
 
-	public MetricProblem findEntity(EntityCodeSpider e) {
+	public MetricProblem findEntity(CodeEntity e) {
 		if(clientServerEntityMapping.containsKey(e)) {
 			return clientServerEntityMapping.get(e).getRepresents();
 		}
