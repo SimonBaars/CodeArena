@@ -5,20 +5,11 @@ import Set;
 import List;
 import lang::java::m3::Core;
 import lang::java::m3::AST;
-import clones;
 import String;
 
-void calculateCodeDuplication(list[loc] partialScanList){
-	calculateCodeDuplication(partialScanList, 1);
-}
-
-void calculateCodeDuplication(list[loc] partialScanList, int cloneType){
-	calculateCodeDuplication(partialScanList, cloneType, 0.00, 6);
-}
-
-void calculateCodeDuplication(list[loc] partialScanList, int cloneType, real similarityPercentage, int nLines){
+void calculateCodeDuplication(void (set[Declaration]) metricFunction, list[loc] partialScanList, int cloneType, real similarityPercentage, int nLines){
 	set[Declaration] asts = {};
 	for (loc m <- partialScanList)
 		asts += createAstFromFile(m, true);
-	getDuplication(cloneType, asts, similarityPercentage, nLines);
+	metricFunction(cloneType, asts, similarityPercentage, nLines);
 }

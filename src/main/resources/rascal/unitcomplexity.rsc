@@ -6,8 +6,9 @@ import List;
 import lang::java::m3::Core;
 import lang::java::m3::AST;
 import util::Math;
+import metricscommons;
 
-public void calcProblem(set[Declaration] model){
+public void unitcomplexity(set[Declaration] model){
 	list[int] cc = calculateCC(model);
 	return getSIGForPercentages(cc, moderateComplexity, highComplexity, veryHighComplexity);
 }

@@ -9,7 +9,7 @@ import sigscore;
 import util::Math;
 import metricscommons;
 
-public void calcProblem(set[Declaration] asts){
+public void unitinterfaces(set[Declaration] asts){
 	for (m <- asts)
 		calcParametersForAST(m);
 }

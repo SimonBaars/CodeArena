@@ -18,7 +18,7 @@ int MIN_AMOUNT_OF_LINES = 6;
 alias LineRegistry = map[str, map[int, list[value]]];
 map[str, list[int]] countedLines = ();
 
-public list[tuple[int, list[loc]]] calcProblem(set[Declaration] asts) {
+public list[tuple[int, list[loc]]] clones(set[Declaration] asts) {
 	MIN_AMOUNT_OF_LINES = nLines;
 	countedLines = ();
     LineRegistry fileLineAsts = fileLineMapGeneration(t, asts);
@@ -163,8 +163,8 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 		list[loc] potentialDuplicates = [];
 		list[int] sortedDomain = sortedDomains[location];
 		int sortedDomainSize = size(sortedDomain);
-		if(sortedDomainSize!=0)
-			println(sortedDomainSize);
+		//if(sortedDomainSize!=0)
+		//	println(sortedDomainSize);
 		int i = 0;
 		while(i < sortedDomainSize){			
 			if(i+(MIN_AMOUNT_OF_LINES-1)<sortedDomainSize && size(potentialDuplicates) == 0){
@@ -216,9 +216,7 @@ public list[tuple[int, list[loc]]] getDupList(map[str, map[int, int]] hashMap, m
 			potentialDuplicates = newPotentialDuplicates;
 			i+=1;
 		}
-		println(0); //End of loc
 	}
-	println(0); //EOF
 	return dupList;
 }
 
