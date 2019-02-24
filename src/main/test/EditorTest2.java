@@ -26,9 +26,9 @@ public class EditorTest2 {
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
-		CodeEditorMaker.create(d.getClones().get(0));
+		//CodeEditorMaker.create(d.getClones().get(0));
 		
-		Thread.sleep(100000);
+		//Thread.sleep(100000);
 	}
 
 }

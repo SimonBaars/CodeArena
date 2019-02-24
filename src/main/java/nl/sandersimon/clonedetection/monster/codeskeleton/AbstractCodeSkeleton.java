@@ -81,6 +81,8 @@ public abstract class AbstractCodeSkeleton extends CodeEntity implements IRanged
 
     public AbstractCodeSkeleton(World world, MetricProblem cloneClass) {
 		super(world, cloneClass);
+		 this.setSize(0.6F, 1.99F);
+	        this.setCombatTask();
 	}
 
 	protected void initEntityAI()

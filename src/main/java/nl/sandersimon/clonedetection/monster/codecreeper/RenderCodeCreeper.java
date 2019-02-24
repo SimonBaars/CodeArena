@@ -81,7 +81,7 @@ public class RenderCodeCreeper extends RenderLiving<EntityCodeCreeper>
 			if(c == null)
 				return;
     	}
-		float scale = c.volume()*0.03F;
+		float scale = (c.volume()-18)*0.03F;
 		
         GlStateManager.scale(scale, scale, scale);
         //System.out.println("Scaled by "+entitylivingbaseIn.getScaleFactor()+" because of "+entitylivingbaseIn.getCustomNameTag()+", "+entitylivingbaseIn.getHealth()+", "+entitylivingbaseIn.getAbsorptionAmount());

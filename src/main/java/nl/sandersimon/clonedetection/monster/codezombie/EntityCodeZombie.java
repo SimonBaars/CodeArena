@@ -88,6 +88,7 @@ public class EntityCodeZombie extends CodeEntity
 
     public EntityCodeZombie(World world, MetricProblem cloneClass) {
 		super(world, cloneClass);
+		this.setSize(0.6F, 1.95F);
 	}
 
 	protected void initEntityAI()

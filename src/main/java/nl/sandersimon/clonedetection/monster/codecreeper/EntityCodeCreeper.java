@@ -67,6 +67,7 @@ public class EntityCodeCreeper extends CodeEntity
 
     public EntityCodeCreeper(World world, MetricProblem cloneClass) {
 		super(world, cloneClass);
+		 this.setSize(0.6F, 1.7F);
 	}
 
 	protected void initEntityAI()
