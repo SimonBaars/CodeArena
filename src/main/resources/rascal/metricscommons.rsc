@@ -1,8 +1,11 @@
-module metricsCommons
+module metricscommons
 
 import IO;
 import Set;
 import List;
+import lang::java::m3::Core;
+import lang::java::m3::AST;
+import String;
 
 // problemSize = totalProblemSize (total of all problems in the list
 void signalProblems(list[tuple[int, list[loc]]] problemLocs, int problemSize){

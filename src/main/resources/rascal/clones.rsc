@@ -14,21 +14,22 @@ import DateTime;
 import metricscommons;
 
 int MIN_AMOUNT_OF_LINES = 6;
+int CLONE_TYPE = 1;
+real DIFF_PERC = 0.0;
 
 alias LineRegistry = map[str, map[int, list[value]]];
 map[str, list[int]] countedLines = ();
 
-public list[tuple[int, list[loc]]] clones(set[Declaration] asts) {
-	MIN_AMOUNT_OF_LINES = nLines;
+public void clones(set[Declaration] asts) {
 	countedLines = ();
-    LineRegistry fileLineAsts = fileLineMapGeneration(t, asts);
+    LineRegistry fileLineAsts = fileLineMapGeneration(CLONE_TYPE, asts);
     set[str] filesOrder = domain(fileLineAsts);
-    tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] nodeRegs = calculateLocationsOfNodeTypes(fileLineAsts, filesOrder, t, allowedDiffPercentage);
+    tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] nodeRegs = calculateLocationsOfNodeTypes(fileLineAsts, filesOrder, CLONE_TYPE, DIFF_PERC);
     map[int, list[loc]] locsAtHash = nodeRegs.locRegistries;
     map[str, list[int]] sortedDomains = nodeRegs.sortedDomains;
     map[int, int] hashStartIndex = nodeRegs.hashStartIndex;
     map[str, map[int, int]] hashMap = nodeRegs.hashMap;
-    return getDupList(hashMap, locsAtHash, sortedDomains, hashStartIndex, filesOrder);
+    getDupList(hashMap, locsAtHash, sortedDomains, hashStartIndex, filesOrder);
 }
 
 public tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] calculateLocationsOfNodeTypes(LineRegistry fileLineAsts, set[str] filesOrder, int t, real allowedDiffPercentage){

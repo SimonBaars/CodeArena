@@ -8,14 +8,9 @@ import lang::java::m3::AST;
 import util::Math;
 import metricscommons;
 
-public void unitcomplexity(set[Declaration] model){
-	list[int] cc = calculateCC(model);
-	return getSIGForPercentages(cc, moderateComplexity, highComplexity, veryHighComplexity);
-}
-
-public void calculateCC(set[Declaration] asts) {
+public void unitcomplexity(set[Declaration] asts){
 	for (m <- asts){
-		visit(dec){
+		visit(m){
 			case Declaration d: calcCCForAST(d);
 		}
 	}

@@ -7,7 +7,7 @@ import lang::java::m3::Core;
 import lang::java::m3::AST;
 import sigscore;
 import unitcomplexity;
-import metricsCommons;
+import metricscommons;
 
 public void unitsize(set[Declaration] asts){
 	list[int] locs = [];
@@ -22,7 +22,6 @@ public void unitsize(set[Declaration] asts){
 			}
 		}
 	}
-	return locs;
 }
 
 public bool isMethod(Declaration d){
