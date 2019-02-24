@@ -1,6 +1,7 @@
 package nl.sandersimon.clonedetection.thread;
 
 import java.io.File;
+import static nl.sandersimon.clonedetection.thread.CloneDetectionGoal.*;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -25,11 +26,13 @@ public class CloneDetectionThread extends Thread {
 	private static CloneDetectionThread worker;
 	private final ICommandSender mySender;
 	private final String project;
+	private CloneDetectionGoal goal;
 	public static final String[] NO_METRICS = {"loader.rsc", "metricscommons.rsc"};
 	
-	public CloneDetectionThread(String project, String type, String similarityPercentage, ICommandSender s, String nLines) {
+	public CloneDetectionThread(CloneDetectionGoal g, ICommandSender s, String project) {
 		this.project = project;
 		this.mySender = s;
+		this.goal = g;
 		start();
 	}
 
@@ -69,7 +72,8 @@ public class CloneDetectionThread extends Thread {
 		return string.isEmpty() ? "" : ", "+string;
 	}
 
-	public void populateResult(String metric){
+	public int populateResult(String metric){
+		int amountOfProblemsFound = 0;
 		CloneDetection c = CloneDetection.get();
 		List<MetricProblem> locs = c.makeProblem(metric);
 		
@@ -84,7 +88,9 @@ public class CloneDetectionThread extends Thread {
 				MetricProblem loc = new MetricProblem(metric, nLines);
 				listLoc = parseList(loc, res, listLoc+1)+2;
 				locs.add(loc);
-				c.eventHandler.nextTickActions.add(() -> c.getArena().create(metric, loc));
+				if(goal == DETECTION)
+					c.eventHandler.nextTickActions.add(() -> c.getArena().create(metric, loc));
+				amountOfProblemsFound++;
 			}
 		}
 	}

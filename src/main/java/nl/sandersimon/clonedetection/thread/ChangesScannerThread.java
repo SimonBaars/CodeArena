@@ -17,21 +17,12 @@ public class ChangesScannerThread extends Thread {
 	private static ChangesScannerThread worker;
 	private MetricProblem c;
 	private boolean before;
-	private CloneMetrics metrics = new CloneMetrics();
 	private final ICommandSender mySender;
-	private final String type;
-	private final String similarityPercentage;
-	private final String nLines;
 
-	public ChangesScannerThread(ICommandSender s, String type, String similarityPercentage, String nLines, MetricProblem c, boolean before) {
+	public ChangesScannerThread(ICommandSender s, MetricProblem c, boolean before) {
 		this.c = c;
 		this.before = before;
 		this.mySender = s;
-		this.nLines = nLines;
-		if(similarityPercentage.length()>0 && !similarityPercentage.contains("."))
-			this.similarityPercentage = similarityPercentage+".0";
-		else this.similarityPercentage = similarityPercentage;
-		this.type = type;
 		start();
 	}
 	
@@ -87,7 +78,8 @@ public class ChangesScannerThread extends Thread {
 		}
 	}
 	
-	public void populateResult(){
+	public int populateResult(){
+		int amount = 
 		CloneDetection c = CloneDetection.get();
 		List<MetricProblem> locs = c.getClones();
 		while(true) {
