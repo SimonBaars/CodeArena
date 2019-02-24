@@ -1,21 +1,20 @@
 package nl.sandersimon.clonedetection.minecraft.gui;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.input.Keyboard;
+import java.util.HashMap;
 
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import nl.sandersimon.clonedetection.CloneDetection;
-import nl.sandersimon.clonedetection.common.Commons;
-import net.minecraft.world.World;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.inventory.Container;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.client.gui.inventory.GuiContainer;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-
-import java.util.HashMap;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import nl.sandersimon.clonedetection.CloneDetection;
 
 public class EndChallengeGUI {
 

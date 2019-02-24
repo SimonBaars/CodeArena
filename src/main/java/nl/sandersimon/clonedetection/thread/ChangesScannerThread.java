@@ -7,10 +7,10 @@ import net.minecraft.util.text.TextFormatting;
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.challenge.CodeArena;
 import nl.sandersimon.clonedetection.common.Commons;
-import nl.sandersimon.clonedetection.model.MetricProblem;
 import nl.sandersimon.clonedetection.model.CloneMetrics;
-import nl.sandersimon.clonedetection.model.ProblemScore;
 import nl.sandersimon.clonedetection.model.Location;
+import nl.sandersimon.clonedetection.model.MetricProblem;
+import nl.sandersimon.clonedetection.model.ProblemScore;
 
 public class ChangesScannerThread extends Thread {
 	

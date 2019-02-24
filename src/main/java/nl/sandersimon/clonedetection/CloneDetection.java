@@ -281,4 +281,10 @@ public class CloneDetection
 			return null;
 		}
 	}
+
+	public List<MetricProblem> makeProblem(String metric) {
+		List<MetricProblem> p = new ArrayList<>();
+		problems.put(metric, p);
+		return p;
+	}
 }

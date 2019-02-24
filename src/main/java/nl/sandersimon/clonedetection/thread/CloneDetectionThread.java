@@ -1,7 +1,6 @@
 package nl.sandersimon.clonedetection.thread;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -18,7 +17,6 @@ import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.challenge.CodeArena;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.SavePaths;
-import nl.sandersimon.clonedetection.common.TestingCommons;
 import nl.sandersimon.clonedetection.model.Location;
 import nl.sandersimon.clonedetection.model.MetricProblem;
 
@@ -51,7 +49,7 @@ public class CloneDetectionThread extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+		cloneDetection.getProblems().clear();
 		cloneDetection.executeTill("getAsts("+foundLocs.rascalLocList()+");", '>');
 		System.out.println("ASTS RETRIEVED");
 		
@@ -73,18 +71,14 @@ public class CloneDetectionThread extends Thread {
 
 	public void populateResult(String metric){
 		CloneDetection c = CloneDetection.get();
-		List<MetricProblem> locs = c.getClones();
+		List<MetricProblem> locs = c.makeProblem(metric);
 		
 		int bufferSize;
 		while((bufferSize = parseNumberFromRascal()) != 0 ) {
-			int dupLines = parseNumberFromRascal();
-
+			parseNumberFromRascal(); //Currently unused, might remove later
 
 			String res = c.readBuffer(bufferSize);
-
-			//System.out.println(res+", "+bufferSizeString);
 			c.waitUntilExecuted('\n');
-
 			int listLoc = 1;
 			while (listLoc < res.length() && res.charAt(listLoc) == '<') {
 				MetricProblem loc = new MetricProblem();

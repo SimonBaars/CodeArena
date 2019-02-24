@@ -2,23 +2,20 @@ package nl.sandersimon.clonedetection.minecraft.gui;
 
 import org.lwjgl.input.Keyboard;
 
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.common.gameevent.InputEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.common.MinecraftForge;
-
-import net.minecraft.world.World;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.Minecraft;
-
-import java.util.HashMap;
+import net.minecraft.client.gui.GuiChat;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class CloneMenuKey {
 

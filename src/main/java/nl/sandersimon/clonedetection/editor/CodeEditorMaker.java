@@ -5,8 +5,8 @@ import javax.swing.UIManager;
 
 import net.minecraft.client.Minecraft;
 import nl.sandersimon.clonedetection.CloneDetection;
-import nl.sandersimon.clonedetection.model.MetricProblem;
 import nl.sandersimon.clonedetection.model.Location;
+import nl.sandersimon.clonedetection.model.MetricProblem;
 import nl.sandersimon.clonedetection.thread.ChangesScannerThread;
 
 public class CodeEditorMaker {
