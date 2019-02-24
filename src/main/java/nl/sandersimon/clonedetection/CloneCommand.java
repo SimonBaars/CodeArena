@@ -49,7 +49,7 @@ public class CloneCommand implements ICommand {
 			CloneDetection.dialoge = 1;
 			return;
 		}
-		ProblemDetectionThread.startWorker(server, sender, args);
+		ProblemDetectionThread.startWorker(server, args[0]);
 	}
 
 	@Override

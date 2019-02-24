@@ -55,6 +55,7 @@ import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.common.TestingCommons;
 import nl.sandersimon.clonedetection.model.MetricProblem;
 import nl.sandersimon.clonedetection.thread.ChangesScannerThread;
+import nl.sandersimon.clonedetection.thread.ProblemDetectionThread;
 
 
 /**
@@ -247,7 +248,7 @@ public class CodeEditor extends JFrame implements SearchListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				statusBar.setLabel("You fixed it!");
-				ChangesScannerThread.startWorker(Minecraft.getMinecraft().player, cloneClass, false);
+				ProblemDetectionThread.startWorker(Minecraft.getMinecraft().player, cloneClass, false);
 				CloneDetection.get().closeAllEditors();
 			}
 		});

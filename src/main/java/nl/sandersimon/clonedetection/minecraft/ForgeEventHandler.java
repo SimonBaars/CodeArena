@@ -26,14 +26,14 @@ public class ForgeEventHandler {
 					int inputNumber = Integer.parseInt(event.getMessage());
 					String[] projects = new File(SavePaths.getProjectFolder()).list();
 					if(inputNumber < 1 || inputNumber > projects.length){
-						CloneDetection.eventHandler.delayedPrints.add("This is not a valid number of a project. Please enter a number between 1-"+projects.length+".");
+						CloneDetection.get().eventHandler.delayedPrints.add("This is not a valid number of a project. Please enter a number between 1-"+projects.length+".");
 					} else {
 						//CloneDetection.eventHandler.delayedPrints.add("Thank you. We'll generate a beatiful city out of the clones of this project.");
 						CloneDetection.dialoge=0;
-						ProblemDetectionThread.startWorker(event.getPlayer().getServer(), event.getPlayer(), new String[]{projects[inputNumber-1]});
+						ProblemDetectionThread.startWorker(event.getPlayer(), projects[inputNumber-1]);
 					}
 				} catch (Exception e){
-					CloneDetection.eventHandler.delayedPrints.add("Please only use numbers");
+					CloneDetection.get().eventHandler.delayedPrints.add("Please only use numbers");
 				}
 			}
 		}

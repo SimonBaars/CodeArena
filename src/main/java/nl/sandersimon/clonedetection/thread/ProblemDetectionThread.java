@@ -64,19 +64,24 @@ public class ProblemDetectionThread extends Thread {
 			if(goal == SCANBEFORE) {
 				beforeMetric = amountOfProblemsFound;
 				beforeProblemSize = problemSize;
-			}else {
-				if(amountOfProblemsFound<beforeMetric) {
-					CloneDetection.get().getArena().increaseScore(5);
-					cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(TextFormatting.DARK_GREEN, "Well done on improving the metric! You are awarded 5 emeralds!")));
-					cloneDetection.eventHandler.nextTickActions.add(() -> cloneDetection.getArena().killSpider(scanProblem));
-				} else if(problemSize<beforeProblemSize){
-					CloneDetection.get().getArena().increaseScore(1);
-					cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(TextFormatting.YELLOW, "Your fix did not fix the entire issue, but did improve upon it. You are awarded 1 emerald!")));
-				} else {
-					cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(TextFormatting.RED, "The problem was not fixed! No emeralds for you!")));
-				}
+			} else {
+				rewardPointsForFix(cloneDetection, amountOfProblemsFound, problemSize);
 			}
-		}		
+		}
+		worker = null;
+	}
+
+	private void rewardPointsForFix(CloneDetection cloneDetection, int amountOfProblemsFound, int problemSize) {
+		if(amountOfProblemsFound<beforeMetric) {
+			CloneDetection.get().getArena().increaseScore(5);
+			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(TextFormatting.DARK_GREEN, "Well done on improving the metric! You are awarded 5 emeralds!")));
+			cloneDetection.eventHandler.nextTickActions.add(() -> cloneDetection.getArena().killSpider(scanProblem));
+		} else if(problemSize<beforeProblemSize){
+			CloneDetection.get().getArena().increaseScore(1);
+			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(TextFormatting.YELLOW, "Your fix did not fix the entire issue, but did improve upon it. You are awarded 1 emerald!")));
+		} else {
+			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(TextFormatting.RED, "The problem was not fixed! No emeralds for you!")));
+		}
 	}
 
 	private void findAllProblems(CloneDetection cloneDetection) {
@@ -159,14 +164,15 @@ public class ProblemDetectionThread extends Thread {
 		return elementLoc;
 	}
 	
-	public static void startWorker(MinecraftServer server, ICommandSender s, String[] args) {
+	public static void startWorker(ICommandSender s, String projectName) {
+		if(worker != null) {
+			s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.RED, "Rascal is busy... Please wait!"));
+			return;
+		}
 		//System.out.println("Spawn at pos "+s.getPosition());
 		//new StructureCreatorClient("arena", s.getPosition().getX()+95, s.getPosition().getY()-2, s.getPosition().getZ()+80	, false, 0);
-		String cloneType = args.length > 1 ? args[1] : "1";
-		String similarityPerc = args.length > 2 ? args[2] : "0.0";
-		String nLines = args.length > 3 ? args[3] : "6";
 		CloneDetection.get().packages.clear();
-		CloneDetection.get().setArena(new CodeArena(s.getPosition().getX(), s.getPosition().getY(), s.getPosition().getZ(),  cloneType, similarityPerc, nLines));
+		CloneDetection.get().setArena(new CodeArena(s.getPosition().getX(), s.getPosition().getY(), s.getPosition().getZ()));
 		CloneDetection.get().initScoreboards();
 		if(worker!=null && worker.isAlive()) {
 			s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.RED, "Sorry, but I'm still busy detecting clones! Please wait a little longer."));
@@ -174,7 +180,15 @@ public class ProblemDetectionThread extends Thread {
 		}
 		s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "Searching for clones, please wait..."));
 		
-		worker = new ProblemDetectionThread(DETECTION, s, null, args[0]);
+		worker = new ProblemDetectionThread(DETECTION, s, null, projectName);
+	}
+	
+	public static void startWorker(ICommandSender s, MetricProblem p, boolean before) {
+		if(worker != null) {
+			s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.RED, "Rascal is busy... Please wait!"));
+			return;
+		}
+		worker = new ProblemDetectionThread(before ? SCANBEFORE : SCANAFTER, s, p, null);
 	}
 
 	public static ProblemDetectionThread getWorker() {
