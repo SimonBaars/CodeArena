@@ -26,7 +26,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.common.SavePaths;
-import nl.sandersimon.clonedetection.thread.CloneDetectionThread;
+import nl.sandersimon.clonedetection.thread.ProblemDetectionThread;
 
 public class GUISetupCloneFinding {
 	public static int GUIID = 1;
@@ -256,7 +256,7 @@ public class GUISetupCloneFinding {
 			World world = server.getWorld(entity.dimension);
 			if (button.id == 0) {
 				Minecraft.getMinecraft().player.closeScreen();
-				CloneDetection.get().eventHandler.nextTickActions.add(() -> CloneDetectionThread.startWorker(server, Minecraft.getMinecraft().player, new String[] {InputProject.getText(), Integer.toString(cloneType), "0.0", MinLines.getText()}));
+				CloneDetection.get().eventHandler.nextTickActions.add(() -> ProblemDetectionThread.startWorker(server, Minecraft.getMinecraft().player, new String[] {InputProject.getText(), Integer.toString(cloneType), "0.0", MinLines.getText()}));
 			}
 			if (button.id == 1) {
 				String[] choices = new File(SavePaths.getProjectFolder()).list();

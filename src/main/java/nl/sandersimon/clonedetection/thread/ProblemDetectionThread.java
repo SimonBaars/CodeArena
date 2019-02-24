@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,15 +22,15 @@ import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.model.Location;
 import nl.sandersimon.clonedetection.model.MetricProblem;
 
-public class CloneDetectionThread extends Thread {
+public class ProblemDetectionThread extends Thread {
 	
-	private static CloneDetectionThread worker;
+	private static ProblemDetectionThread worker;
 	private final ICommandSender mySender;
 	private final String project;
 	private CloneDetectionGoal goal;
 	public static final String[] NO_METRICS = {"loader.rsc", "metricscommons.rsc"};
 	
-	public CloneDetectionThread(CloneDetectionGoal g, ICommandSender s, String project) {
+	public ProblemDetectionThread(CloneDetectionGoal g, ICommandSender s, String project) {
 		this.project = project;
 		this.mySender = s;
 		this.goal = g;
@@ -38,6 +39,27 @@ public class CloneDetectionThread extends Thread {
 
 	public void run() {
 		CloneDetection cloneDetection = CloneDetection.get();
+		if(goal == DETECTION) {
+			retrieveAsts(cloneDetection);
+			findAllProblems(cloneDetection);
+		}
+		
+		cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "All clones have been successfully parsed!")));
+	}
+
+	private void findAllProblems(CloneDetection cloneDetection) {
+		String[] metrics = new File(SavePaths.getRascalFolder()).list((dir, name) -> Arrays.stream(NO_METRICS).noneMatch(e -> e.equals(name)));
+		for(String metric : metrics) {
+			String metricName = metric.replace(".rsc", "");
+			cloneDetection.executeTill("import "+metricName+";", '>');
+			cloneDetection.executeTill("calcMetric("+metricName+");", '\n');
+			System.out.println("Metric "+metricName+" retrieved");
+			populateResult(metricName);
+			cloneDetection.waitUntilExecuted();
+		}
+	}
+
+	private void retrieveAsts(CloneDetection cloneDetection) {
 		MetricProblem foundLocs = new MetricProblem();
 		try {
 			Files.walkFileTree(Paths.get(SavePaths.getProjectFolder()+project+"/src/"), new SimpleFileVisitor<Path>() {
@@ -55,17 +77,6 @@ public class CloneDetectionThread extends Thread {
 		cloneDetection.getProblems().clear();
 		cloneDetection.executeTill("getAsts("+foundLocs.rascalLocList()+");", '>');
 		System.out.println("ASTS RETRIEVED");
-		
-		String[] metrics = new File(SavePaths.getRascalFolder()).list((dir, name) -> Arrays.stream(NO_METRICS).noneMatch(e -> e.equals(name)));
-		for(String metric : metrics) {
-			String metricName = metric.replace(".rsc", "");
-			cloneDetection.executeTill("import "+metricName+";", '>');
-			cloneDetection.executeTill("calcMetric("+metricName+");", '\n');
-			System.out.println("Metric "+metricName+" retrieved");
-			populateResult(metricName);
-			cloneDetection.waitUntilExecuted();
-		}
-		cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "All clones have been successfully parsed!")));
 	}
 	
 	private String addIfNotEmpty(String string) {
@@ -75,7 +86,7 @@ public class CloneDetectionThread extends Thread {
 	public int populateResult(String metric){
 		int amountOfProblemsFound = 0;
 		CloneDetection c = CloneDetection.get();
-		List<MetricProblem> locs = c.makeProblem(metric);
+		List<MetricProblem> locs = goal == DETECTION ? c.makeProblem(metric) : new ArrayList<>();
 		
 		int bufferSize;
 		while((bufferSize = parseNumberFromRascal()) != 0 ) {
@@ -93,6 +104,7 @@ public class CloneDetectionThread extends Thread {
 				amountOfProblemsFound++;
 			}
 		}
+		return amountOfProblemsFound;
 	}
 
 	private int parseNumberFromRascal() {
@@ -128,10 +140,10 @@ public class CloneDetectionThread extends Thread {
 		}
 		s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "Searching for clones, please wait..."));
 		
-		worker = new CloneDetectionThread(args[0], cloneType, similarityPerc, s, nLines);
+		worker = new ProblemDetectionThread(args[0], cloneType, similarityPerc, s, nLines);
 	}
 
-	public static CloneDetectionThread getWorker() {
+	public static ProblemDetectionThread getWorker() {
 		return worker;
 	}
 }

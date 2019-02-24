@@ -4,7 +4,7 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandSenderWrapper;
 import nl.sandersimon.clonedetection.CloneCommand;
 import nl.sandersimon.clonedetection.CloneDetection;
-import nl.sandersimon.clonedetection.thread.CloneDetectionThread;
+import nl.sandersimon.clonedetection.thread.ProblemDetectionThread;
 
 public class TestConsole {
 
@@ -19,7 +19,7 @@ public class TestConsole {
 		} catch (CommandException e) {
 			e.printStackTrace();
 		}
-		while(CloneDetectionThread.getWorker().isAlive())
+		while(ProblemDetectionThread.getWorker().isAlive())
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {

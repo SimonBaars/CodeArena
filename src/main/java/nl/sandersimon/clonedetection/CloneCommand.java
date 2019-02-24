@@ -13,7 +13,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.SavePaths;
-import nl.sandersimon.clonedetection.thread.CloneDetectionThread;
+import nl.sandersimon.clonedetection.thread.ProblemDetectionThread;
 import scala.actors.threadpool.Arrays;
 
 public class CloneCommand implements ICommand {
@@ -49,7 +49,7 @@ public class CloneCommand implements ICommand {
 			CloneDetection.dialoge = 1;
 			return;
 		}
-		CloneDetectionThread.startWorker(server, sender, args);
+		ProblemDetectionThread.startWorker(server, sender, args);
 	}
 
 	@Override

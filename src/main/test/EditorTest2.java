@@ -5,7 +5,7 @@ import net.minecraft.command.CommandSenderWrapper;
 import nl.sandersimon.clonedetection.CloneCommand;
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.editor.CodeEditorMaker;
-import nl.sandersimon.clonedetection.thread.CloneDetectionThread;
+import nl.sandersimon.clonedetection.thread.ProblemDetectionThread;
 
 public class EditorTest2 {
 
@@ -20,7 +20,7 @@ public class EditorTest2 {
 		} catch (CommandException e) {
 			e.printStackTrace();
 		}
-		while(CloneDetectionThread.getWorker().isAlive())
+		while(ProblemDetectionThread.getWorker().isAlive())
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {

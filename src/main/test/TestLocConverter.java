@@ -1,6 +1,6 @@
 import org.junit.Test;
 
-import nl.sandersimon.clonedetection.thread.CloneDetectionThread;
+import nl.sandersimon.clonedetection.thread.ProblemDetectionThread;
 import scala.actors.threadpool.Arrays;
 
 public class TestLocConverter {

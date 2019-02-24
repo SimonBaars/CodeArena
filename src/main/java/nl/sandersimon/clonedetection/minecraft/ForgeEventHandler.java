@@ -7,7 +7,7 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.common.SavePaths;
-import nl.sandersimon.clonedetection.thread.CloneDetectionThread;
+import nl.sandersimon.clonedetection.thread.ProblemDetectionThread;
 
 public class ForgeEventHandler {
 	public static int searchingPage = 1;
@@ -30,7 +30,7 @@ public class ForgeEventHandler {
 					} else {
 						//CloneDetection.eventHandler.delayedPrints.add("Thank you. We'll generate a beatiful city out of the clones of this project.");
 						CloneDetection.dialoge=0;
-						CloneDetectionThread.startWorker(event.getPlayer().getServer(), event.getPlayer(), new String[]{projects[inputNumber-1]});
+						ProblemDetectionThread.startWorker(event.getPlayer().getServer(), event.getPlayer(), new String[]{projects[inputNumber-1]});
 					}
 				} catch (Exception e){
 					CloneDetection.eventHandler.delayedPrints.add("Please only use numbers");
