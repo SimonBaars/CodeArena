@@ -74,15 +74,10 @@ public class CloneDetectionThread extends Thread {
 	public void populateResult(String metric){
 		CloneDetection c = CloneDetection.get();
 		List<MetricProblem> locs = c.getClones();
-
-		while(true) {
-			String bufferSizeString = c.waitUntilExecuted('\n').get(0);
-			int bufferSize = Integer.parseInt(bufferSizeString);
-			if(bufferSize == 0)
-				break;
-
-			String dupLinesString = c.waitUntilExecuted('\n').get(0);
-			int dupLines = Integer.parseInt(dupLinesString);
+		
+		int bufferSize;
+		while((bufferSize = parseNumberFromRascal()) != 0 ) {
+			int dupLines = parseNumberFromRascal();
 
 
 			String res = c.readBuffer(bufferSize);
@@ -96,13 +91,13 @@ public class CloneDetectionThread extends Thread {
 				listLoc = parseList(loc, res, listLoc+1)+2;
 				locs.add(loc);
 				c.eventHandler.nextTickActions.add(() -> c.getArena().create(loc));
-				try {
-					TestingCommons.writeStringToFile(new File(SavePaths.createDirectoryIfNotExists(SavePaths.getSaveFolder())+"clone-"+loc.hashCode()+".txt"), loc.toString());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
 			}
 		}
+	}
+
+	private int parseNumberFromRascal() {
+		String bufferSizeString = CloneDetection.get().waitUntilExecuted('\n').get(0);
+		return Integer.parseInt(bufferSizeString);
 	}
 
 	private int parseList(MetricProblem loc, String res, int elementLoc) {

@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.scoreboard.ScoreObjective;
@@ -51,8 +53,12 @@ public class CloneDetection
 	private InputStreamReader scanIn = null;
 	@Mod.Instance
 	private static CloneDetection cloneDetection;
-	private List<MetricProblem> clones = new ArrayList<>();
+	private final Map<String, List<MetricProblem>> problems = new HashMap<>();
 	
+	public Map<String, List<MetricProblem>> getProblems() {
+		return problems;
+	}
+
 	private final List<ProblemScore> problemScores = new ArrayList<>();
 	
 	@SidedProxy(clientSide = "nl.sandersimon.clonedetection.minecraft.proxy.ClientProxy", serverSide = "nl.sandersimon.clonedetection.minecraft.proxy.ServerProxy")
@@ -207,14 +213,6 @@ public class CloneDetection
 	
 	public String readBuffer(int bufferSize) {
 		return readBuffer(rascalIn, bufferSize);
-	}
-
-	public List<MetricProblem> getClones() {
-		return clones;
-	}
-
-	public void setClones(List<MetricProblem> clones) {
-		this.clones = clones;
 	}
 
 	public CodeArena getArena() {
