@@ -178,15 +178,24 @@ public abstract class Challenges {
 	public void removeThisChallenge(){
 		if(Minecraft.getMinecraft().player!=null){
 			for(int i = 0; i<players.length; i++){
+				players[i].inventory.clear();
 				players[i].setGameType(oldGameType);
 				int j;
 				for(j = 0; j<Minecraft.getMinecraft().player.inventory.mainInventory.size(); j++){
 					players[i].inventory.mainInventory.set(j, oldInventory.get(j));
 				}
 				for(int k = 0; k<Minecraft.getMinecraft().player.inventory.armorInventory.size(); k++){
-					Minecraft.getMinecraft().player.inventory.armorInventory.set(k, oldInventory.get(j));
+					players[i].inventory.armorInventory.set(k, oldInventory.get(j));
 					j++;
 				}
+			}
+			int j;
+			for(j = 0; j<Minecraft.getMinecraft().player.inventory.mainInventory.size(); j++){
+				Minecraft.getMinecraft().player.inventory.mainInventory.set(j, oldInventory.get(j));
+			}
+			for(int k = 0; k<Minecraft.getMinecraft().player.inventory.armorInventory.size(); k++){
+				Minecraft.getMinecraft().player.inventory.armorInventory.set(k, oldInventory.get(j));
+				j++;
 			}
 			try{
 				new File(SavePaths.getSaveFolder()+Minecraft.getMinecraft().getIntegratedServer().getFolderName()+"/challenge.txt").delete();
@@ -223,7 +232,7 @@ public abstract class Challenges {
 			alivePlayers.remove(deadPlayer);
 			deadPlayers.add(deadPlayer);
 		}
-		if(alivePlayers.size()==0){
+		if(alivePlayers.isEmpty()){
 			removeThisChallenge();
 		} else {
 			deadPlayer.setGameType(GameType.SPECTATOR);
