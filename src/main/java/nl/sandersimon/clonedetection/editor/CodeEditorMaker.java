@@ -1,5 +1,7 @@
 package nl.sandersimon.clonedetection.editor;
 
+import java.io.File;
+
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -29,6 +31,20 @@ public class CodeEditorMaker {
 				e.setVisible(true);
 			});
 		}
+		CodeEditor.locked = false;
+	}
+	
+	public static void create(File file, String metric) {
+		SwingUtilities.invokeLater(() -> {
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			CodeEditor e = new CodeEditor(file, false, metric);
+					CloneDetection.get().openEditors.add(e);
+			e.setVisible(true);
+		});
 		CodeEditor.locked = false;
 	}
 }

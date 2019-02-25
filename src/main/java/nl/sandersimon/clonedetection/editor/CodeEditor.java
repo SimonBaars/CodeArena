@@ -80,8 +80,8 @@ public class CodeEditor extends JFrame implements SearchListener {
 		this(cloneClass, file, markedRangeStart, markedRangeEnd, pos, amount, true, null);
 	}
 	
-	public CodeEditor(MetricProblem cloneClass, File file, boolean isMetricsProblem, String metric) {
-		this(cloneClass, file, 0, 0, 0, 0, isMetricsProblem, metric);
+	public CodeEditor(File file, boolean isMetricsProblem, String metric) {
+		this(null, file, 0, 0, 0, 0, false, metric);
 	}
 	
 	public CodeEditor(MetricProblem cloneClass, File file, int markedRangeStart, int markedRangeEnd, int pos, int amount, boolean isMetricProblem, String metric) {
@@ -145,7 +145,7 @@ public class CodeEditor extends JFrame implements SearchListener {
 			statusBar = new StatusBar();
 			contentPane.add(statusBar, BorderLayout.SOUTH);
 
-			setTitle("CodeArena IDE");
+			setTitle(file.getName()+" - CodeArena IDE");
 			//setDefaultCloseOperation(EXIT_ON_CLOSE);
 			pack();
 			setLocationRelativeTo(null);

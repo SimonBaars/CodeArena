@@ -26,6 +26,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.common.SavePaths;
+import nl.sandersimon.clonedetection.editor.CodeEditorMaker;
 import nl.sandersimon.clonedetection.thread.ProblemDetectionThread;
 
 public class GUISetupCloneFinding {
@@ -278,6 +279,7 @@ public class GUISetupCloneFinding {
 				        "Choose metric", JOptionPane.QUESTION_MESSAGE, null, // Use default icon
 				        metrics, // Array of choices
 				        metrics[0]); // Initial choice
+				CodeEditorMaker.create(new File(SavePaths.getRascalFolder()+input+".rsc"), input);
 			}
 		}
 
