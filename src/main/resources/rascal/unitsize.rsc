@@ -9,6 +9,8 @@ import sigscore;
 import unitcomplexity;
 import metricscommons;
 
+int TOO_BIG_UNIT_SIZE = 25;
+
 public void unitsize(set[Declaration] asts){
 	list[int] locs = [];
 	for (ast <- asts){
@@ -16,7 +18,7 @@ public void unitsize(set[Declaration] asts){
 			case Declaration d: {
 				if(isMethod(d)){ 
 					int lines = getLinesOfCode(d);
-					if(lines>=25)
+					if(lines>=TOO_BIG_UNIT_SIZE)
 						signalProblemDec(d, lines);
 				}
 			}

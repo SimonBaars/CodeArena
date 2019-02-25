@@ -8,6 +8,8 @@ import lang::java::m3::AST;
 import util::Math;
 import metricscommons;
 
+int TOO_HIGH_UNIT_COMPLEXITY = 21;
+
 public void unitcomplexity(set[Declaration] asts){
 	for (m <- asts){
 		visit(m){
@@ -25,7 +27,7 @@ void calcCCForAST(Declaration dec){
 
 void checkCC(Declaration dec, Statement impl){
 	int ccNumber = calcCC(impl);
-	if(ccNumber>=21){
+	if(ccNumber>=TOO_HIGH_UNIT_COMPLEXITY){
 		signalProblemDec(dec, ccNumber);
 	}
 }

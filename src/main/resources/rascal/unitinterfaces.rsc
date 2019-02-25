@@ -9,6 +9,8 @@ import sigscore;
 import util::Math;
 import metricscommons;
 
+int TOO_MANY_UNIT_PARAMETERS = 4;
+
 public void unitinterfaces(set[Declaration] asts){
 	for (m <- asts)
 		calcParametersForAST(m);
@@ -30,7 +32,7 @@ public void checkType(Declaration dec){
 
 public void checkTooBig(Declaration dec, list[Declaration] params){
 	int nParam = size(params);
-	if(nParam>=6){
+	if(nParam>=TOO_MANY_UNIT_PARAMETERS){
 		signalProblemDec(dec, nParam);
 	}
 }

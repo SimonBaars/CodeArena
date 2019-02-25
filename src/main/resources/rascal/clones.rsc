@@ -14,8 +14,6 @@ import DateTime;
 import metricscommons;
 
 int MIN_AMOUNT_OF_LINES = 6;
-int CLONE_TYPE = 1;
-real DIFF_PERC = 0.0;
 
 alias LineRegistry = map[str, map[int, list[value]]];
 map[str, list[int]] countedLines = ();
@@ -31,6 +29,9 @@ public void clones(set[Declaration] asts) {
     map[str, map[int, int]] hashMap = nodeRegs.hashMap;
     getDupList(hashMap, locsAtHash, sortedDomains, hashStartIndex, filesOrder);
 }
+
+int CLONE_TYPE = 1;
+real DIFF_PERC = 0.0;
 
 public tuple[map[int, list[loc]] locRegistries, map[str, list[int]] sortedDomains, map[int, int] hashStartIndex, map[str, map[int, int]] hashMap] calculateLocationsOfNodeTypes(LineRegistry fileLineAsts, set[str] filesOrder, int t, real allowedDiffPercentage){
 	map[int, list[loc]] registry = ();
