@@ -59,15 +59,15 @@ public class ProblemDetectionThread extends Thread {
 			findAllProblems(cloneDetection);
 			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "All metrics have been successfully parsed!")));
 		} else {
-			cloneDetection.executeTill("scanMetric("+scanProblem.getMetric()+", ["+IntStream.range(0, foundLocs.size()).filter(e -> scanProblem.getLocations().stream().anyMatch(l -> l.getFile().equals(foundLocs.get(e).getFile()))).boxed().map(e -> Integer.toString(e)).collect(Collectors.joining(", "))+"]);", '\n');
-			System.out.println("Metric "+scanProblem.getMetric()+" retrieved "+scanProblem.getLocations().stream().map(e -> e.getFile()).collect(Collectors.joining())+ " ==> "+foundLocs.getLocations().stream().map(e -> e.getFile()).collect(Collectors.joining()));
+			cloneDetection.executeTill("calcMetric("+scanProblem.getMetric()+", "+scanProblem.rascalLocList()+");", '\n');
+			//System.out.println("Metric "+scanProblem.getMetric()+" retrieved "+scanProblem.getLocations().stream().map(e -> e.getFile()).collect(Collectors.joining())+ " ==> "+foundLocs.getLocations().stream().map(e -> e.getFile()).collect(Collectors.joining()));
 			Pair<Integer, Integer> amount = populateResult(scanProblem.getMetric());
 			int amountOfProblemsFound = amount.first();
 			int problemSize = amount.second();
 			if(goal == SCANBEFORE) {
 				beforeMetric = amountOfProblemsFound;
 				beforeProblemSize = problemSize;
-				System.out.println("Set beforeMetric = "+beforeMetric+", beforeProblemSize = "+problemSize);
+				//System.out.println("Set beforeMetric = "+beforeMetric+", beforeProblemSize = "+problemSize);
 			} else {
 				rewardPointsForFix(cloneDetection, amountOfProblemsFound, problemSize);
 			}
@@ -93,7 +93,7 @@ public class ProblemDetectionThread extends Thread {
 		String[] metrics = new File(SavePaths.getRascalFolder()).list((dir, name) -> Arrays.stream(NO_METRICS).noneMatch(e -> e.equals(name)));
 		for(String metric : metrics) {
 			String metricName = metric.replace(".rsc", "");
-			cloneDetection.executeTill("calcMetric("+metricName+");", '\n');
+			cloneDetection.executeTill("calcMetric("+metricName+", "+foundLocs.rascalLocList()+");", '\n');
 			System.out.println("Metric "+metricName+" retrieved");
 			populateResult(metricName);
 			cloneDetection.waitUntilExecuted();
@@ -116,8 +116,6 @@ public class ProblemDetectionThread extends Thread {
 			e.printStackTrace();
 		}
 		cloneDetection.getProblems().clear();
-		cloneDetection.executeTill("getAsts("+foundLocs.rascalLocList()+");", '>');
-		System.out.println("ASTS RETRIEVED");
 	}
 	
 	private String addIfNotEmpty(String string) {
