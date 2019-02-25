@@ -15,6 +15,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import akka.japi.Pair;
 import net.minecraft.command.ICommandSender;
@@ -38,6 +40,7 @@ public class ProblemDetectionThread extends Thread {
 	public static final String[] NO_METRICS = {"loader.rsc", "metricscommons.rsc"};
 	private static int beforeMetric = 0;
 	private static int beforeProblemSize = 0;
+	private static final MetricProblem foundLocs = new MetricProblem();
 	
 	public ProblemDetectionThread(ProblemDetectionGoal g, ICommandSender s, MetricProblem p, String project) {
 		this.project = project;
@@ -56,7 +59,7 @@ public class ProblemDetectionThread extends Thread {
 			findAllProblems(cloneDetection);
 			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "All clones have been successfully parsed!")));
 		} else {
-			cloneDetection.executeTill("calcMetric("+scanProblem.getMetric()+");", '\n');
+			cloneDetection.executeTill("scanMetric("+scanProblem.getMetric()+", ["+IntStream.range(0, foundLocs.size()).filter(e -> scanProblem.getLocations().contains(foundLocs.get(e))).boxed().map(e -> Integer.toString(e)).collect(Collectors.joining(", "))+"]);", '\n');
 			System.out.println("Metric "+scanProblem.getMetric()+" retrieved");
 			Pair<Integer, Integer> amount = populateResult(scanProblem.getMetric());
 			int amountOfProblemsFound = amount.first();
@@ -99,7 +102,7 @@ public class ProblemDetectionThread extends Thread {
 	}
 
 	private void retrieveAsts(CloneDetection cloneDetection) {
-		MetricProblem foundLocs = new MetricProblem();
+		foundLocs.getLocations().clear();
 		try {
 			Files.walkFileTree(Paths.get(SavePaths.getProjectFolder()+project+"/src/"), new SimpleFileVisitor<Path>() {
 			    @Override
@@ -142,7 +145,7 @@ public class ProblemDetectionThread extends Thread {
 				if(goal == DETECTION)
 					c.eventHandler.nextTickActions.add(() -> c.getArena().create(metric, loc));
 				amountOfProblemsFound++;
-				problemSize+=loc.size();
+				problemSize+=loc.getLines();
 			}
 		}
 		return new Pair<>(amountOfProblemsFound, problemSize);
