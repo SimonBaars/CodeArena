@@ -37,7 +37,6 @@ public class ProblemDetectionThread extends Thread {
 	private final String project;
 	private ProblemDetectionGoal goal;
 	private MetricProblem scanProblem;
-	public static final String[] NO_METRICS = {"loader.rsc", "metricscommons.rsc"};
 	private static int beforeMetric = 0;
 	private static int beforeProblemSize = 0;
 	private static final MetricProblem foundLocs = new MetricProblem();
@@ -90,7 +89,7 @@ public class ProblemDetectionThread extends Thread {
 	}
 
 	private void findAllProblems(CloneDetection cloneDetection) {
-		String[] metrics = new File(SavePaths.getRascalFolder()).list((dir, name) -> Arrays.stream(NO_METRICS).noneMatch(e -> e.equals(name)));
+		String[] metrics = SavePaths.getMetrics();
 		for(String metric : metrics) {
 			String metricName = metric.replace(".rsc", "");
 			cloneDetection.executeTill("calcMetric("+metricName+", "+foundLocs.rascalLocList()+");", '\n');

@@ -1,10 +1,14 @@
 package nl.sandersimon.clonedetection.common;
 
 import java.io.File;
+import java.util.Arrays;
+
+import nl.sandersimon.clonedetection.thread.ProblemDetectionThread;
 
 public class SavePaths {
 	
 	private static String dataFolder = ".clone";
+	public static final String[] NO_METRICS = {"loader.rsc", "metricscommons.rsc"};
 
 	private SavePaths() {}
 	
@@ -46,5 +50,9 @@ public class SavePaths {
 		if (os.contains("win")) return System.getenv("APPDATA");
 		else if (os.contains("mac")) return System.getProperty("user.home") + File.separator + "Library" + File.separator + "Application Support";
 		else return System.getProperty("user.home");
+	}
+
+	public static String[] getMetrics() {
+		return new File(SavePaths.getRascalFolder()).list((dir, name) -> Arrays.stream(NO_METRICS).noneMatch(e -> e.equals(name)));
 	}
 }
