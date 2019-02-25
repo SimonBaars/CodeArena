@@ -29,5 +29,6 @@ public class CodeEditorMaker {
 				e.setVisible(true);
 			});
 		}
+		CodeEditor.locked = false;
 	}
 }

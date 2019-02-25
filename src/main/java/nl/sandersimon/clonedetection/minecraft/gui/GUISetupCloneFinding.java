@@ -269,6 +269,16 @@ public class GUISetupCloneFinding {
 				if(input!=null)
 					InputProject.setText(input);
 			}
+			if(button.id == 2) {
+				String[] metrics = SavePaths.getMetrics();
+				String input = (String) JOptionPane.showInputDialog(null, "Here you can edit the actual source code of the metrics that will be turned into monsters.\n"
+						+ "These metrics are stored in the following location (where you can also edit and add them in your favorite IDE): "+SavePaths.getRascalFolder()+"\n"
+								+ "Please choose a metric down below:",
+				        "Choose metric", JOptionPane.QUESTION_MESSAGE, null, // Use default icon
+				        metrics, // Array of choices
+				        metrics[0]); // Initial choice
+				//TODO: Open Editor
+			}
 		}
 
 		@Override

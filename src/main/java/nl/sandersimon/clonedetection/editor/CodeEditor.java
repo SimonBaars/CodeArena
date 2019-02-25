@@ -1,4 +1,5 @@
 package nl.sandersimon.clonedetection.editor;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -8,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 
@@ -50,22 +53,14 @@ import org.fife.ui.rtextarea.SearchContext;
 import org.fife.ui.rtextarea.SearchEngine;
 import org.fife.ui.rtextarea.SearchResult;
 
+import com.sun.jna.platform.win32.WinUser.WNDENUMPROC;
+
 import net.minecraft.client.Minecraft;
 import nl.sandersimon.clonedetection.CloneDetection;
 import nl.sandersimon.clonedetection.common.TestingCommons;
 import nl.sandersimon.clonedetection.model.MetricProblem;
 import nl.sandersimon.clonedetection.thread.ProblemDetectionThread;
 
-
-/**
- * An application that demonstrates use of the RSTAUI project.  Please don't
- * take this as good application design; it's just a simple example.<p>
- *
- * Unlike the library itself, this class is public domain.
- *
- * @author Robert Futrell
- * @version 1.0
- */
 public class CodeEditor extends JFrame implements SearchListener {
 
 	private CollapsibleSectionPanel csp;
@@ -77,8 +72,21 @@ public class CodeEditor extends JFrame implements SearchListener {
 	private StatusBar statusBar;
 	private final File file;
 	private final MetricProblem cloneClass;
-
+	private final boolean isMetricProblem;
+	public static boolean locked = true;
+	private final String metric;
+	
 	public CodeEditor(MetricProblem cloneClass, File file, int markedRangeStart, int markedRangeEnd, int pos, int amount) {
+		this(cloneClass, file, markedRangeStart, markedRangeEnd, pos, amount, true, null);
+	}
+	
+	public CodeEditor(MetricProblem cloneClass, File file, boolean isMetricsProblem, String metric) {
+		this(cloneClass, file, 0, 0, 0, 0, isMetricsProblem, metric);
+	}
+	
+	public CodeEditor(MetricProblem cloneClass, File file, int markedRangeStart, int markedRangeEnd, int pos, int amount, boolean isMetricProblem, String metric) {
+		this.metric = metric;
+		this.isMetricProblem = isMetricProblem;
 		this.file = file;
 		this.cloneClass = cloneClass;
 		String content;
@@ -102,7 +110,7 @@ public class CodeEditor extends JFrame implements SearchListener {
 
 			RTextScrollPane sp = new RTextScrollPane(textArea);
 			csp.add(sp);
-
+			if(isMetricProblem) {
 			for(int line = markedRangeStart; line<=markedRangeEnd && line>0; line++) {
 				try {
 					textArea.addLineHighlight(line-1, Color.CYAN);
@@ -110,7 +118,7 @@ public class CodeEditor extends JFrame implements SearchListener {
 					//sp.getVerticalScrollBar().set.scrollRectToVisible(new java.awt.Rectangle(0, textArea.getLineStartOffset(line-1),0,textArea.getLineStartOffset(line-1)));
 					//sp.scrollRectToVisible(new java.awt.Rectangle(0, textArea.getLineStartOffset(line-1),0,0));
 				} catch (BadLocationException e) {
-					e.printStackTrace();
+					//e.printStackTrace(); Doesn't matter
 				}
 			}
 			DefaultCaret caret = (DefaultCaret)textArea.getCaret();
@@ -122,6 +130,7 @@ public class CodeEditor extends JFrame implements SearchListener {
 			index = getLineStartIndex(textArea, markedRangeEnd);
 			if (index != -1) { 
 				textArea.setCaretPosition(index);
+			}
 			}
 			//Point pt = textArea.getCaret().getMagicCaretPosition();
 			//Rectangle rect = new Rectangle(pt, new Dimension(1, 10));
@@ -136,7 +145,7 @@ public class CodeEditor extends JFrame implements SearchListener {
 			statusBar = new StatusBar();
 			contentPane.add(statusBar, BorderLayout.SOUTH);
 
-			setTitle("SanSim Code Editor");
+			setTitle("CodeArena IDE");
 			//setDefaultCloseOperation(EXIT_ON_CLOSE);
 			pack();
 			setLocationRelativeTo(null);
@@ -161,6 +170,29 @@ public class CodeEditor extends JFrame implements SearchListener {
 			java.awt.Rectangle maxBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
 			int width2 = (int)maxBounds.getWidth()/amount;
 			setBounds(width2*pos, 0, width2, (int)maxBounds.getHeight());
+			
+			
+			this.addWindowListener(new WindowAdapter() {
+				@Override
+				public void windowClosing(WindowEvent e) {
+					if(!locked) {
+						locked = true;
+						try {
+							for(CodeEditor c : CloneDetection.get().openEditors)
+								TestingCommons.writeStringToFile(c.file, c.textArea.getText());
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+						if(isMetricProblem) {
+							ProblemDetectionThread.startWorker(Minecraft.getMinecraft().player, cloneClass, false);
+						} else {
+							CloneDetection.get().executeRascal("import "+metric+";", '>');
+						}
+						CloneDetection.get().closeAllEditorsExcept(this);
+						CloneDetection.get().openEditors.clear();
+					}
+				}
+			});
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -242,17 +274,19 @@ public class CodeEditor extends JFrame implements SearchListener {
 			}
 		});
 		menuItem.setText("Save");
-		JMenuItem fixedButton = new JMenuItem(new AbstractAction() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				statusBar.setLabel("You fixed it!");
-				ProblemDetectionThread.startWorker(Minecraft.getMinecraft().player, cloneClass, false);
-				CloneDetection.get().closeAllEditors();
-			}
-		});
-		fixedButton.setText("I fixed it! :-)");
-		menu.add(fixedButton);
+		
+		/*if(isMetricProblem) {
+			JMenuItem fixedButton = new JMenuItem(new AbstractAction() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					ProblemDetectionThread.startWorker(Minecraft.getMinecraft().player, cloneClass, false);
+					CloneDetection.get().closeAllEditors();
+				}
+			});
+			fixedButton.setText("I fixed it! :-)");
+			menu.add(fixedButton);
+		}*/
 		
 		menu.add(menuItem);
 		mb.add(menu);

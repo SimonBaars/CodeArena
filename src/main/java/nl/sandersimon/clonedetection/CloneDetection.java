@@ -1,5 +1,6 @@
 package nl.sandersimon.clonedetection;
 
+import java.awt.event.WindowAdapter;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -107,14 +108,14 @@ public class CloneDetection
 			rascal = getProcess("java -jar "+ResourceCommons.getResource("Rascal.jar").getAbsolutePath(), ResourceCommons.getResource("rascal"));
 			waitUntilExecuted(rascalIn, getRascalReadyState());
 			executeRascal("import loader;");
-			importRequiredLibraries();
+			importRequiredMetrics();
 		} catch (IOException e) {
 			throw new RuntimeException("Rascal could not be started!", e);
 		}
 	}
 
-	private void importRequiredLibraries() {
-		String[] metrics = new File(SavePaths.getRascalFolder()).list((dir, name) -> Arrays.stream(ProblemDetectionThread.NO_METRICS).noneMatch(e -> e.equals(name)));
+	private void importRequiredMetrics() {
+		String[] metrics = SavePaths.getMetrics();
 		for(String metric : metrics) {
 			String metricName = metric.replace(".rsc", "");
 			executeRascal("import "+metricName+";", '>');
@@ -243,13 +244,7 @@ public class CloneDetection
 	}
 
 	public void closeAllEditors() {
-		while(!openEditors.isEmpty()) {
-			if(openEditors.get(0).isVisible()) {
-				openEditors.get(0).setVisible(false);
-				openEditors.get(0).dispose();
-			}
-			openEditors.remove(0);
-		}
+		closeAllEditorsExcept(null);
 	}
 
 	public BufferedWriter getRascalOut() {
@@ -285,5 +280,15 @@ public class CloneDetection
 		List<MetricProblem> p = new ArrayList<>();
 		problems.put(metric, p);
 		return p;
+	}
+
+	public void closeAllEditorsExcept(WindowAdapter windowAdapter) {
+		while(!openEditors.isEmpty()) {
+			if(openEditors.get(0).isVisible() && (windowAdapter==null || !openEditors.get(0).equals(windowAdapter))) {
+				openEditors.get(0).setVisible(false);
+				openEditors.get(0).dispose();
+			}
+			openEditors.remove(0);
+		}
 	}
 }
