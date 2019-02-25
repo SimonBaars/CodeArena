@@ -57,7 +57,7 @@ public class ProblemDetectionThread extends Thread {
 		if(goal == DETECTION) {
 			retrieveAsts(cloneDetection);
 			findAllProblems(cloneDetection);
-			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "All clones have been successfully parsed!")));
+			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "All metrics have been successfully parsed!")));
 		} else {
 			cloneDetection.executeTill("scanMetric("+scanProblem.getMetric()+", ["+IntStream.range(0, foundLocs.size()).filter(e -> scanProblem.getLocations().stream().anyMatch(l -> l.getFile().equals(foundLocs.get(e).getFile()))).boxed().map(e -> Integer.toString(e)).collect(Collectors.joining(", "))+"]);", '\n');
 			System.out.println("Metric "+scanProblem.getMetric()+" retrieved "+scanProblem.getLocations().stream().map(e -> e.getFile()).collect(Collectors.joining())+ " ==> "+foundLocs.getLocations().stream().map(e -> e.getFile()).collect(Collectors.joining()));

@@ -129,7 +129,7 @@ public abstract class AbstractCodeSkeleton extends CodeEntity implements IRanged
     /**
      * Called frequently so the entity can update its state every tick as required. For example, zombies and skeletons
      * use this to react to sunlight and start to burn.
-     */
+     
     public void onLivingUpdate()
     {
         if (this.world.isDaytime() && !this.world.isRemote)
@@ -166,7 +166,7 @@ public abstract class AbstractCodeSkeleton extends CodeEntity implements IRanged
         }
 
         super.onLivingUpdate();
-    }
+    }*/
 
     /**
      * Handles updating while riding another entity

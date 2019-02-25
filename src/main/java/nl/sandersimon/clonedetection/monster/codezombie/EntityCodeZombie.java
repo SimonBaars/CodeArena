@@ -221,7 +221,7 @@ public class EntityCodeZombie extends CodeEntity
     /**
      * Called frequently so the entity can update its state every tick as required. For example, zombies and skeletons
      * use this to react to sunlight and start to burn.
-     */
+    
     public void onLivingUpdate()
     {
         if (this.world.isDaytime() && !this.world.isRemote && !this.isChild() && this.shouldBurnInDay())
@@ -258,10 +258,10 @@ public class EntityCodeZombie extends CodeEntity
 
         super.onLivingUpdate();
     }
-
+ */
     protected boolean shouldBurnInDay()
     {
-        return true;
+        return false;
     }
 
     /**
