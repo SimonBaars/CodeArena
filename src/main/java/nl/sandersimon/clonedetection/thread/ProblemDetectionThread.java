@@ -64,6 +64,7 @@ public class ProblemDetectionThread extends Thread {
 			if(goal == SCANBEFORE) {
 				beforeMetric = amountOfProblemsFound;
 				beforeProblemSize = problemSize;
+				System.out.println("Set beforeMetric = "+beforeMetric+", beforeProblemSize = "+problemSize);
 			} else {
 				rewardPointsForFix(cloneDetection, amountOfProblemsFound, problemSize);
 			}
@@ -72,6 +73,7 @@ public class ProblemDetectionThread extends Thread {
 	}
 
 	private void rewardPointsForFix(CloneDetection cloneDetection, int amountOfProblemsFound, int problemSize) {
+		System.out.println("Is beforeMetric = "+beforeMetric+", beforeProblemSize = "+problemSize+" and amountOfProblemsFound = "+amountOfProblemsFound+", problemSize = "+problemSize);
 		if(amountOfProblemsFound<beforeMetric) {
 			CloneDetection.get().getArena().increaseScore(5);
 			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(TextFormatting.DARK_GREEN, "Well done on improving the metric! You are awarded 5 emeralds!")));
