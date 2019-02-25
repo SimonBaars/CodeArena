@@ -70,7 +70,7 @@ public abstract class Challenges {
 			}
 		}
 		Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().getGameRules().setOrCreateGameRule("doMobSpawning", "false");
-		Minecraft.getMinecraft().player.sendChatMessage("The challenge has started!");
+		//Minecraft.getMinecraft().player.sendChatMessage("The challenge has started!");
 		numberOfPlayers = Minecraft.getMinecraft().getIntegratedServer().getCurrentPlayerCount();
 		if(numberOfPlayers==0){
 			System.out.println("Something went wrong while initializing players...");

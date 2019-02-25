@@ -259,17 +259,21 @@ public class CodeArena extends Challenges {
 				//System.out.println("Found!");
 				clientServerEntityMapping.put(e, codeEntity);
 				e.setRepresents(codeEntity.getRepresents());
-				float f = codeEntity.getRepresents().volume()*0.03F;
+				
 				if(codeEntity instanceof EntityCodeSpider) {
+					float f = codeEntity.getRepresents().volume()*0.03F;
 					e.setSizePublic(1.5F*f, 0.8F*f);
 					codeEntity.setSizePublic(1.5F*f, 0.8F*f);
 				} else if(codeEntity instanceof EntityCodeSkeleton) {
+					float f = ((codeEntity.getRepresents().volume()*2)+4)*0.03F;
 					e.setSizePublic(0.6F*f, 1.99F*f);
 					codeEntity.setSizePublic(0.6F*f, 1.99F*f);
 				} else if(codeEntity instanceof EntityCodeCreeper) {
+					float f = ((codeEntity.getRepresents().volume()/1.5F)-18)*0.03F;
 					e.setSizePublic(0.6F*f, 1.7F*f);
 					codeEntity.setSizePublic(0.6F*f, 1.7F*f);
 				} else if(codeEntity instanceof EntityCodeZombie) {
+					float f = (codeEntity.getRepresents().volume()-13)*0.03F;
 					e.setSizePublic(0.6F*f, 1.95F*f);
 					codeEntity.setSizePublic(0.6F*f, 1.95F*f);
 				}
