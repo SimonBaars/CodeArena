@@ -221,7 +221,7 @@ public class GUISetupCloneFinding {
 			InputProject.drawTextBox();
 			this.fontRenderer.drawString("Please enter the Java project:", 22, 67, -1);
 			//MinLines.drawTextBox();
-			this.fontRenderer.drawString("Please enter the min. amount of lines:", 22, 119, -1);
+			//this.fontRenderer.drawString("Please enter the min. amount of lines:", 22, 119, -1);
 		}
 
 		@Override
@@ -239,7 +239,7 @@ public class GUISetupCloneFinding {
 			this.buttonList.clear();
 			this.buttonList.add(new GuiButton(0, this.guiLeft + 127, this.guiTop + 170, 118, 20, "Start Battle!"));
 			this.buttonList.add(new GuiButton(1, this.guiLeft + 147, this.guiTop + 82, 72, 20, "Choose"));
-			this.buttonList.add(new GuiButton(2, 23, 136, 120, 20, "Edit Metric Code"));
+			this.buttonList.add(new GuiButton(2, this.guiLeft + 30, this.guiTop + 125, 120, 20, "Edit Metric Code"));
 			InputProject = new GuiTextField(0, this.fontRenderer, 21, 83, 120, 20);
 			guiinventory.put("text:InputProject", InputProject);
 			InputProject.setMaxStringLength(32767);
@@ -279,7 +279,7 @@ public class GUISetupCloneFinding {
 				        "Choose metric", JOptionPane.QUESTION_MESSAGE, null, // Use default icon
 				        metrics, // Array of choices
 				        metrics[0]); // Initial choice
-				CodeEditorMaker.create(new File(SavePaths.getRascalFolder()+input+".rsc"), input);
+				CodeEditorMaker.create(new File(SavePaths.getRascalFolder()+input), input);
 			}
 		}
 

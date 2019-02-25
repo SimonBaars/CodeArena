@@ -104,7 +104,7 @@ public class EndChallengeGUI {
 		@Override
 		protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 			CloneDetection c = CloneDetection.get();
-			this.fontRenderer.drawString("Current reward: "+c.getArena().getCurrentReward()+" emeralds!", 23, 6, 0);
+			this.fontRenderer.drawString("Current reward: "+c.getArena().getCurrentReward()+" emeralds!", 18, 6, 0);
 		}
 
 		@Override
