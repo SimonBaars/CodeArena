@@ -152,7 +152,7 @@ public class GUISetupCloneFinding {
 		int x, y, z;
 		EntityPlayer entity;
 		GuiTextField InputProject;
-		GuiTextField MinLines;
+		//GuiTextField MinLines;
 
 		public GuiWindow(World world, int x, int y, int z, EntityPlayer entity) {
 			super(new GuiContainerMod(world, x, y, z, entity));
@@ -189,7 +189,7 @@ public class GUISetupCloneFinding {
 			try {
 				super.mouseClicked(mouseX, mouseY, mouseButton);
 				InputProject.mouseClicked(mouseX - guiLeft, mouseY - guiTop, mouseButton);
-				MinLines.mouseClicked(mouseX - guiLeft, mouseY - guiTop, mouseButton);
+				//MinLines.mouseClicked(mouseX - guiLeft, mouseY - guiTop, mouseButton);
 			} catch (Exception ignored) {
 			}
 		}
@@ -198,7 +198,7 @@ public class GUISetupCloneFinding {
 		public void updateScreen() {
 			super.updateScreen();
 			InputProject.updateCursorCounter();
-			MinLines.updateCursorCounter();
+			//MinLines.updateCursorCounter();
 		}
 
 		@Override
@@ -206,7 +206,7 @@ public class GUISetupCloneFinding {
 			try {
 				super.keyTyped(typedChar, keyCode);
 				InputProject.textboxKeyTyped(typedChar, keyCode);
-				MinLines.textboxKeyTyped(typedChar, keyCode);
+				//MinLines.textboxKeyTyped(typedChar, keyCode);
 			} catch (Exception ignored) {
 			}
 		}
@@ -219,7 +219,7 @@ public class GUISetupCloneFinding {
 			this.fontRenderer.drawString("Please choose the clone type:", 21, 15, -1);
 			InputProject.drawTextBox();
 			this.fontRenderer.drawString("Please enter the Java project:", 22, 67, -1);
-			MinLines.drawTextBox();
+			//MinLines.drawTextBox();
 			this.fontRenderer.drawString("Please enter the min. amount of lines:", 22, 119, -1);
 		}
 
@@ -238,16 +238,17 @@ public class GUISetupCloneFinding {
 			this.buttonList.clear();
 			this.buttonList.add(new GuiButton(0, this.guiLeft + 127, this.guiTop + 170, 118, 20, "Start Battle!"));
 			this.buttonList.add(new GuiButton(1, this.guiLeft + 147, this.guiTop + 82, 72, 20, "Choose"));
+			this.buttonList.add(new GuiButton(2, 23, 136, 120, 20, "Edit Metric Code"));
 			InputProject = new GuiTextField(0, this.fontRenderer, 21, 83, 120, 20);
 			guiinventory.put("text:InputProject", InputProject);
 			InputProject.setMaxStringLength(32767);
 			InputProject.setFocused(true);
 			InputProject.setText("");
-			MinLines = new GuiTextField(1, this.fontRenderer, 23, 136, 120, 20);
+			/*MinLines = new GuiTextField(1, this.fontRenderer, 23, 136, 120, 20);
 			guiinventory.put("text:MinLines", MinLines);
 			MinLines.setMaxStringLength(32767);
 			MinLines.setFocused(false);
-			MinLines.setText("6");
+			MinLines.setText("6");*/
 		}
 
 		@Override
@@ -277,7 +278,6 @@ public class GUISetupCloneFinding {
 				        "Choose metric", JOptionPane.QUESTION_MESSAGE, null, // Use default icon
 				        metrics, // Array of choices
 				        metrics[0]); // Initial choice
-				//TODO: Open Editor
 			}
 		}
 
