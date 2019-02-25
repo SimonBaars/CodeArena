@@ -81,7 +81,7 @@ public class CodeEditor extends JFrame implements SearchListener {
 	}
 	
 	public CodeEditor(File file, boolean isMetricsProblem, String metric) {
-		this(null, file, 0, 0, 0, 0, false, metric);
+		this(null, file, 0, 0, 0, 1, false, metric);
 	}
 	
 	public CodeEditor(MetricProblem cloneClass, File file, int markedRangeStart, int markedRangeEnd, int pos, int amount, boolean isMetricProblem, String metric) {

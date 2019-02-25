@@ -24,7 +24,7 @@ public class LayerCodeSpiderEyes<T extends EntityCodeSpider> implements LayerRen
         this.spiderRenderer.bindTexture(SPIDER_EYES);
         GlStateManager.enableBlend();
         GlStateManager.disableAlpha();
-        GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+        /*GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 
         if (entitylivingbaseIn.isInvisible())
         {
@@ -47,7 +47,7 @@ public class LayerCodeSpiderEyes<T extends EntityCodeSpider> implements LayerRen
         j = i % 65536;
         k = i / 65536;
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
-        this.spiderRenderer.setLightmap(entitylivingbaseIn);
+        this.spiderRenderer.setLightmap(entitylivingbaseIn);*/
         GlStateManager.disableBlend();
         GlStateManager.enableAlpha();
     }
