@@ -93,7 +93,6 @@ public class ProblemDetectionThread extends Thread {
 		String[] metrics = new File(SavePaths.getRascalFolder()).list((dir, name) -> Arrays.stream(NO_METRICS).noneMatch(e -> e.equals(name)));
 		for(String metric : metrics) {
 			String metricName = metric.replace(".rsc", "");
-			cloneDetection.executeTill("import "+metricName+";", '>');
 			cloneDetection.executeTill("calcMetric("+metricName+");", '\n');
 			System.out.println("Metric "+metricName+" retrieved");
 			populateResult(metricName);

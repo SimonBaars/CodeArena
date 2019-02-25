@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import nl.sandersimon.clonedetection.challenge.CodeArena;
 import nl.sandersimon.clonedetection.common.Commons;
 import nl.sandersimon.clonedetection.common.ResourceCommons;
+import nl.sandersimon.clonedetection.common.SavePaths;
 import nl.sandersimon.clonedetection.editor.CodeEditor;
 import nl.sandersimon.clonedetection.minecraft.CDEventHandler;
 import nl.sandersimon.clonedetection.minecraft.gui.CloneMenuKey;
@@ -35,6 +37,7 @@ import nl.sandersimon.clonedetection.minecraft.gui.GUISetupCloneFinding;
 import nl.sandersimon.clonedetection.minecraft.proxy.CommonProxy;
 import nl.sandersimon.clonedetection.model.MetricProblem;
 import nl.sandersimon.clonedetection.model.ProblemScore;
+import nl.sandersimon.clonedetection.thread.ProblemDetectionThread;
 
 @Mod(modid = CloneDetection.MODID, name = CloneDetection.NAME, version = CloneDetection.VERSION, dependencies = "required-after:forge@[13.19.0.2129,)", useMetadata = true)
 public class CloneDetection
@@ -104,9 +107,17 @@ public class CloneDetection
 			rascal = getProcess("java -jar "+ResourceCommons.getResource("Rascal.jar").getAbsolutePath(), ResourceCommons.getResource("rascal"));
 			waitUntilExecuted(rascalIn, getRascalReadyState());
 			executeRascal("import loader;");
-			System.out.println("Rascal Started!");
+			importRequiredLibraries();
 		} catch (IOException e) {
 			throw new RuntimeException("Rascal could not be started!", e);
+		}
+	}
+
+	private void importRequiredLibraries() {
+		String[] metrics = new File(SavePaths.getRascalFolder()).list((dir, name) -> Arrays.stream(ProblemDetectionThread.NO_METRICS).noneMatch(e -> e.equals(name)));
+		for(String metric : metrics) {
+			String metricName = metric.replace(".rsc", "");
+			executeRascal("import "+metricName+";", '>');
 		}
 	}
 	
