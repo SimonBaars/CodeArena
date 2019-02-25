@@ -7,10 +7,10 @@ import lang::java::m3::Core;
 import lang::java::m3::AST;
 import String;
 
-set[Declaration] asts = {};
+list[Declaration] asts = [];
 
 void getAsts(list[loc] partialScanList){
-	asts = {};
+	asts = [];
 	for (loc m <- partialScanList)
 		asts += createAstFromFile(m, true);
 }
@@ -21,6 +21,5 @@ void scanMetric(void (set[Declaration]) metricFunction, list[int] astIndexes){
 }
 
 void calcMetric(void (set[Declaration]) metricFunction){
-	metricFunction(asts);
-	println(0);
+	scanMetric(metricFunction, [0..size(asts)]);
 }
