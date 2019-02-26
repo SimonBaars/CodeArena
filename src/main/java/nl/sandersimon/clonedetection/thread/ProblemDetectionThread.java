@@ -58,7 +58,7 @@ public class ProblemDetectionThread extends Thread {
 			findAllProblems(cloneDetection);
 			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "All metrics have been successfully parsed!")));
 		} else {
-			cloneDetection.executeTill("calcMetric("+scanProblem.getMetric()+", "+scanProblem.rascalLocList()+");", '\n');
+			cloneDetection.executeTill("calcMetric("+scanProblem.getMetric()+", "+scanProblem.rascalLocList()+", true);", '\n');
 			//System.out.println("Metric "+scanProblem.getMetric()+" retrieved "+scanProblem.getLocations().stream().map(e -> e.getFile()).collect(Collectors.joining())+ " ==> "+foundLocs.getLocations().stream().map(e -> e.getFile()).collect(Collectors.joining()));
 			Pair<Integer, Integer> amount = populateResult(scanProblem.getMetric());
 			int amountOfProblemsFound = amount.first();
@@ -90,12 +90,14 @@ public class ProblemDetectionThread extends Thread {
 
 	private void findAllProblems(CloneDetection cloneDetection) {
 		String[] metrics = SavePaths.getMetrics();
+		boolean reload = true;
 		for(String metric : metrics) {
 			String metricName = metric.replace(".rsc", "");
-			cloneDetection.executeTill("calcMetric("+metricName+", "+foundLocs.rascalLocList()+");", '\n');
+			cloneDetection.executeTill("calcMetric("+metricName+", "+foundLocs.rascalLocList()+", "+Boolean.toString(reload)+");", '\n');
 			System.out.println("Metric "+metricName+" retrieved");
 			populateResult(metricName);
 			cloneDetection.waitUntilExecuted();
+			reload = false;
 		}
 	}
 
