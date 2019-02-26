@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -290,5 +291,17 @@ public class CloneDetection
 			}
 			openEditors.remove(0);
 		}
+	}
+
+	public ProblemScore createMetricScore(String metricName) {
+		ScoreObjective scoreBoard = arena.getScoreBoard();
+		final String scoreName = turnIntoScoreName(metricName);
+		final ProblemScore e = new ProblemScore(scoreName, scoreBoard.getScoreboard().getOrCreateScore(scoreName, scoreBoard));
+		problemScores.add(e);
+		return e;
+	}
+
+	public String turnIntoScoreName(String metricName) {
+		return metricName.substring(0, 1).toUpperCase() + metricName.substring(1) +" problem";
 	}
 }

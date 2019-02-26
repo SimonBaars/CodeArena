@@ -203,6 +203,7 @@ public abstract class Challenges {
 
 			}
 			scoreBoard.getScoreboard().removeObjective(scoreBoard);
+			CloneDetection.get().getProblemScores().clear();
 			//scoreBoard.getScoreboard().func_96519_k(scoreBoard);
 			Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().getGameRules().setOrCreateGameRule("doMobSpawning", "true");
 			destroy();
