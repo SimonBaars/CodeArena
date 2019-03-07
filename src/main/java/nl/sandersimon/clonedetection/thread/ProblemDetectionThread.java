@@ -183,10 +183,10 @@ public class ProblemDetectionThread extends Thread {
 		CloneDetection.get().setArena(new CodeArena(s.getPosition().getX(), s.getPosition().getY(), s.getPosition().getZ()));
 		//CloneDetection.get().initScoreboards();
 		if(worker!=null && worker.isAlive()) {
-			s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.RED, "Sorry, but I'm still busy detecting clones! Please wait a little longer."));
+			s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.RED, "Sorry, but I'm still busy detecting code problems! Please wait a little longer."));
 			return;
 		}
-		s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "Searching for clones, please wait..."));
+		s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "Searching for code problems, please wait..."));
 		
 		worker = new ProblemDetectionThread(DETECTION, s, null, projectName);
 	}

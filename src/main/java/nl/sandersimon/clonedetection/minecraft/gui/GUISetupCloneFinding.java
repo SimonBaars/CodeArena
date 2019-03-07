@@ -214,12 +214,12 @@ public class GUISetupCloneFinding {
 
 		@Override
 		protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-			this.fontRenderer.drawString("Type 1", 41, 37, -1);
-			this.fontRenderer.drawString("Type 2", 119, 37, -1);
-			this.fontRenderer.drawString("Type 3", 200, 37, -1);
-			this.fontRenderer.drawString("Please choose the clone type:", 21, 15, -1);
+			this.fontRenderer.drawString("Type 1", 41, 37, 0);
+			this.fontRenderer.drawString("Type 2", 119, 37, 0);
+			this.fontRenderer.drawString("Type 3", 200, 37, 0);
+			this.fontRenderer.drawString("Please choose the clone type:", 21, 15, 0);
 			InputProject.drawTextBox();
-			this.fontRenderer.drawString("Please enter the Java project:", 22, 67, -1);
+			this.fontRenderer.drawString("Please enter the Java project:", 22, 67, 0);
 			//MinLines.drawTextBox();
 			//this.fontRenderer.drawString("Please enter the min. amount of lines:", 22, 119, -1);
 		}
