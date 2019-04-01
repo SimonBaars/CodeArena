@@ -93,14 +93,16 @@ public class ProblemDetectionThread extends Thread {
 	private void findAllProblems(CloneDetection cloneDetection) {
 		String[] metrics = SavePaths.getMetrics();
 		boolean reload = true;
-		for(String metric : metrics) {
-			String metricName = metric.replace(".rsc", "");
-			ProblemScore s = cloneDetection.createMetricScore(metricName);
-			cloneDetection.executeTill("calcMetric("+metricName+", "+foundLocs.rascalLocList()+", "+Boolean.toString(reload)+");", '\n');
-			System.out.println("Metric "+metricName+" retrieved");
-			populateResult(metricName, s);
-			cloneDetection.waitUntilExecuted();
-			reload = false;
+		for(Location location : foundLocs.getLocations()) {
+			for(String metric : metrics) {
+				String metricName = metric.replace(".rsc", "");
+				ProblemScore s = cloneDetection.createMetricScore(metricName);
+				cloneDetection.executeTill("calcMetric("+metricName+", "+location.rascalFile()+", "+Boolean.toString(reload)+");", '\n');
+				System.out.println("Metric "+metricName+" retrieved");
+				populateResult(metricName, s);
+				cloneDetection.waitUntilExecuted();
+				reload = false;
+			}
 		}
 	}
 
