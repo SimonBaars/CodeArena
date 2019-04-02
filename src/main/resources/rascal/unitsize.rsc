@@ -11,16 +11,14 @@ import metricscommons;
 
 int TOO_BIG_UNIT_SIZE = 25;
 
-public void unitsize(set[Declaration] asts){
+public void unitsize(Declaration ast){
 	list[int] locs = [];
-	for (ast <- asts){
-		visit(ast){
-			case Declaration d: {
-				if(isMethod(d)){ 
-					int lines = getLinesOfCode(d);
-					if(lines>=TOO_BIG_UNIT_SIZE)
-						signalProblemDec(d, lines);
-				}
+	visit(ast){
+		case Declaration d: {
+			if(isMethod(d)){ 
+				int lines = getLinesOfCode(d);
+				if(lines>=TOO_BIG_UNIT_SIZE)
+					signalProblemDec(d, lines);
 			}
 		}
 	}

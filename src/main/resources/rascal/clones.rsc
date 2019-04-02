@@ -18,7 +18,7 @@ int MIN_AMOUNT_OF_LINES = 6;
 alias LineRegistry = map[str, map[int, list[value]]];
 map[str, list[int]] countedLines = ();
 
-public void clones(set[Declaration] asts) {
+public void clones(Declaration ast) {
 	countedLines = ();
     LineRegistry fileLineAsts = fileLineMapGeneration(CLONE_TYPE, asts);
     set[str] filesOrder = domain(fileLineAsts);

@@ -10,11 +10,9 @@ import metricscommons;
 
 int TOO_HIGH_UNIT_COMPLEXITY = 21;
 
-public void unitcomplexity(set[Declaration] asts){
-	for (m <- asts){
-		visit(m){
-			case Declaration d: calcCCForAST(d);
-		}
+public void unitcomplexity(Declaration m){
+	visit(m){
+		case Declaration d: calcCCForAST(d);
 	}
 }
 

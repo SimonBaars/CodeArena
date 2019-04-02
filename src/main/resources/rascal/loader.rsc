@@ -9,7 +9,7 @@ import String;
 
 Declaration asts = {};
 
-void calcMetric(void (set[Declaration]) metricFunction, loc partialScanList, bool reload){
+void calcMetric(void (Declaration) metricFunction, loc partialScanList, bool reload){
 	if(reload)
 		asts = createAstFromFile(partialScanList, true);
 	metricFunction(asts);

@@ -11,12 +11,7 @@ import metricscommons;
 
 int TOO_MANY_UNIT_PARAMETERS = 4;
 
-public void unitinterfaces(set[Declaration] asts){
-	for (m <- asts)
-		calcParametersForAST(m);
-}
-
-public void calcParametersForAST(Declaration dec){
+public void unitinterfaces(Declaration dec){
 	visit(dec){
 		case Declaration d: checkType(d);
 	}
