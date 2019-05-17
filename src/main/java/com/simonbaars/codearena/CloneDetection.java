@@ -51,9 +51,6 @@ public class CloneDetection
 	
 	public final CDEventHandler eventHandler = new CDEventHandler();
 
-	private Process rascal;
-	private BufferedWriter rascalOut = null;
-	private InputStreamReader rascalIn = null;
 	@Mod.Instance
 	private static CloneDetection cloneDetection;
 	private final Map<String, List<MetricProblem>> problems = new HashMap<>();
@@ -105,125 +102,13 @@ public class CloneDetection
 			NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
 			new CloneMenuKey().registerRenderers();
 		}
-		try {
-			System.out.println("Starting Rascal..");
-			rascal = getProcess("java -jar "+ResourceCommons.getResource("Rascal.jar").getAbsolutePath(), ResourceCommons.getResource("rascal"));
-			waitUntilExecuted(rascalIn, getRascalReadyState());
-			executeRascal("import loader;");
-			importRequiredMetrics();
-		} catch (IOException e) {
-			throw new RuntimeException("Rascal could not be started!", e);
-		}
 	}
 
-	private void importRequiredMetrics() {
-		String[] metrics = SavePaths.getMetrics();
-		for(String metric : metrics) {
-			String metricName = metric.replace(".rsc", "");
-			executeRascal("import "+metricName+";", '>');
-		}
-	}
-	
 	@Mod.EventHandler
     public void postInit(FMLPostInitializationEvent e) {
         if(proxy != null)	
         	proxy.postInit(e);
     }
-
-	private Process getProcess(String command, File dir) throws IOException {
-		String[] com;
-		if(Commons.getOS().isUnix())
-			com = new String[]{"bash", "-c", command};
-		else 
-			com = command.split(" ");
-		ProcessBuilder prb = new ProcessBuilder(com);
-		prb.directory(dir);
-		Process pr = prb.start();
-		rascalOut = new BufferedWriter(new OutputStreamWriter(pr.getOutputStream()));
-		rascalIn = new InputStreamReader(pr.getInputStream());
-		return pr;
-	}
-
-	public List<String> executeRascal(String statement){
-		return executeRascal(statement, getRascalReadyState());
-	}
-	
-	public List<String> executeRascal(String statement, char till) {
-		return executeRascal(rascalIn, rascalOut, statement, till);
-	}
-	
-	public List<String> executeRascal(InputStreamReader r, BufferedWriter w, String statement, char till) {
-		System.out.println("Executing Rascal: "+statement);
-		try {
-			w.write(statement);
-			w.newLine();
-			w.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		readBuffer(r, statement.length());
-		return waitUntilExecuted(r, till);
-	}
-
-	public String executeSingleLineRascal(String statement) {
-		return executeRascal(statement).get(1);
-	}
-	
-	public String executeTill(String statement, char till) {
-		return executeRascal(statement, till).get(0);
-	}
-	
-	public List<String> waitUntilExecuted() {
-		return waitUntilExecuted(getRascalReadyState());
-	}
-
-	public char getRascalReadyState() {
-		return '>';
-	}
-	
-	public List<String> waitUntilExecuted(char till) {
-		return waitUntilExecuted(rascalIn, till);
-	}
-
-	public List<String> waitUntilExecuted(InputStreamReader i, char till) {
-		List<String> lines = new ArrayList<>();
-		outerloop: while(true) {
-			StringBuilder buffer = new StringBuilder();
-			try {
-				while(i.ready()) {
-					int read = i.read();
-					System.out.print((char)read+"");
-					if((char)read == till) {
-						lines.add(buffer.toString());
-						break outerloop;
-					}
-					if(read == '\n') {
-						lines.add(buffer.toString());
-						buffer.setLength(0);
-					} else buffer.append((char)read);
-				}
-				Thread.sleep(400);
-			} catch (IOException | InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		return lines;
-	}
-	
-	public String readBuffer(InputStreamReader i, int bufferSize) {
-		char[] cbuf = new char[bufferSize];
-		try {
-			int read = i.read(cbuf);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		System.out.println(cbuf);
-		return new String(cbuf);
-	}
-	
-	public String readBuffer(int bufferSize) {
-		return readBuffer(rascalIn, bufferSize);
-	}
 
 	public CodeArena getArena() {
 		return arena;
@@ -247,14 +132,6 @@ public class CloneDetection
 
 	public void closeAllEditors() {
 		closeAllEditorsExcept(null);
-	}
-
-	public BufferedWriter getRascalOut() {
-		return rascalOut;
-	}
-
-	public InputStreamReader getRascalIn() {
-		return rascalIn;
 	}
 	
 	public static class GuiHandler implements IGuiHandler {
