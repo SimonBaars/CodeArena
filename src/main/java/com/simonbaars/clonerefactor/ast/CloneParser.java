@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -42,7 +43,7 @@ public class CloneParser implements Parser, RemovesDuplicates {
 		return new DetectionResults();
 	}
 	
-	public DetectionResults parse(List<File> files) {
+	public DetectionResults parse(Collection<File> files) {
 		astParser = new NodeParser(metricCollector);
 		Location lastLoc = calculateLineReg(files);
 		if(lastLoc!=null) {
@@ -89,7 +90,7 @@ public class CloneParser implements Parser, RemovesDuplicates {
 		return lh.getLocation();
 	}
 	
-	private final Location calculateLineReg(List<File> files) {
+	private final Location calculateLineReg(Collection<File> files) {
 		Location l = null;
 		for(File file : files) {
 			ParseResult<CompilationUnit> compilationUnitNode;

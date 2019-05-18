@@ -5,30 +5,25 @@ import static com.simonbaars.codearena.thread.ProblemDetectionGoal.SCANAFTER;
 import static com.simonbaars.codearena.thread.ProblemDetectionGoal.SCANBEFORE;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.simonbaars.clonerefactor.Main;
 import com.simonbaars.clonerefactor.SequenceObservable;
 import com.simonbaars.clonerefactor.SequenceObserver;
+import com.simonbaars.clonerefactor.ast.CloneParser;
 import com.simonbaars.clonerefactor.metrics.ProblemType;
+import com.simonbaars.clonerefactor.model.DetectionResults;
 import com.simonbaars.clonerefactor.model.Sequence;
 import com.simonbaars.codearena.CloneDetection;
 import com.simonbaars.codearena.challenge.CodeArena;
 import com.simonbaars.codearena.common.Commons;
 import com.simonbaars.codearena.common.SavePaths;
-import com.simonbaars.codearena.model.Location;
 import com.simonbaars.codearena.model.MetricProblem;
 import com.simonbaars.codearena.model.ProblemScore;
 
-import akka.japi.Pair;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.text.TextFormatting;
 
@@ -39,7 +34,7 @@ public class ProblemDetectionThread extends Thread {
 	private final String project;
 	private ProblemDetectionGoal goal;
 	private MetricProblem scanProblem;
-	private static int beforeProblemSize = 0;
+	private static final List<Integer> problemSizes = new ArrayList<>();
 	private static final MetricProblem foundLocs = new MetricProblem();
 	private SequenceObserver observer;
 	
@@ -54,52 +49,48 @@ public class ProblemDetectionThread extends Thread {
 	public void run() {
 		CloneDetection cloneDetection = CloneDetection.get();
 		if(goal == DETECTION) {
-			observer = new SequenceObserver() {
-				
-				@Override
-				public void update(ProblemType problem, Sequence sequence, int problemSize) {
-					MetricProblem loc = new MetricProblem(problem, problemSize, sequence);
-					CloneDetection.get().eventHandler.nextTickActions.add(() -> CloneDetection.get().getArena().create(problem, loc));
-					CloneDetection.get().getScoreForType(problem).incrementScore();
-				}
+			observer = (ProblemType problem, Sequence sequence, int problemSize) -> {
+				MetricProblem loc = new MetricProblem(problem, problemSize, sequence);
+				CloneDetection.get().eventHandler.nextTickActions.add(() -> CloneDetection.get().getArena().create(problem, loc));
+				CloneDetection.get().getScoreForType(problem).incrementScore();
 			};
 			SequenceObservable.get().subscribe(observer);
 			Main.cloneDetection(SavePaths.getProjectFolder()+project);
+			SequenceObservable.get().unsubscribe(observer);
+			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "All metrics have been successfully parsed!")));
 		} else {
-			Pair<Integer, Integer> amount = populateResult(scanProblem.getMetric(), null);
-			int amountOfProblemsFound = amount.first();
-			int problemSize = amount.second();
-			if(goal == SCANBEFORE) {
-				beforeMetric = amountOfProblemsFound;
-				beforeProblemSize = problemSize;
-				//System.out.println("Set beforeMetric = "+beforeMetric+", beforeProblemSize = "+problemSize);
-			} else {
-				rewardPointsForFix(cloneDetection, amountOfProblemsFound, problemSize);
+			List<Integer> before = new ArrayList<>(problemSizes);
+			problemSizes.clear();
+			Set<File> files = scanProblem.getLocations().stream().map(e -> e.getFile().toFile()).collect(Collectors.toSet());
+			observer = (ProblemType problem, Sequence sequence, int problemSize) -> {
+				if(problem == scanProblem.getType()) {
+					problemSizes.add(problemSize);
+				}
+			};
+			SequenceObservable.get().subscribe(observer);
+			new CloneParser().parse(files);
+			if(goal == SCANAFTER) {
+				rewardPointsForFix(before, problemSizes);
 			}
 		}
 		worker = null;
 	}
 
-	private void rewardPointsForFix(CloneDetection cloneDetection, int amountOfProblemsFound, int problemSize) {
-		System.out.println("Is beforeMetric = "+beforeMetric+", beforeProblemSize = "+problemSize+" and amountOfProblemsFound = "+amountOfProblemsFound+", problemSize = "+problemSize);
-		if(amountOfProblemsFound<beforeMetric) {
-			CloneDetection.get().getArena().increaseScore(5);
+	private void rewardPointsForFix(List<Integer> before, List<Integer> after) {
+		CloneDetection cloneDetection = CloneDetection.get();
+		if(after.size()<before.size()) {
+			cloneDetection.getArena().increaseScore(5);
 			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(TextFormatting.DARK_GREEN, "Well done on improving the metric! You are awarded 5 emeralds!")));
 			cloneDetection.eventHandler.nextTickActions.add(() -> cloneDetection.getArena().killSpider(scanProblem));
-			for(ProblemScore s : cloneDetection.getProblemScores()) {
-				if(s.getName().equals(cloneDetection.turnIntoScoreName(scanProblem.getMetric()))) {
-					s.increaseScore(-1);
-					break;
-				}
-			}
-		} else if(problemSize<beforeProblemSize){
+			cloneDetection.getScoreForType(scanProblem.getType()).increaseScore(after.size()-before.size());
+		} else if(after.stream().mapToInt(e -> e).sum()<before.stream().mapToInt(e -> e).sum()){
 			CloneDetection.get().getArena().increaseScore(1);
 			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(TextFormatting.YELLOW, "Your fix did not fix the entire issue, but did improve upon it. You are awarded 1 emerald!")));
 		} else {
 			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(TextFormatting.RED, "The problem was not fixed! No emeralds for you!")));
 		}
 	}
-	
+
 	public static void startWorker(ICommandSender s, String projectName) {
 		if(worker != null) {
 			s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.RED, "We are busy... Please wait!"));

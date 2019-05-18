@@ -25,4 +25,8 @@ public class SequenceObservable {
 	public void subscribe(SequenceObserver observer) {
 		observers.add(observer);
 	}
+
+	public void unsubscribe(SequenceObserver observer) {
+		observers.remove(observer);
+	}
 }

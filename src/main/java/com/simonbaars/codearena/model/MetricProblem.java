@@ -80,4 +80,20 @@ public class MetricProblem implements Comparable<MetricProblem>, RequiresNodeCon
 	public String getMetric() {
 		return type.getName();
 	}
+
+	public ProblemType getType() {
+		return type;
+	}
+
+	public void setType(ProblemType type) {
+		this.type = type;
+	}
+
+	public Sequence getSeq() {
+		return seq;
+	}
+
+	public void setSeq(Sequence seq) {
+		this.seq = seq;
+	}
 }
