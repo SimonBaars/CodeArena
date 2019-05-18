@@ -66,7 +66,7 @@ public class CloneDetection
 		return problemScores;
 	}
 
-	@SidedProxy(clientSide = "nl.sandersimon.clonedetection.minecraft.proxy.ClientProxy", serverSide = "nl.sandersimon.clonedetection.minecraft.proxy.ServerProxy")
+	@SidedProxy(clientSide = "com.simonbaars.codearena.minecraft.proxy.ClientProxy", serverSide = "com.simonbaars.codearena.minecraft.proxy.ServerProxy")
 	public static CommonProxy proxy;
 	
 	private CodeArena arena;
