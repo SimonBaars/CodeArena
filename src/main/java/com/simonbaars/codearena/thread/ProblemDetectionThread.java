@@ -5,6 +5,13 @@ import static com.simonbaars.codearena.thread.ProblemDetectionGoal.SCANAFTER;
 import static com.simonbaars.codearena.thread.ProblemDetectionGoal.SCANBEFORE;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -15,14 +22,12 @@ import com.simonbaars.clonerefactor.SequenceObservable;
 import com.simonbaars.clonerefactor.SequenceObserver;
 import com.simonbaars.clonerefactor.ast.CloneParser;
 import com.simonbaars.clonerefactor.metrics.ProblemType;
-import com.simonbaars.clonerefactor.model.DetectionResults;
 import com.simonbaars.clonerefactor.model.Sequence;
 import com.simonbaars.codearena.CloneDetection;
 import com.simonbaars.codearena.challenge.CodeArena;
 import com.simonbaars.codearena.common.Commons;
 import com.simonbaars.codearena.common.SavePaths;
 import com.simonbaars.codearena.model.MetricProblem;
-import com.simonbaars.codearena.model.ProblemScore;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.text.TextFormatting;
@@ -51,11 +56,11 @@ public class ProblemDetectionThread extends Thread {
 		if(goal == DETECTION) {
 			observer = (ProblemType problem, Sequence sequence, int problemSize) -> {
 				MetricProblem loc = new MetricProblem(problem, problemSize, sequence);
-				CloneDetection.get().eventHandler.nextTickActions.add(() -> CloneDetection.get().getArena().create(problem, loc));
-				CloneDetection.get().getScoreForType(problem).incrementScore();
+				cloneDetection.eventHandler.nextTickActions.add(() -> cloneDetection.getArena().create(problem, loc));
+				cloneDetection.getScoreForType(problem).incrementScore();
 			};
 			SequenceObservable.get().subscribe(observer);
-			Main.cloneDetection(SavePaths.getProjectFolder()+project);
+			new CloneParser().parse(scanProjectForJavaFiles(SavePaths.getProjectFolder()+project));
 			SequenceObservable.get().unsubscribe(observer);
 			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "All metrics have been successfully parsed!")));
 		} else {
@@ -74,6 +79,24 @@ public class ProblemDetectionThread extends Thread {
 			}
 		}
 		worker = null;
+	}
+	
+	private static List<File> scanProjectForJavaFiles(String path) {
+		List<File> javaFiles = new ArrayList<>();
+		try {
+			Files.walkFileTree(Paths.get(path), new SimpleFileVisitor<Path>() {
+			    @Override
+			    public FileVisitResult visitFile(Path filePath, BasicFileAttributes attrs) throws IOException {
+			    	File file = filePath.toFile();
+					if(file.getName().endsWith(".java"))
+			    		javaFiles.add(file);
+			    	return FileVisitResult.CONTINUE;
+			    }
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return javaFiles;
 	}
 
 	private void rewardPointsForFix(List<Integer> before, List<Integer> after) {
