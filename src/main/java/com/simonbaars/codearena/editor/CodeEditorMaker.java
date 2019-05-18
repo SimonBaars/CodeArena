@@ -5,8 +5,8 @@ import java.io.File;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import com.simonbaars.clonerefactor.model.location.Location;
 import com.simonbaars.codearena.CloneDetection;
-import com.simonbaars.codearena.model.Location;
 import com.simonbaars.codearena.model.MetricProblem;
 import com.simonbaars.codearena.thread.ProblemDetectionThread;
 
@@ -27,7 +27,7 @@ public class CodeEditorMaker {
 					e.printStackTrace();
 				}
 				Location location = cloneClass.get(j);
-				CodeEditor e = new CodeEditor(cloneClass, location.file(), location.getBeginLine(), location.getEndLine(), j, cloneClass.size());
+				CodeEditor e = new CodeEditor(cloneClass, location.getFile().toFile(), location.getRange().begin.line, location.getRange().end.line, j, cloneClass.size());
 				CloneDetection.get().openEditors.add(e);
 				e.setVisible(true);
 			});

@@ -7,10 +7,12 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.Range;
+import com.simonbaars.clonerefactor.SequenceObservable;
 import com.simonbaars.clonerefactor.ast.interfaces.DeterminesNodeTokens;
 import com.simonbaars.clonerefactor.datatype.ListMap;
 import com.simonbaars.clonerefactor.detection.interfaces.ChecksThresholds;
 import com.simonbaars.clonerefactor.detection.interfaces.RemovesDuplicates;
+import com.simonbaars.clonerefactor.metrics.ProblemType;
 import com.simonbaars.clonerefactor.model.Sequence;
 import com.simonbaars.clonerefactor.model.location.Location;
 
@@ -68,7 +70,6 @@ public class CloneDetection implements ChecksThresholds, RemovesDuplicates, Dete
 			List<Location> l = entry.getValue();
 			addAllNonEndedLocations(oldClones, amountOfNodes, l);
 			createClone(l);
-			continue;
 		}
 	}
 
@@ -76,8 +77,10 @@ public class CloneDetection implements ChecksThresholds, RemovesDuplicates, Dete
 		Sequence newSequence = new Sequence(l);
 		if(l.size()>1 && checkThresholds(newSequence)) {
 			newSequence.isValid();
-			if(removeDuplicatesOf(clones, newSequence))
+			if(removeDuplicatesOf(clones, newSequence)) {
 				clones.add(newSequence);
+				SequenceObservable.get().sendUpdate(ProblemType.DUPLICATION, newSequence);
+			}
 		}
 	}
 

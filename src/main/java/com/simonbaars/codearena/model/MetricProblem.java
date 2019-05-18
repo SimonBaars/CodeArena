@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.github.javaparser.ast.PackageDeclaration;
+import com.simonbaars.clonerefactor.metrics.ProblemType;
 import com.simonbaars.clonerefactor.metrics.enums.RequiresNodeContext;
 import com.simonbaars.clonerefactor.model.Sequence;
 import com.simonbaars.clonerefactor.model.location.Location;

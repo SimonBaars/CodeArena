@@ -35,7 +35,6 @@ public class Type3Location extends Location implements Type3Calculation{
 		Range r = before.getRange().withEnd(after.getRange().end);
 		populateContents(getContents(), before.getContents());
 		populateContents(getContents(), after.getContents());
-		getContents().setRange(r);
 		setRange(r);
 		calculateDiffContents(before, after);
 	}

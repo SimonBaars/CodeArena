@@ -32,7 +32,7 @@ public class Location implements Comparable<Location>, HasRange {
 	public Location(Path file, Range range) {
 		this.file = file;
 		this.range = range;
-		this.contents = new LocationContents();
+		this.contents = new LocationContents(range);
 	}
 
 	public Location(Location clonedLocation, Range r) {
@@ -128,8 +128,10 @@ public class Location implements Comparable<Location>, HasRange {
 		return nextLocation;
 	}
 	
-	public void setRange(Range r) {
+	public Location setRange(Range r) {
+		getContents().setRange(r);
 		this.range = r;
+		return this;
 	}
 
 	public void setNextLocation(Location nextLocation) {

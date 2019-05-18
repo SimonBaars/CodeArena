@@ -6,9 +6,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import com.github.javaparser.JavaToken;
 import com.github.javaparser.Range;
+import com.github.javaparser.TokenRange;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.simonbaars.clonerefactor.ast.interfaces.HasCompareList;
@@ -65,6 +67,13 @@ public class LocationContents implements FiltersTokens, HasRange, HasCompareList
 		this.nodes = new ArrayList<>(contents.getNodes());
 		this.tokens = new ArrayList<>(contents.getTokens());
 		this.compare = new ArrayList<>(contents.getCompare());
+	}
+
+	public LocationContents(Range r) {
+		this.range = r;
+		this.nodes = new ArrayList<>();
+		this.tokens = new ArrayList<>();
+		this.compare = new ArrayList<>();
 	}
 
 	public List<Node> getNodes() {
@@ -169,5 +178,9 @@ public class LocationContents implements FiltersTokens, HasRange, HasCompareList
 		if(tokens.stream().anyMatch(e -> !range.contains(e.getRange().get()))) {
 			throw new IllegalStateException("Invalid Contents "+this);
 		}
+	}
+
+	public void setTokens(TokenRange tokenRange) {
+		StreamSupport.stream(tokenRange.spliterator(), false).filter(this::isComparableToken).forEach(e -> getTokens().add(e));
 	}
 }

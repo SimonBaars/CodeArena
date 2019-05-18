@@ -26,6 +26,11 @@ public class Settings {
 	private double type2VariabilityPercentage;
 	private double type3GapSize;
 	
+	// Other metrics
+	private int cyclomaticComplexity;
+	private int unitSize;
+	private int unitInterfaceParameters;
+	
 	private Settings() {
 		try (InputStream input = Settings.class.getClassLoader().getResourceAsStream(CLONEREFACTOR_PROPERTIES)) {
             Properties prop = new Properties();
@@ -39,8 +44,11 @@ public class Settings {
             useLiteratureTypeDefinitions = prop.getProperty("use_literature_type_definitions").equals("true");
             type2VariabilityPercentage = percentageStringToDouble(prop.getProperty("max_type2_variability_percentage"));
             type3GapSize = percentageStringToDouble(prop.getProperty("max_type3_gap_size"));
+            cyclomaticComplexity = Integer.parseInt(prop.getProperty("max_cc"));
+            unitSize = Integer.parseInt(prop.getProperty("max_methodlines"));
+            unitInterfaceParameters = Integer.parseInt(prop.getProperty("max_interface_parameters"));
         } catch (IOException ex) {
-            throw new RuntimeException("Could not get settings! Please check for the existence of the properties file!");
+            throw new IllegalStateException("Could not get settings! Please check for the existence of the properties file!");
         }
 	}
 	
@@ -114,6 +122,34 @@ public class Settings {
 
 	public void setType3GapSize(double type3GapSize) {
 		this.type3GapSize = type3GapSize;
+	}
+
+	public int getCyclomaticComplexity() {
+		return cyclomaticComplexity;
+	}
+
+	public void setCyclomaticComplexity(int cyclomaticComplexity) {
+		this.cyclomaticComplexity = cyclomaticComplexity;
+	}
+
+	public int getUnitSize() {
+		return unitSize;
+	}
+
+	public void setUnitSize(int unitSize) {
+		this.unitSize = unitSize;
+	}
+
+	public int getUnitInterfaceParameters() {
+		return unitInterfaceParameters;
+	}
+
+	public void setUnitInterfaceParameters(int unitInterfaceParameters) {
+		this.unitInterfaceParameters = unitInterfaceParameters;
+	}
+
+	public static Settings getSettings() {
+		return settings;
 	}
 
 	@Override

@@ -57,7 +57,6 @@ import com.simonbaars.codearena.CloneDetection;
 import com.simonbaars.codearena.common.TestingCommons;
 import com.simonbaars.codearena.model.MetricProblem;
 import com.simonbaars.codearena.thread.ProblemDetectionThread;
-import com.sun.jna.platform.win32.WinUser.WNDENUMPROC;
 
 import net.minecraft.client.Minecraft;
 
@@ -72,7 +71,6 @@ public class CodeEditor extends JFrame implements SearchListener {
 	private StatusBar statusBar;
 	private final File file;
 	private final MetricProblem cloneClass;
-	private final boolean isMetricProblem;
 	public static boolean locked = true;
 	private final String metric;
 	
@@ -86,7 +84,6 @@ public class CodeEditor extends JFrame implements SearchListener {
 	
 	public CodeEditor(MetricProblem cloneClass, File file, int markedRangeStart, int markedRangeEnd, int pos, int amount, boolean isMetricProblem, String metric) {
 		this.metric = metric;
-		this.isMetricProblem = isMetricProblem;
 		this.file = file;
 		this.cloneClass = cloneClass;
 		String content;
@@ -183,11 +180,8 @@ public class CodeEditor extends JFrame implements SearchListener {
 						} catch (IOException e1) {
 							e1.printStackTrace();
 						}
-						if(isMetricProblem) {
-							ProblemDetectionThread.startWorker(Minecraft.getMinecraft().player, cloneClass, false);
-						} else {
-							CloneDetection.get().executeRascal("import "+metric+";", '>');
-						}
+						ProblemDetectionThread.startWorker(Minecraft.getMinecraft().player, cloneClass, false);
+
 						CloneDetection.get().closeAllEditorsExcept(this);
 						CloneDetection.get().openEditors.clear();
 					}

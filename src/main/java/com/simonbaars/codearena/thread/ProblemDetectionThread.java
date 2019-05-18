@@ -15,6 +15,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.simonbaars.clonerefactor.Main;
 import com.simonbaars.codearena.CloneDetection;
 import com.simonbaars.codearena.challenge.CodeArena;
 import com.simonbaars.codearena.common.Commons;
@@ -51,7 +52,7 @@ public class ProblemDetectionThread extends Thread {
 	public void run() {
 		CloneDetection cloneDetection = CloneDetection.get();
 		if(goal == DETECTION) {
-			
+			Main.cloneDetection(project);
 			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "All metrics have been successfully parsed!")));
 		} else {
 			cloneDetection.executeTill("calcMetric("+scanProblem.getMetric()+", "+scanProblem.rascalLocList()+", true);", '\n');

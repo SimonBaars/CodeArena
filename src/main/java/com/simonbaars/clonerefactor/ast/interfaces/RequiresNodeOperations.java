@@ -26,7 +26,7 @@ public interface RequiresNodeOperations {
 		if(parent instanceof MethodDeclaration) {
 			Optional<BlockStmt> body = ((MethodDeclaration)parent).getBody();
 			return body.isPresent() ? body.get().getChildNodes() : new ArrayList<>(0);
-		}else if(parent instanceof NodeWithBody)
+		} else if(parent instanceof NodeWithBody)
 			return ((NodeWithBody)parent).getBody().getChildNodes();
 		else if (parent instanceof NodeWithBlockStmt)
 			return ((NodeWithBlockStmt)parent).getBody().getChildNodes();

@@ -1,4 +1,4 @@
-package com.simonbaars.codearena.model;
+package com.simonbaars.clonerefactor.metrics;
 
 public enum ProblemType {
 	DUPLICATION,
