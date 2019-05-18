@@ -57,12 +57,12 @@ public class NodeParser implements Parser, DeterminesNodeTokens {
 		int methodSize = new UnitSizeCalculator().calculate(n);
 		int parameters = new NumberOfParametersCalculator().calculate(n);
 		if(cc >= Settings.get().getCyclomaticComplexity()) 
-			SequenceObservable.get().sendUpdate(ProblemType.UNITCOMPLEXITY, sequence);
+			SequenceObservable.get().sendUpdate(ProblemType.UNITCOMPLEXITY, sequence, cc);
 		if(methodSize >= Settings.get().getUnitSize())
-			SequenceObservable.get().sendUpdate(ProblemType.UNITVOLUME, sequence);
+			SequenceObservable.get().sendUpdate(ProblemType.UNITVOLUME, sequence, methodSize);
 		if(parameters >= Settings.get().getUnitInterfaceParameters()) {
 			sequence = new Sequence(Collections.singletonList(new Location(l).setRange(getRange(n))));
-			SequenceObservable.get().sendUpdate(ProblemType.UNITINTERFACESIZE, sequence);
+			SequenceObservable.get().sendUpdate(ProblemType.UNITINTERFACESIZE, sequence, parameters);
 		}
 	}
 

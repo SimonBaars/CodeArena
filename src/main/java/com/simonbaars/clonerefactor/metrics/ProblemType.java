@@ -1,8 +1,18 @@
 package com.simonbaars.clonerefactor.metrics;
 
 public enum ProblemType {
-	DUPLICATION,
-	UNITINTERFACESIZE,
-	UNITCOMPLEXITY,
-	UNITVOLUME
+	DUPLICATION("Duplication"),
+	UNITINTERFACESIZE("Unit Interface Size"),
+	UNITCOMPLEXITY("Unit Complexity"),
+	UNITVOLUME("Unit Volume");
+	
+	private final String name;
+	
+	private ProblemType(String name) {
+		this.name= name;
+	}
+
+	public String getName() {
+		return name;
+	}
 }

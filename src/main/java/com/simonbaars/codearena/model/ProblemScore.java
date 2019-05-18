@@ -1,21 +1,23 @@
 package com.simonbaars.codearena.model;
 
+import com.simonbaars.clonerefactor.metrics.ProblemType;
+
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 
 public class ProblemScore {
 	private Score score;
 	private int scorePoints = 0;
-	private final String name;
+	private final ProblemType type;
 	
-	public ProblemScore (String name) {
+	public ProblemScore (ProblemType type) {
 		this.score = null;
-		this.name = name;
+		this.type = type;
 	}
 	
-	public ProblemScore (String name, Score score) {
+	public ProblemScore (ProblemType type, Score score) {
 		this.score = score;
-		this.name = name;
+		this.type = type;
 	}
 	
 	public synchronized void increaseScore(int s) {
@@ -47,7 +49,7 @@ public class ProblemScore {
 	}
 
 	public String getName() {
-		return name;
+		return type.getName();
 	}
 
 	@Override
@@ -57,5 +59,9 @@ public class ProblemScore {
 
 	public void setScore(ScoreObjective scoreBoard) {
 		setScore(scoreBoard.getScoreboard().getOrCreateScore(getName(), scoreBoard));
+	}
+
+	public ProblemType getType() {
+		return type;
 	}
 }

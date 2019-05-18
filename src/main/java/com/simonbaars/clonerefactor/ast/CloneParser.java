@@ -1,14 +1,18 @@
 package com.simonbaars.clonerefactor.ast;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.utils.SourceRoot;
+import com.github.javaparser.utils.SourceRoot.Callback.Result;
 import com.simonbaars.clonerefactor.ast.interfaces.Parser;
 import com.simonbaars.clonerefactor.detection.CloneDetection;
 import com.simonbaars.clonerefactor.detection.interfaces.RemovesDuplicates;
@@ -30,6 +34,17 @@ public class CloneParser implements Parser, RemovesDuplicates {
 	public DetectionResults parse(SourceRoot sourceRoot, ParserConfiguration config) {
 		astParser = new NodeParser(metricCollector);
 		Location lastLoc = calculateLineReg(sourceRoot, config);
+		if(lastLoc!=null) {
+			List<Sequence> findChains = new CloneDetection().findChains(lastLoc);
+			doTypeSpecificTransformations(findChains);
+			return new DetectionResults(metricCollector.reportClones(findChains), findChains);
+		}
+		return new DetectionResults();
+	}
+	
+	public DetectionResults parse(List<File> files) {
+		astParser = new NodeParser(metricCollector);
+		Location lastLoc = calculateLineReg(files);
 		if(lastLoc!=null) {
 			List<Sequence> findChains = new CloneDetection().findChains(lastLoc);
 			doTypeSpecificTransformations(findChains);
@@ -60,20 +75,34 @@ public class CloneParser implements Parser, RemovesDuplicates {
 	private final Location calculateLineReg(SourceRoot sourceRoot, ParserConfiguration config) {
 		final LocationHolder lh = new LocationHolder();
 		try {
-			sourceRoot.parse("", config, new SourceRoot.Callback() {
-				@Override
-				public Result process(Path localPath, Path absolutePath, ParseResult<CompilationUnit> result) {
-					if(result.getResult().isPresent()) {
-						CompilationUnit cu = result.getResult().get();
-						lh.setLocation(astParser.extractLinesFromAST(lh.getLocation(), cu, cu));
-					}
-					return Result.DONT_SAVE;
+			sourceRoot.parse("", config, (Path localPath, Path absolutePath, ParseResult<CompilationUnit> result) -> {
+				if(result.getResult().isPresent()) {
+					CompilationUnit cu = result.getResult().get();
+					lh.setLocation(astParser.extractLinesFromAST(lh.getLocation(), cu, cu));
 				}
+				return Result.DONT_SAVE;
 			});
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
 		return lh.getLocation();
+	}
+	
+	private final Location calculateLineReg(List<File> files) {
+		Location l = null;
+		for(File file : files) {
+			ParseResult<CompilationUnit> compilationUnitNode;
+			try {
+				compilationUnitNode = new JavaParser().parse(file);
+				if(compilationUnitNode.getResult().isPresent()) {
+					CompilationUnit cu = compilationUnitNode.getResult().get();
+					l = setIfNotNull(l, astParser.extractLinesFromAST(l, cu, cu));
+				}
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		return l;
 	}
 }

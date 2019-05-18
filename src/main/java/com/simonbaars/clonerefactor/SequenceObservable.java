@@ -14,11 +14,15 @@ public class SequenceObservable {
 		return singleton;
 	}
 	
-	public void sendUpdate(ProblemType problem, Sequence sequence) {
-		observers.forEach(e -> e.update(problem, sequence));
+	public void sendUpdate(ProblemType problem, Sequence sequence, int problemSize) {
+		observers.forEach(e -> e.update(problem, sequence, problemSize));
 	}
 	
 	public boolean isActive() {
 		return !observers.isEmpty();
+	}
+
+	public void subscribe(SequenceObserver observer) {
+		observers.add(observer);
 	}
 }

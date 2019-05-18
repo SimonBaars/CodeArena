@@ -8,24 +8,19 @@ import com.simonbaars.clonerefactor.metrics.ProblemType;
 import com.simonbaars.clonerefactor.metrics.enums.RequiresNodeContext;
 import com.simonbaars.clonerefactor.model.Sequence;
 import com.simonbaars.clonerefactor.model.location.Location;
-import com.simonbaars.codearena.CloneDetection;
 import com.simonbaars.codearena.editor.CodeEditorMaker;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
 
 public class MetricProblem implements Comparable<MetricProblem>, RequiresNodeContext {
 
-	private String metric;
 	private int lines;
 	private ProblemType type;
 	private Sequence seq;
 	
-	public MetricProblem(String metric, int lines) {
+	public MetricProblem(ProblemType problem, int lines, Sequence seq) {
 		super();
-		this.metric = metric;
+		this.type = problem;
 		this.lines = lines;
+		this.seq = seq;
 	}
 
 	public MetricProblem() {
@@ -83,10 +78,6 @@ public class MetricProblem implements Comparable<MetricProblem>, RequiresNodeCon
 	}
 
 	public String getMetric() {
-		return metric;
-	}
-
-	public void setMetric(String metric) {
-		this.metric = metric;
+		return type.getName();
 	}
 }

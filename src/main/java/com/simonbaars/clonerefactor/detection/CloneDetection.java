@@ -79,7 +79,7 @@ public class CloneDetection implements ChecksThresholds, RemovesDuplicates, Dete
 			newSequence.isValid();
 			if(removeDuplicatesOf(clones, newSequence)) {
 				clones.add(newSequence);
-				SequenceObservable.get().sendUpdate(ProblemType.DUPLICATION, newSequence);
+				SequenceObservable.get().sendUpdate(ProblemType.DUPLICATION, newSequence, newSequence.getTotalNodeVolume());
 			}
 		}
 	}

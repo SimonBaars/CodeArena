@@ -16,6 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.simonbaars.clonerefactor.Main;
+import com.simonbaars.clonerefactor.SequenceObservable;
+import com.simonbaars.clonerefactor.SequenceObserver;
+import com.simonbaars.clonerefactor.metrics.ProblemType;
+import com.simonbaars.clonerefactor.model.Sequence;
 import com.simonbaars.codearena.CloneDetection;
 import com.simonbaars.codearena.challenge.CodeArena;
 import com.simonbaars.codearena.common.Commons;
@@ -35,28 +39,33 @@ public class ProblemDetectionThread extends Thread {
 	private final String project;
 	private ProblemDetectionGoal goal;
 	private MetricProblem scanProblem;
-	private static int beforeMetric = 0;
 	private static int beforeProblemSize = 0;
 	private static final MetricProblem foundLocs = new MetricProblem();
+	private SequenceObserver observer;
 	
 	public ProblemDetectionThread(ProblemDetectionGoal g, ICommandSender s, MetricProblem p, String project) {
 		this.project = project;
 		this.mySender = s;
 		this.goal = g;
 		this.scanProblem = p;
-		if(g == SCANBEFORE)
-			beforeProblemSize = 0;
 		start();
 	}
 
 	public void run() {
 		CloneDetection cloneDetection = CloneDetection.get();
 		if(goal == DETECTION) {
-			Main.cloneDetection(project);
-			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "All metrics have been successfully parsed!")));
+			observer = new SequenceObserver() {
+				
+				@Override
+				public void update(ProblemType problem, Sequence sequence, int problemSize) {
+					MetricProblem loc = new MetricProblem(problem, problemSize, sequence);
+					CloneDetection.get().eventHandler.nextTickActions.add(() -> CloneDetection.get().getArena().create(problem, loc));
+					CloneDetection.get().getScoreForType(problem).incrementScore();
+				}
+			};
+			SequenceObservable.get().subscribe(observer);
+			Main.cloneDetection(SavePaths.getProjectFolder()+project);
 		} else {
-			cloneDetection.executeTill("calcMetric("+scanProblem.getMetric()+", "+scanProblem.rascalLocList()+", true);", '\n');
-			//System.out.println("Metric "+scanProblem.getMetric()+" retrieved "+scanProblem.getLocations().stream().map(e -> e.getFile()).collect(Collectors.joining())+ " ==> "+foundLocs.getLocations().stream().map(e -> e.getFile()).collect(Collectors.joining()));
 			Pair<Integer, Integer> amount = populateResult(scanProblem.getMetric(), null);
 			int amountOfProblemsFound = amount.first();
 			int problemSize = amount.second();
@@ -89,6 +98,25 @@ public class ProblemDetectionThread extends Thread {
 		} else {
 			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(TextFormatting.RED, "The problem was not fixed! No emeralds for you!")));
 		}
+	}
+	
+	public static void startWorker(ICommandSender s, String projectName) {
+		if(worker != null) {
+			s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.RED, "We are busy... Please wait!"));
+			return;
+		}
+		//System.out.println("Spawn at pos "+s.getPosition());
+		//new StructureCreatorClient("arena", s.getPosition().getX()+95, s.getPosition().getY()-2, s.getPosition().getZ()+80	, false, 0);
+		CloneDetection.get().packages.clear();
+		CloneDetection.get().setArena(new CodeArena(s.getPosition().getX(), s.getPosition().getY(), s.getPosition().getZ()));
+		//CloneDetection.get().initScoreboards();
+		if(worker!=null && worker.isAlive()) {
+			s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.RED, "Sorry, but I'm still busy detecting code problems! Please wait a little longer."));
+			return;
+		}
+		s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "Searching for code problems, please wait..."));
+		
+		worker = new ProblemDetectionThread(DETECTION, s, null, projectName);
 	}
 	
 	public static void startWorker(ICommandSender s, MetricProblem p, boolean before) {

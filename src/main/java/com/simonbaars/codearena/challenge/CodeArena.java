@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.simonbaars.clonerefactor.metrics.ProblemType;
 import com.simonbaars.codearena.CloneDetection;
 import com.simonbaars.codearena.minecraft.structureloader.SchematicStructure;
 import com.simonbaars.codearena.model.MetricProblem;
@@ -105,8 +106,8 @@ public class CodeArena extends Challenges {
 		//}
 	}
 	
-	public void create(String metric, MetricProblem cloneClass) {
-		CodeEntity monster = getMonster(serverWorld, cloneClass, metric);
+	public void create(ProblemType problem, MetricProblem cloneClass) {
+		CodeEntity monster = getMonster(serverWorld, cloneClass, problem);
 		//System.out.println("Created "+monster.getRepresents());
 		monster.setLocationAndAngles(cornerx+((int)(Math.random()*(fieldx-2)))+1, y+3, cornerz+((int)(Math.random()*(fieldz-2)))+1, 0, 0);
 		monster.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(monster)), (IEntityLivingData)null);
@@ -115,34 +116,12 @@ public class CodeArena extends Challenges {
 		activeMonsters.add(monster);
 	}
 
-	private CodeEntity getMonster(World world, MetricProblem cloneClass, String metric) {
-		switch(metric) {
-			case "clones": return new EntityCodeSpider(world, cloneClass);
-			case "unitcomplexity": return new EntityCodeZombie(world, cloneClass);
-			case "unitinterfaces": return new EntityCodeSkeleton(world, cloneClass);
-			default: return new EntityCodeCreeper(world, cloneClass);
-		}
-	}
-	
-	private EntityLiving getMonster(int monsterId, World world) {
-		switch(monsterId){
-			case 0: return new EntityZombie(world);
-			case 1: return new EntitySpider(world);
-			case 2: return new EntityBlaze(world);
-			case 3: return new EntityCaveSpider(world);
-			case 4: return new EntityCreeper(world);
-			case 5: return new EntityEnderman(world);
-			case 6: return new EntityEndermite(world);
-			case 7: return new EntityGiantZombie(world);
-			case 8: return new EntityGuardian(world);
-			case 9: return new EntityMagmaCube(world);
-			case 10: return new EntityPigZombie(world);
-			case 11: return new EntitySilverfish(world);
-			case 12: return new EntitySkeleton(world); /*skelly.setCurrentItemOrArmor(0, new ItemStack(Items.bow)); return skelly*/
-			case 13: return new EntitySlime(world);
-			case 14: return new EntityWitch(world);
-			case 15: return new EntityWolf(world);
-			case 16: EntityRabbit rabbit = new EntityRabbit(world); rabbit.setRabbitType(99); return rabbit;
+	private CodeEntity getMonster(World world, MetricProblem cloneClass, ProblemType type) {
+		switch(type) {
+			case DUPLICATION: return new EntityCodeSpider(world, cloneClass);
+			case UNITCOMPLEXITY: return new EntityCodeZombie(world, cloneClass);
+			case UNITINTERFACESIZE: return new EntityCodeSkeleton(world, cloneClass);
+			case UNITVOLUME: return new EntityCodeCreeper(world, cloneClass);
 		}
 		return null;
 	}

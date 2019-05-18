@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.simonbaars.clonerefactor.metrics.ProblemType;
 import com.simonbaars.codearena.challenge.CodeArena;
 import com.simonbaars.codearena.common.Commons;
 import com.simonbaars.codearena.common.ResourceCommons;
@@ -108,6 +109,7 @@ public class CloneDetection
     public void postInit(FMLPostInitializationEvent e) {
         if(proxy != null)	
         	proxy.postInit(e);
+        Arrays.stream(ProblemType.values()).forEach(s -> problemScores.add(new ProblemScore(s)));
     }
 
 	public CodeArena getArena() {
@@ -120,10 +122,10 @@ public class CloneDetection
 	
 	public void initScoreboards() {
 		ScoreObjective scoreBoard = arena.getScoreBoard();
-		for(ProblemScore s : problemScores)
+		for(ProblemScore s : problemScores) {
 			s.setScorePoints(0);
-		for(ProblemScore score : problemScores)
-			score.setScore(scoreBoard);
+			s.setScore(scoreBoard);
+		}
 	}
 
 	public int perc(int total, int partOfTotal) {
@@ -171,15 +173,7 @@ public class CloneDetection
 		}
 	}
 
-	public ProblemScore createMetricScore(String metricName) {
-		ScoreObjective scoreBoard = arena.getScoreBoard();
-		final String scoreName = turnIntoScoreName(metricName);
-		final ProblemScore e = new ProblemScore(scoreName, scoreBoard.getScoreboard().getOrCreateScore(scoreName, scoreBoard));
-		problemScores.add(e);
-		return e;
-	}
-
-	public String turnIntoScoreName(String metricName) {
-		return metricName.substring(0, 1).toUpperCase() + metricName.substring(1) +" problem";
+	public ProblemScore getScoreForType(ProblemType problem) {
+		return problemScores.stream().filter(e -> e.getType().equals(problem)).findAny().get();
 	}
 }
