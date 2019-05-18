@@ -163,4 +163,8 @@ public class Location implements Comparable<Location>, HasRange {
 			return range.begin.compareTo(o.range.begin);
 		return stringCompare;
 	}
+
+	public String getName() {
+		return file.getName(file.getNameCount()-1).toString();
+	}
 }

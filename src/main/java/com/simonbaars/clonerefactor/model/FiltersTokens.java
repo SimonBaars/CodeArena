@@ -16,7 +16,7 @@ public interface FiltersTokens {
 	public static final Category[] LITERATURE_TYPE2_NO_TOKEN = {Category.COMMENT, Category.EOL, Category.WHITESPACE_NO_EOL, Category.IDENTIFIER, Category.LITERAL};
 	
 	public default Stream<JavaToken> getEffectiveTokens(TokenRange tokens) {
-		return StreamSupport.stream(tokens.spliterator(), false).filter(e -> isComparableToken(e));
+		return StreamSupport.stream(tokens.spliterator(), false).filter(this::isComparableToken);
 	}
 	
 	public default List<JavaToken> getEffectiveTokenList(TokenRange tokens){
