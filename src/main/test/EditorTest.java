@@ -5,7 +5,7 @@ import javax.swing.UIManager;
 
 import org.junit.Test;
 
-import nl.sandersimon.clonedetection.editor.CodeEditor;
+import com.simonbaars.codearena.editor.CodeEditor;
 
 public class EditorTest {
 

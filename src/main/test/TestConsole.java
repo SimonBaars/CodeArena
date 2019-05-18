@@ -1,10 +1,11 @@
 import org.junit.Test;
 
+import com.simonbaars.codearena.CloneCommand;
+import com.simonbaars.codearena.CloneDetection;
+import com.simonbaars.codearena.thread.ProblemDetectionThread;
+
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandSenderWrapper;
-import nl.sandersimon.clonedetection.CloneCommand;
-import nl.sandersimon.clonedetection.CloneDetection;
-import nl.sandersimon.clonedetection.thread.ProblemDetectionThread;
 
 public class TestConsole {
 

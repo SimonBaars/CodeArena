@@ -56,9 +56,11 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 	compile 'com.fifesoft:rsyntaxtextarea:2.6.1'
 	compile 'com.fifesoft:rstaui:2.6.1'
-compile 'com.google.code.gson:gson:2.8.2'
-compile 'com.google.guava:guava:23.0'
-compile 'com.github.javaparser:javaparser-core-serialization:3.9.0'
+	compile ('com.github.javaparser:javaparser-symbol-solver-core:3.14.1'){
+        exclude group: 'com.google.guava', module: 'guava'
+    }       
+	compile 'com.google.code.gson:gson:2.8.2'
+	compile 'com.google.guava:guava:23.0'
 }
 
 processResources {

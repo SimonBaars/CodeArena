@@ -1,7 +1,7 @@
 import org.junit.Test;
 
-import nl.sandersimon.clonedetection.model.MetricProblem;
-import nl.sandersimon.clonedetection.model.Location;
+import com.simonbaars.codearena.model.Location;
+import com.simonbaars.codearena.model.MetricProblem;
 
 public class PackageTest {
 	@Test
