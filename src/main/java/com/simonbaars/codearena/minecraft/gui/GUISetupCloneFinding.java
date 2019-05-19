@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import com.simonbaars.clonerefactor.settings.Settings;
 import com.simonbaars.codearena.CloneDetection;
 import com.simonbaars.codearena.common.SavePaths;
 import com.simonbaars.codearena.editor.CodeEditorMaker;
@@ -154,7 +155,7 @@ public class GUISetupCloneFinding {
 		int x, y, z;
 		EntityPlayer entity;
 		GuiTextField InputProject;
-		//GuiTextField MinLines;
+		GuiTextField MinLines;
 
 		public GuiWindow(World world, int x, int y, int z, EntityPlayer entity) {
 			super(new GuiContainerMod(world, x, y, z, entity));
@@ -191,7 +192,7 @@ public class GUISetupCloneFinding {
 			try {
 				super.mouseClicked(mouseX, mouseY, mouseButton);
 				InputProject.mouseClicked(mouseX - guiLeft, mouseY - guiTop, mouseButton);
-				//MinLines.mouseClicked(mouseX - guiLeft, mouseY - guiTop, mouseButton);
+				MinLines.mouseClicked(mouseX - guiLeft, mouseY - guiTop, mouseButton);
 			} catch (Exception ignored) {
 			}
 		}
@@ -200,7 +201,7 @@ public class GUISetupCloneFinding {
 		public void updateScreen() {
 			super.updateScreen();
 			InputProject.updateCursorCounter();
-			//MinLines.updateCursorCounter();
+			MinLines.updateCursorCounter();
 		}
 
 		@Override
@@ -208,7 +209,7 @@ public class GUISetupCloneFinding {
 			try {
 				super.keyTyped(typedChar, keyCode);
 				InputProject.textboxKeyTyped(typedChar, keyCode);
-				//MinLines.textboxKeyTyped(typedChar, keyCode);
+				MinLines.textboxKeyTyped(typedChar, keyCode);
 			} catch (Exception ignored) {
 			}
 		}
@@ -221,8 +222,8 @@ public class GUISetupCloneFinding {
 			this.fontRenderer.drawString("Please choose the clone type:", 21, 15, 0);
 			InputProject.drawTextBox();
 			this.fontRenderer.drawString("Please enter the Java project:", 22, 67, 0);
-			//MinLines.drawTextBox();
-			//this.fontRenderer.drawString("Please enter the min. amount of lines:", 22, 119, -1);
+			MinLines.drawTextBox();
+			this.fontRenderer.drawString("Please enter the min. amount of lines:", 22, 119, -1);
 		}
 
 		@Override
@@ -240,17 +241,17 @@ public class GUISetupCloneFinding {
 			this.buttonList.clear();
 			this.buttonList.add(new GuiButton(0, this.guiLeft + 127, this.guiTop + 170, 118, 20, "Start Battle!"));
 			this.buttonList.add(new GuiButton(1, this.guiLeft + 147, this.guiTop + 82, 72, 20, "Choose"));
-			this.buttonList.add(new GuiButton(2, this.guiLeft + 70, this.guiTop + 125, 120, 20, "Edit Metric Code"));
+			//this.buttonList.add(new GuiButton(2, this.guiLeft + 70, this.guiTop + 125, 120, 20, "Edit Metric Code"));
 			InputProject = new GuiTextField(0, this.fontRenderer, 21, 83, 120, 20);
 			guiinventory.put("text:InputProject", InputProject);
 			InputProject.setMaxStringLength(32767);
 			InputProject.setFocused(true);
 			InputProject.setText("");
-			/*MinLines = new GuiTextField(1, this.fontRenderer, 23, 136, 120, 20);
+			MinLines = new GuiTextField(1, this.fontRenderer, 23, 136, 120, 20);
 			guiinventory.put("text:MinLines", MinLines);
 			MinLines.setMaxStringLength(32767);
 			MinLines.setFocused(false);
-			MinLines.setText("6");*/
+			MinLines.setText("5");
 		}
 
 		@Override
@@ -259,6 +260,12 @@ public class GUISetupCloneFinding {
 			World world = server.getWorld(entity.dimension);
 			if (button.id == 0) {
 				Minecraft.getMinecraft().player.closeScreen();
+				String minLines = MinLines.getText();
+				if(!minLines.isEmpty()) {
+					try {
+						Settings.get().setMinAmountOfNodes(Integer.parseInt(minLines));
+					} catch(Exception e) {}
+				}
 				CloneDetection.get().eventHandler.nextTickActions.add(() -> ProblemDetectionThread.startWorker( Minecraft.getMinecraft().player, InputProject.getText()));
 			}
 			if (button.id == 1) {
@@ -271,16 +278,6 @@ public class GUISetupCloneFinding {
 				        choices[0]); // Initial choice
 				if(input!=null)
 					InputProject.setText(input);
-			}
-			if(button.id == 2) {
-				String[] metrics = SavePaths.getMetrics();
-				String input = (String) JOptionPane.showInputDialog(null, "Here you can edit the actual source code of the metrics that will be turned into monsters.\n"
-						+ "These metrics are stored in the following location (where you can also edit and add them in your favorite IDE): "+SavePaths.getRascalFolder()+"\n"
-								+ "Please choose a metric down below:",
-				        "Choose metric", JOptionPane.QUESTION_MESSAGE, null, // Use default icon
-				        metrics, // Array of choices
-				        metrics[0]); // Initial choice
-				CodeEditorMaker.create(new File(SavePaths.getRascalFolder()+input), input);
 			}
 		}
 
