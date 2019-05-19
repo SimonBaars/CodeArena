@@ -266,6 +266,9 @@ public class GUISetupCloneFinding {
 						Settings.get().setMinAmountOfNodes(Integer.parseInt(minLines));
 					} catch(Exception e) {}
 				}
+				try {
+					Settings.get().setCloneType(com.simonbaars.clonerefactor.settings.CloneType.valueOf("TYPE"+cloneType));
+				} catch (Exception e) {}
 				CloneDetection.get().eventHandler.nextTickActions.add(() -> ProblemDetectionThread.startWorker( Minecraft.getMinecraft().player, InputProject.getText()));
 			}
 			if (button.id == 1) {
