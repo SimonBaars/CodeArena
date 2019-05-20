@@ -12,14 +12,14 @@ import com.simonbaars.codearena.editor.CodeEditorMaker;
 
 public class MetricProblem implements Comparable<MetricProblem>, RequiresNodeContext {
 
-	private int lines;
+	private int problemSize;
 	private ProblemType type;
 	private Sequence seq;
 	
-	public MetricProblem(ProblemType problem, int lines, Sequence seq) {
+	public MetricProblem(ProblemType problem, int problemSize, Sequence seq) {
 		super();
 		this.type = problem;
-		this.lines = lines;
+		this.problemSize = problemSize;
 		this.seq = seq;
 	}
 
@@ -27,12 +27,12 @@ public class MetricProblem implements Comparable<MetricProblem>, RequiresNodeCon
 		super();
 	}
 
-	public int getLines() {
-		return lines;
+	public int getProblemSize() {
+		return problemSize;
 	}
 
-	public void setLines(int lines) {
-		this.lines = lines;
+	public void setProblemSize(int lines) {
+		this.problemSize = lines;
 	}
 
 	public List<Location> getLocations() {
@@ -57,7 +57,7 @@ public class MetricProblem implements Comparable<MetricProblem>, RequiresNodeCon
 	}
 	
 	public int volume() {
-		return lines * size();
+		return problemSize;
 	}
 
 	public void open() {
