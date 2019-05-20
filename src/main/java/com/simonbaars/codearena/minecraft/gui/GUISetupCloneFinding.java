@@ -11,7 +11,6 @@ import org.lwjgl.opengl.GL11;
 import com.simonbaars.clonerefactor.settings.Settings;
 import com.simonbaars.codearena.CloneDetection;
 import com.simonbaars.codearena.common.SavePaths;
-import com.simonbaars.codearena.editor.CodeEditorMaker;
 import com.simonbaars.codearena.thread.ProblemDetectionThread;
 
 import net.minecraft.client.Minecraft;
@@ -269,6 +268,19 @@ public class GUISetupCloneFinding {
 				try {
 					Settings.get().setCloneType(com.simonbaars.clonerefactor.settings.CloneType.valueOf("TYPE"+cloneType));
 				} catch (Exception e) {}
+				String project = InputProject.getText();
+				if(project.startsWith("http://") || project.startsWith("https://") || project.startsWith("github.com")) {
+					if(project.startsWith("github.com")) {
+						project = "https://"+project;
+					}
+					if(!project.endsWith(".git")) {
+						project+=".git";
+					}
+					Git git = Git.cloneRepository()
+							  .setURI(project)
+							  .setDirectory(SavePaths.getProjectFolder())
+							  .call();
+				}
 				CloneDetection.get().eventHandler.nextTickActions.add(() -> ProblemDetectionThread.startWorker( Minecraft.getMinecraft().player, InputProject.getText()));
 			}
 			if (button.id == 1) {
