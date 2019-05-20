@@ -11,21 +11,27 @@ import com.simonbaars.clonerefactor.model.Sequence;
 import com.simonbaars.clonerefactor.model.location.Location;
 import com.simonbaars.codearena.editor.CodeEditorMaker;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+
 public class MetricProblem implements Comparable<MetricProblem>, RequiresNodeContext {
 
 	private int problemSize;
 	private ProblemType type;
 	private Sequence seq;
+	private final String packageName;
 	
 	public MetricProblem(ProblemType problem, int problemSize, Sequence seq) {
 		super();
 		this.type = problem;
 		this.problemSize = problemSize;
 		this.seq = seq;
-	}
-
-	public MetricProblem() {
-		super();
+		this.packageName = calcPackage();
+		ItemStack itemStackIn = new ItemStack(Items.DIAMOND, 1);
+		itemStackIn.setStackDisplayName(this.packageName);
+		Minecraft.getMinecraft().player.inventory.addItemStackToInventory(itemStackIn);
+		Minecraft.getMinecraft().player.inventoryContainer.detectAndSendChanges();
 	}
 
 	public int getProblemSize() {
@@ -71,7 +77,7 @@ public class MetricProblem implements Comparable<MetricProblem>, RequiresNodeCon
 		return get(0).getName();
 	}
 
-	public String getPackage() {
+	public String calcPackage() {
 		if(size() == 0)
 			return "error";
 		CompilationUnit compilationUnit = getCompilationUnit(get(0).getContents().getNodes().get(0));
@@ -101,5 +107,9 @@ public class MetricProblem implements Comparable<MetricProblem>, RequiresNodeCon
 
 	public void setSeq(Sequence seq) {
 		this.seq = seq;
+	}
+
+	public String getPackage() {
+		return packageName;
 	}
 }

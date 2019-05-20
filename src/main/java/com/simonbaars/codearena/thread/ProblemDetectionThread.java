@@ -44,7 +44,6 @@ public class ProblemDetectionThread extends Thread {
 	private ProblemDetectionGoal goal;
 	private MetricProblem scanProblem;
 	private static final List<Integer> problemSizes = new ArrayList<>();
-	private static final MetricProblem foundLocs = new MetricProblem();
 	private SequenceObserver observer;
 	
 	public ProblemDetectionThread(ProblemDetectionGoal g, ICommandSender s, MetricProblem p, String project) {
