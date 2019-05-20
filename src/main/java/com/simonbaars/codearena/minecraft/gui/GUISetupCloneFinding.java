@@ -264,7 +264,6 @@ public class GUISetupCloneFinding {
 			MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
 			World world = server.getWorld(entity.dimension);
 			if (button.id == 0) {
-				Minecraft.getMinecraft().player.closeScreen();
 				String minLines = MinLines.getText();
 				if(!minLines.isEmpty()) {
 					try {
@@ -274,39 +273,8 @@ public class GUISetupCloneFinding {
 				try {
 					Settings.get().setCloneType(com.simonbaars.clonerefactor.settings.CloneType.valueOf("TYPE"+cloneType));
 				} catch (Exception e) {}
-				String project = InputProject.getText();
-				if(project.startsWith("http://") || project.startsWith("https://") || project.startsWith("github.com")) {
-					if(project.startsWith("github.com")) {
-						project = "https://"+project;
-					}
-					if(!project.endsWith("/")) {
-						project += "/";
-					}
-					if(project.endsWith(".git")) {
-						project = project.substring(0, project.length()-4);
-					}
-					project += "archive/master.zip";
-					String folder = project.substring(project.lastIndexOf('/')+1);
-					if(folder.isEmpty())
-						folder = "git_project";
-					File directory = new File(SavePaths.getProjectFolder()+folder+File.separator);
-					for(int i = 1; !directory.exists(); i++)
-						directory = new File(SavePaths.getProjectFolder()+folder+i+File.separator);
-					try {
-						System.out.println("Cloning Repo");
-						directory.mkdirs();
-						File masterZip = new File(directory+"master.zip");
-						FileUtils.copyURLToFile(new URL(project), masterZip);
-						com.simonbaars.clonerefactor.util.FileUtils.extractFile(masterZip, directory.getAbsolutePath());
-						Files.deleteIfExists(masterZip.toPath());
-						System.out.println("Cloned");
-						project = directory.getName();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-				final String projectFolder = project;
-				CloneDetection.get().eventHandler.nextTickActions.add(() -> ProblemDetectionThread.startWorker( Minecraft.getMinecraft().player, projectFolder));
+				Minecraft.getMinecraft().player.closeScreen();
+				CloneDetection.get().eventHandler.nextTickActions.add(() -> ProblemDetectionThread.startWorker( Minecraft.getMinecraft().player, InputProject.getText()));
 			}
 			if (button.id == 1) {
 				String[] choices = new File(SavePaths.getProjectFolder()).list();

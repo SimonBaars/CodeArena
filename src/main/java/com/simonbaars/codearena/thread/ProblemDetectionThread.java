@@ -6,6 +6,7 @@ import static com.simonbaars.codearena.thread.ProblemDetectionGoal.SCANBEFORE;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,12 +18,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
+
 import com.simonbaars.clonerefactor.Main;
 import com.simonbaars.clonerefactor.SequenceObservable;
 import com.simonbaars.clonerefactor.SequenceObserver;
 import com.simonbaars.clonerefactor.ast.CloneParser;
 import com.simonbaars.clonerefactor.metrics.ProblemType;
 import com.simonbaars.clonerefactor.model.Sequence;
+import com.simonbaars.clonerefactor.settings.Settings;
 import com.simonbaars.codearena.CloneDetection;
 import com.simonbaars.codearena.challenge.CodeArena;
 import com.simonbaars.codearena.common.Commons;
@@ -36,7 +40,7 @@ public class ProblemDetectionThread extends Thread {
 	
 	private static ProblemDetectionThread worker;
 	private final ICommandSender mySender;
-	private final String project;
+	private String project;
 	private ProblemDetectionGoal goal;
 	private MetricProblem scanProblem;
 	private static final List<Integer> problemSizes = new ArrayList<>();
@@ -54,6 +58,8 @@ public class ProblemDetectionThread extends Thread {
 	}
 
 	public void run() {
+		prepareProject();
+		
 		CloneDetection cloneDetection = CloneDetection.get();
 		if(goal == DETECTION) {
 			observer = (ProblemType problem, Sequence sequence, int problemSize) -> {
@@ -81,6 +87,40 @@ public class ProblemDetectionThread extends Thread {
 			}
 		}
 		worker = null;
+	}
+
+	private void prepareProject() {
+		System.out.println("Starting project prepare");
+		if(project.startsWith("http://") || project.startsWith("https://") || project.startsWith("github.com")) {
+			if(project.startsWith("github.com")) {
+				project = "https://"+project;
+			}
+			if(!project.endsWith("/")) {
+				project += "/";
+			}
+			if(project.endsWith(".git")) {
+				project = project.substring(0, project.length()-4);
+			}
+			project += "archive/master.zip";
+			String folder = project.substring(project.lastIndexOf('/')+1);
+			if(folder.isEmpty())
+				folder = "git_project";
+			File directory = new File(SavePaths.getProjectFolder()+folder+File.separator);
+			for(int i = 1; directory.exists(); i++)
+				directory = new File(SavePaths.getProjectFolder()+folder+i+File.separator);
+			try {
+				System.out.println("Cloning Repo");
+				directory.mkdirs();
+				File masterZip = new File(directory+"master.zip");
+				FileUtils.copyURLToFile(new URL(project), masterZip);
+				com.simonbaars.clonerefactor.util.FileUtils.extractFile(masterZip, directory.getAbsolutePath());
+				Files.deleteIfExists(masterZip.toPath());
+				System.out.println("Cloned");
+				project = directory.getName();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	private static List<File> scanProjectForJavaFiles(String path) {
