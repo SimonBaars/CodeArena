@@ -3,6 +3,7 @@ package com.simonbaars.codearena.model;
 import java.util.List;
 import java.util.Optional;
 
+import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.simonbaars.clonerefactor.metrics.ProblemType;
 import com.simonbaars.clonerefactor.metrics.enums.RequiresNodeContext;
@@ -73,7 +74,12 @@ public class MetricProblem implements Comparable<MetricProblem>, RequiresNodeCon
 	public String getPackage() {
 		if(size() == 0)
 			return "error";
-		Optional<PackageDeclaration> p = getCompilationUnit(get(0).getContents().getNodes().get(0)).getPackageDeclaration();
+		CompilationUnit compilationUnit = getCompilationUnit(get(0).getContents().getNodes().get(0));
+		if(compilationUnit != null){
+			Optional<PackageDeclaration> p = compilationUnit.getPackageDeclaration();
+			if(p.isPresent())
+				return p.get().getNameAsString();
+		}
 		return "No package";
 	}
 
