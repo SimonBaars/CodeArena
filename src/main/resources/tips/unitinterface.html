@@ -1,0 +1,40 @@
+<article>
+    <h1 class="title">Long Parameter List</h1>
+            
+    <h3>Signs and Symptoms</h3>
+<p>More than three or four parameters for a method.</p>
+
+<h3>Reasons for the Problem</h3>
+<p>A long list of parameters might happen after several types of algorithms are merged in a single method. A long list may have been created to control which algorithm will be run and how.</p>
+<p>Long parameter lists may also be the byproduct of efforts to make classes more independent of each other. For example, the code for creating specific objects needed in a method was moved from the method to the code for calling the method, but the created objects are passed to the method as parameters. Thus the original class no longer knows about the relationships between objects, and dependency has decreased. But if several of these objects are created, each of them will require its own parameter, which means a longer parameter list.</p>
+<p>It’s hard to understand such lists, which become contradictory and hard to use as they grow longer. Instead of a long list of parameters, a method can use the data of its own object. If the current object doesn’t contain all necessary data, another object (which will get the necessary data) can be passed as a method parameter.</p>
+<h3>Treatment</h3>
+<ul>
+<li>
+<p>Check what values are passed to parameters. If some of the arguments are just results of method calls of another object, use <a href="https://refactoring.guru/replace-parameter-with-method-call">Replace Parameter with Method Call</a>. This object can be placed in the field of its own class or passed as a method parameter.</p>
+</li>
+<li>
+<p>Instead of passing a group of data received from another object as parameters, pass the object itself to the method, by using <a href="https://refactoring.guru/preserve-whole-object">Preserve Whole Object</a>.</p>
+</li>
+<li>
+<p>If there are several unrelated data elements, sometimes you can merge them into a single parameter object via <a href="https://refactoring.guru/introduce-parameter-object">Introduce Parameter Object</a>.</p>
+</li>
+</ul>
+
+<h3>Payoff</h3>
+<ul>
+<li>
+<p>More readable, shorter code.</p>
+</li>
+<li>
+<p>Refactoring may reveal previously unnoticed duplicate code.</p>
+</li>
+</ul>
+<h3>When to Ignore</h3>
+<ul>
+<li>Don’t get rid of parameters if doing so would cause unwanted dependency between classes.</li>
+</ul>
+
+<p>Read more at: <a href="https://refactoring.guru/smells/long-parameter-list">https://refactoring.guru/smells/long-parameter-list</a></p>
+
+</article>

@@ -269,18 +269,16 @@ public class CodeEditor extends JFrame implements SearchListener {
 		});
 		menuItem.setText("Save");
 		
-		/*if(isMetricProblem) {
 			JMenuItem fixedButton = new JMenuItem(new AbstractAction() {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					ProblemDetectionThread.startWorker(Minecraft.getMinecraft().player, cloneClass, false);
-					CloneDetection.get().closeAllEditors();
+					new TipViewer().createHTMLView(cloneClass);
 				}
 			});
-			fixedButton.setText("I fixed it! :-)");
+			fixedButton.setText("Help Me");
 			menu.add(fixedButton);
-		}*/
+			
 		
 		menu.add(menuItem);
 		mb.add(menu);

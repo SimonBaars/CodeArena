@@ -11,6 +11,10 @@ import javax.swing.JTextArea;
 import com.simonbaars.codearena.common.TestingCommons;
 
 public class SaveFile extends AbstractAction {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4940861690942712089L;
 	private File file;
 	private JTextArea textArea;
 	private JLabel statusBar;
