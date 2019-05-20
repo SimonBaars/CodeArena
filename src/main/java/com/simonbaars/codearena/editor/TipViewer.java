@@ -70,9 +70,6 @@ public class TipViewer implements GetTip {
         // now add it all to a frame
         JFrame j = new JFrame("How to solve this problem");
         j.getContentPane().add(scrollPane, BorderLayout.CENTER);
-
-        // make it easy to close the application
-        j.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         // display the frame
         j.setSize(new Dimension(1280,720));
