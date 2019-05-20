@@ -14,19 +14,19 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 
-import com.simonbaars.clonerefactor.Main;
 import com.simonbaars.clonerefactor.SequenceObservable;
 import com.simonbaars.clonerefactor.SequenceObserver;
 import com.simonbaars.clonerefactor.ast.CloneParser;
 import com.simonbaars.clonerefactor.metrics.ProblemType;
 import com.simonbaars.clonerefactor.model.Sequence;
-import com.simonbaars.clonerefactor.settings.Settings;
 import com.simonbaars.codearena.CloneDetection;
 import com.simonbaars.codearena.challenge.CodeArena;
 import com.simonbaars.codearena.common.Commons;
@@ -102,21 +102,17 @@ public class ProblemDetectionThread extends Thread {
 				project = project.substring(0, project.length()-4);
 			}
 			project += "archive/master.zip";
-			String folder = project.substring(project.lastIndexOf('/')+1);
-			if(folder.isEmpty())
-				folder = "git_project";
-			File directory = new File(SavePaths.getProjectFolder()+folder+File.separator);
-			for(int i = 1; directory.exists(); i++)
-				directory = new File(SavePaths.getProjectFolder()+folder+i+File.separator);
 			try {
 				System.out.println("Cloning Repo");
-				directory.mkdirs();
-				File masterZip = new File(directory+"master.zip");
+				File[] projectFolderFiles = new File(SavePaths.getProjectFolder()).listFiles();
+				File masterZip = new File(SavePaths.getProjectFolder()+"master.zip");
 				FileUtils.copyURLToFile(new URL(project), masterZip);
-				com.simonbaars.clonerefactor.util.FileUtils.extractFile(masterZip, directory.getAbsolutePath());
+				com.simonbaars.clonerefactor.util.FileUtils.extractFile(masterZip, SavePaths.getProjectFolder());
 				Files.deleteIfExists(masterZip.toPath());
 				System.out.println("Cloned");
-				project = directory.getName();
+				Optional<File> file = Arrays.stream(new File(SavePaths.getProjectFolder()).listFiles()).filter(e -> Arrays.stream(projectFolderFiles).noneMatch(f -> f.equals(e))).findAny();
+				if(file.isPresent())
+					this.project = file.get().getName();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
