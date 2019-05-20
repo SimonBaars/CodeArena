@@ -222,7 +222,7 @@ public class GUISetupCloneFinding {
 			InputProject.drawTextBox();
 			this.fontRenderer.drawString("Please enter the Java project:", 22, 67, 0);
 			MinLines.drawTextBox();
-			this.fontRenderer.drawString("Please enter the min. amount of lines:", 22, 119, -1);
+			this.fontRenderer.drawString("Please enter the min. amount of lines:", 22, 119, 0);
 		}
 
 		@Override
