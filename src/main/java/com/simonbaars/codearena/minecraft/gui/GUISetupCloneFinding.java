@@ -294,6 +294,7 @@ public class GUISetupCloneFinding {
 						directory = new File(SavePaths.getProjectFolder()+folder+i+File.separator);
 					try {
 						System.out.println("Cloning Repo");
+						directory.mkdirs();
 						File masterZip = new File(directory+"master.zip");
 						FileUtils.copyURLToFile(new URL(project), masterZip);
 						com.simonbaars.clonerefactor.util.FileUtils.extractFile(masterZip, directory.getAbsolutePath());
