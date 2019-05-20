@@ -11,7 +11,9 @@ import com.simonbaars.codearena.CloneDetection;
 import com.simonbaars.codearena.minecraft.structureloader.SchematicStructure;
 import com.simonbaars.codearena.model.MetricProblem;
 import com.simonbaars.codearena.monster.CodeEntity;
+import com.simonbaars.codearena.monster.UsesCustomScaleFactors;
 import com.simonbaars.codearena.monster.codecreeper.EntityCodeCreeper;
+import com.simonbaars.codearena.monster.codeskeleton.AbstractCodeSkeleton;
 import com.simonbaars.codearena.monster.codeskeleton.EntityCodeSkeleton;
 import com.simonbaars.codearena.monster.codespider.EntityCodeSpider;
 import com.simonbaars.codearena.monster.codezombie.EntityCodeZombie;
@@ -27,7 +29,7 @@ import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.GameType;
 import net.minecraft.world.World;
 
-public class CodeArena extends Challenges {
+public class CodeArena extends Challenges implements UsesCustomScaleFactors {
 	int sizex;
 	int sizey;
 	int sizez;
@@ -156,20 +158,17 @@ public class CodeArena extends Challenges {
 				clientServerEntityMapping.put(e, codeEntity);
 				e.setRepresents(codeEntity.getRepresents());
 				
+				float f = getScaleFactor(codeEntity);
 				if(codeEntity instanceof EntityCodeSpider) { //Code clones
-					float f = checkF(codeEntity.getRepresents().volume()*0.02F);
 					e.setSizePublic(1.5F*f, 0.8F*f);
 					codeEntity.setSizePublic(1.5F*f, 0.8F*f);
-				} else if(codeEntity instanceof EntityCodeSkeleton) { // Unit interface size
-					float f = checkF(codeEntity.getRepresents().volume()*0.1F);
+				} else if(codeEntity instanceof AbstractCodeSkeleton) { // Unit interface size
 					e.setSizePublic(0.6F*f, 1.99F*f);
 					codeEntity.setSizePublic(0.6F*f, 1.99F*f);
 				} else if(codeEntity instanceof EntityCodeCreeper) { // Unit volume
-					float f = checkF(codeEntity.getRepresents().volume()*0.04F);
 					e.setSizePublic(0.6F*f, 1.7F*f);
 					codeEntity.setSizePublic(0.6F*f, 1.7F*f);
 				} else if(codeEntity instanceof EntityCodeZombie) { // Unit complexity
-					float f = checkF(codeEntity.getRepresents().volume()*0.04F);
 					e.setSizePublic(0.6F*f, 1.95F*f);
 					codeEntity.setSizePublic(0.6F*f, 1.95F*f);
 				}
@@ -179,12 +178,6 @@ public class CodeArena extends Challenges {
 		
 		//System.out.println("Not found "+e.getPosition()+ " for "+activeMonsters.stream().map(i -> i.getPosition().toString()).collect(Collectors.joining(",")));
 		return null;
-	}
-	
-	private float checkF(float f) {
-		if(f>5.0F)
-			f = 5.0F;
-		return 0.1F+f;
 	}
 
 	public int getCurrentReward() {

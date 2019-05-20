@@ -3,6 +3,7 @@ package com.simonbaars.codearena.monster.codezombie;
 import com.simonbaars.codearena.CloneDetection;
 import com.simonbaars.codearena.challenge.CodeArena;
 import com.simonbaars.codearena.model.MetricProblem;
+import com.simonbaars.codearena.monster.UsesCustomScaleFactors;
 
 import net.minecraft.client.model.ModelZombie;
 import net.minecraft.client.renderer.GlStateManager;
@@ -15,7 +16,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderCodeZombie extends RenderBiped<EntityCodeZombie>
+public class RenderCodeZombie extends RenderBiped<EntityCodeZombie> implements UsesCustomScaleFactors
 {
     private static final ResourceLocation ZOMBIE_TEXTURES = new ResourceLocation("textures/entity/zombie/zombie.png");
 
@@ -55,7 +56,7 @@ public class RenderCodeZombie extends RenderBiped<EntityCodeZombie>
 			if(c == null)
 				return;
     	}
-		float scale = (c.volume()-13)*0.03F;
+		float scale = getScaleFactor(entitylivingbaseIn, c);
 		
         GlStateManager.scale(scale, scale, scale);
         //System.out.println("Scaled by "+entitylivingbaseIn.getScaleFactor()+" because of "+entitylivingbaseIn.getCustomNameTag()+", "+entitylivingbaseIn.getHealth()+", "+entitylivingbaseIn.getAbsorptionAmount());

@@ -3,6 +3,7 @@ package com.simonbaars.codearena.monster.codecreeper;
 import com.simonbaars.codearena.CloneDetection;
 import com.simonbaars.codearena.challenge.CodeArena;
 import com.simonbaars.codearena.model.MetricProblem;
+import com.simonbaars.codearena.monster.UsesCustomScaleFactors;
 
 import net.minecraft.client.model.ModelCreeper;
 import net.minecraft.client.renderer.GlStateManager;
@@ -16,7 +17,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderCodeCreeper extends RenderLiving<EntityCodeCreeper>
+public class RenderCodeCreeper extends RenderLiving<EntityCodeCreeper> implements UsesCustomScaleFactors
 {
     private static final ResourceLocation CREEPER_TEXTURES = new ResourceLocation("textures/entity/creeper/creeper.png");
 
@@ -82,7 +83,7 @@ public class RenderCodeCreeper extends RenderLiving<EntityCodeCreeper>
 			if(c == null)
 				return;
     	}
-		float scale = ((c.volume()/1.5F)-18)*0.03F;
+		float scale = getScaleFactor(entitylivingbaseIn, c);
 		
         GlStateManager.scale(scale, scale, scale);
         //System.out.println("Scaled by "+entitylivingbaseIn.getScaleFactor()+" because of "+entitylivingbaseIn.getCustomNameTag()+", "+entitylivingbaseIn.getHealth()+", "+entitylivingbaseIn.getAbsorptionAmount());

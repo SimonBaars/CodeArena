@@ -3,6 +3,7 @@ package com.simonbaars.codearena.monster.codeskeleton;
 import com.simonbaars.codearena.CloneDetection;
 import com.simonbaars.codearena.challenge.CodeArena;
 import com.simonbaars.codearena.model.MetricProblem;
+import com.simonbaars.codearena.monster.UsesCustomScaleFactors;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderBiped;
@@ -14,7 +15,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderCodeSkeleton extends RenderBiped<AbstractCodeSkeleton>
+public class RenderCodeSkeleton extends RenderBiped<AbstractCodeSkeleton> implements UsesCustomScaleFactors
 {
     private static final ResourceLocation SKELETON_TEXTURES = new ResourceLocation("textures/entity/skeleton/skeleton.png");
 
@@ -59,7 +60,7 @@ public class RenderCodeSkeleton extends RenderBiped<AbstractCodeSkeleton>
 			if(c == null)
 				return;
     	}
-		float scale = ((c.volume()*2)+4)*0.03F;
+		float scale = getScaleFactor(entitylivingbaseIn, c);
 		
         GlStateManager.scale(scale, scale, scale);
         //System.out.println("Scaled by "+entitylivingbaseIn.getScaleFactor()+" because of "+entitylivingbaseIn.getCustomNameTag()+", "+entitylivingbaseIn.getHealth()+", "+entitylivingbaseIn.getAbsorptionAmount());

@@ -3,6 +3,7 @@ package com.simonbaars.codearena.monster.codespider;
 import com.simonbaars.codearena.CloneDetection;
 import com.simonbaars.codearena.challenge.CodeArena;
 import com.simonbaars.codearena.model.MetricProblem;
+import com.simonbaars.codearena.monster.UsesCustomScaleFactors;
 
 import net.minecraft.client.model.ModelSpider;
 import net.minecraft.client.renderer.GlStateManager;
@@ -13,7 +14,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderCodeSpider<T extends EntityCodeSpider> extends RenderLiving<T>
+public class RenderCodeSpider<T extends EntityCodeSpider> extends RenderLiving<T> implements UsesCustomScaleFactors
 {
     private static final ResourceLocation SPIDER_TEXTURES = new ResourceLocation("textures/entity/spider/spider.png");
 
@@ -42,7 +43,7 @@ public class RenderCodeSpider<T extends EntityCodeSpider> extends RenderLiving<T
 			if(c == null)
 				return;
     	}
-		float scale = c.volume()*0.03F;
+		float scale = getScaleFactor(entitylivingbaseIn, c);
 		
         GlStateManager.scale(scale, scale, scale);
         //System.out.println("Scaled by "+entitylivingbaseIn.getScaleFactor()+" because of "+entitylivingbaseIn.getCustomNameTag()+", "+entitylivingbaseIn.getHealth()+", "+entitylivingbaseIn.getAbsorptionAmount());
