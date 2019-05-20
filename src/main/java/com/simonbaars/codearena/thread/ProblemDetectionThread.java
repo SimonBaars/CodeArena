@@ -57,10 +57,9 @@ public class ProblemDetectionThread extends Thread {
 	}
 
 	public void run() {
-		prepareProject();
-		
 		CloneDetection cloneDetection = CloneDetection.get();
 		if(goal == DETECTION) {
+			prepareProject();
 			observer = (ProblemType problem, Sequence sequence, int problemSize) -> {
 				MetricProblem loc = new MetricProblem(problem, problemSize, sequence);
 				cloneDetection.eventHandler.nextTickActions.add(() -> cloneDetection.getArena().create(problem, loc));
