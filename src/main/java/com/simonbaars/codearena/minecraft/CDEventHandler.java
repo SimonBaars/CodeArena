@@ -92,7 +92,8 @@ public class CDEventHandler {
 	
 	
 	@SubscribeEvent
-	public void update(TickEvent.ServerTickEvent event){
+	public void update(TickEvent.WorldTickEvent event){
+		if(event.side.isServer()) {
 		while(nextTickActions.size()!=0) {
 			nextTickActions.get(0).run();
 			nextTickActions.remove(0);
@@ -123,7 +124,7 @@ public class CDEventHandler {
 			if(isLoaded){
 				lightUpdate.runServer();
 	}
-		
+		}
 		//lastUpdateTime=System.currentTimeMillis();
 			//System.out.println("IMSM took "+(System.currentTimeMillis()-tickTime));
 	}

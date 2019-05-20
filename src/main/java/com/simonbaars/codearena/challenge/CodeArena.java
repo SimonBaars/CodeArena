@@ -60,7 +60,10 @@ public class CodeArena extends Challenges implements UsesCustomScaleFactors {
 			//for(int i = 0; i<3; i++)
 			//	items.add(Items.ARROW);
 		}
-		resetPlayer();
+		ItemStack itemStackIn = new ItemStack(Items.DIAMOND, 1);
+		itemStackIn.setStackDisplayName(SHOW_ALL);
+		Minecraft.getMinecraft().player.inventory.addItemStackToInventory(itemStackIn);
+		Minecraft.getMinecraft().player.inventoryContainer.detectAndSendChanges();
 	}
 	
 	void initArena(){

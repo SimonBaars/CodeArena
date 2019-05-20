@@ -64,12 +64,6 @@ public abstract class Challenges {
 		for(int i = 0; i<Minecraft.getMinecraft().player.inventory.armorInventory.size(); i++){
 			oldInventory.add(Minecraft.getMinecraft().player.inventory.armorInventory.get(i));
 		}
-		for(int i = 0; i<Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().loadedEntityList.size(); i++){
-			if(Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().loadedEntityList.get(i) instanceof EntityCreature || Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().loadedEntityList.get(i) instanceof EntityItem){
-				((Entity)Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().loadedEntityList.get(i)).setDead();
-				//Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().removeEntity((Entity) Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().loadedEntityList.get(i));
-			}
-		}
 		Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().getGameRules().setOrCreateGameRule("doMobSpawning", "false");
 		//Minecraft.getMinecraft().player.sendChatMessage("The challenge has started!");
 		numberOfPlayers = Minecraft.getMinecraft().getIntegratedServer().getCurrentPlayerCount();
@@ -93,54 +87,6 @@ public abstract class Challenges {
 		scoreBoard.getScoreboard().setObjectiveInDisplaySlot(Scoreboard.getObjectiveDisplaySlotNumber("sidebar"), scoreBoard);
 		displayScore = scoreBoard.getScoreboard().getOrCreateScore("Score", scoreBoard);
 		displayScore.setScorePoints(0);
-		//System.out.println(Challenge.highscores[getChallengeNum()-1]+", "+(getChallengeNum()-1));
-	}
-
-	public boolean resetPlayer(){
-		if(y>150){
-			Minecraft.getMinecraft().player.sendChatMessage("You cannot create this challenge this high...");
-			removeThisChallenge();
-			return true;
-		}
-		if(Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().getDifficulty()!=defDifficulty){
-			Minecraft.getMinecraft().player.sendChatMessage("Please do not change the difficulty...");
-			removeThisChallenge();
-			return true;
-		}
-		for(EntityPlayerMP player : players){
-			player.getFoodStats().setFoodLevel(20);
-			if(alivePlayers.contains(player) && Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().getWorldInfo().getGameType()!=defGameType){
-				Minecraft.getMinecraft().player.sendChatMessage("You cannot do this challenge in any other gamemode than survival...");
-				removeThisChallenge();
-				return true;
-			} 
-			if(deadPlayers.contains(player) && Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().getWorldInfo().getGameType()!=GameType.SPECTATOR){
-				Minecraft.getMinecraft().player.sendChatMessage("You cannot be in any other gamemode than SPECTATOR now...");
-				removeThisChallenge();
-				return true;
-			}
-			if(player.getActivePotionEffects().size()>0){
-				Minecraft.getMinecraft().player.sendChatMessage("You cannot do this challenge when potion effects are active");
-				removeThisChallenge();
-				return true;
-			}
-			if(alivePlayers.contains(player) && !withinGameRoom((int)player.posX, (int)player.posY, (int)player.posZ)){
-				System.out.println("You left the gameroom? (this might be by error)");
-				endChallenge(player);
-				return true;
-			}
-		}
-		Minecraft.getMinecraft().player.inventory.clear();
-		ItemStack itemStackIn = new ItemStack(Items.DIAMOND, 1);
-		itemStackIn.setStackDisplayName(SHOW_ALL);
-		Minecraft.getMinecraft().player.inventory.addItemStackToInventory(itemStackIn);
-		Minecraft.getMinecraft().player.inventoryContainer.detectAndSendChanges();
-		if(numberOfPlayers!=Minecraft.getMinecraft().getIntegratedServer().getCurrentPlayerCount()){
-			Minecraft.getMinecraft().player.sendChatMessage("No players may leave or join the game while a challenge is running.");
-			removeThisChallenge();
-			return true;
-		}
-		return false;
 	}
 
 	boolean withinGameRoom(int x, int y, int z){
