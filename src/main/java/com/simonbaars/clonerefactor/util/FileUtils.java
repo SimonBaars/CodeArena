@@ -2,13 +2,20 @@ package com.simonbaars.clonerefactor.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -105,5 +112,33 @@ public class FileUtils {
 
 	public static String getFileAsString(String string) throws IOException {
 		return getFileAsString(new File(string));
+	}
+	
+	public static void extractFile(File p, String outputLoc) throws IOException {
+		Map<String, String> env = new HashMap<>(); 
+		URI uri = URI.create("jar:" + p.toPath().toUri());
+		try (FileSystem fs = FileSystems.newFileSystem(uri, env))
+		{
+			Path jarRoot = fs.getPath(File.separator);
+			copyPathToResourcesFolder(jarRoot, outputLoc);
+		}
+	}
+
+	private static void copyPathToResourcesFolder(Path jarRoot, String outputLoc) throws IOException {
+		Files.walkFileTree(jarRoot, new SimpleFileVisitor<Path>() {
+		    @Override
+		    public FileVisitResult visitFile(Path filePath, BasicFileAttributes attrs) throws IOException {
+		        // Make sure that we conserve the hierachy of files and folders inside the zip
+		        Path relativePathInZip = jarRoot.relativize(filePath);
+		        String replace = relativePathInZip.toString().replace(".."+File.separator, "");
+				File file = new File(outputLoc+replace);
+				Path targetPath = file.toPath();
+		        Files.createDirectories(targetPath.getParent());
+		        // And extract the file
+		        Files.copy(filePath, targetPath);
+
+		        return FileVisitResult.CONTINUE;
+		    }
+		});
 	}
 }

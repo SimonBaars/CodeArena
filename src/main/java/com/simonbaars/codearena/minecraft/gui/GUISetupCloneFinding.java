@@ -1,10 +1,14 @@
 package com.simonbaars.codearena.minecraft.gui;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
 import java.util.HashMap;
 
 import javax.swing.JOptionPane;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.lwjgl.input.Keyboard;
@@ -275,9 +279,13 @@ public class GUISetupCloneFinding {
 					if(project.startsWith("github.com")) {
 						project = "https://"+project;
 					}
-					if(!project.endsWith(".git")) {
-						project+=".git";
+					if(!project.endsWith("/")) {
+						project += "/";
 					}
+					if(project.endsWith(".git")) {
+						project = project.substring(0, project.length()-4);
+					}
+					project += "archive/master.zip";
 					String folder = project.substring(project.lastIndexOf('/')+1);
 					if(folder.isEmpty())
 						folder = "git_project";
@@ -285,12 +293,14 @@ public class GUISetupCloneFinding {
 					for(int i = 1; !directory.exists(); i++)
 						directory = new File(SavePaths.getProjectFolder()+folder+i+File.separator);
 					try {
-						Git.cloneRepository()
-								  .setURI(project)
-								  .setDirectory(directory)
-								  .call();
+						System.out.println("Cloning Repo");
+						File masterZip = new File(directory+"master.zip");
+						FileUtils.copyURLToFile(new URL(project), masterZip);
+						com.simonbaars.clonerefactor.util.FileUtils.extractFile(masterZip, directory.getAbsolutePath());
+						Files.deleteIfExists(masterZip.toPath());
+						System.out.println("Cloned");
 						project = directory.getName();
-					} catch (GitAPIException e) {
+					} catch (IOException e) {
 						e.printStackTrace();
 					}
 				}
