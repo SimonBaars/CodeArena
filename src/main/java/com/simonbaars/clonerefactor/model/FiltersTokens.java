@@ -8,8 +8,8 @@ import java.util.stream.StreamSupport;
 
 import com.github.javaparser.JavaToken;
 import com.github.javaparser.JavaToken.Category;
-import com.simonbaars.clonerefactor.settings.Settings;
 import com.github.javaparser.TokenRange;
+import com.simonbaars.clonerefactor.settings.Settings;
 
 public interface FiltersTokens {
 	public static final Category[] NO_TOKEN = {Category.COMMENT, Category.EOL, Category.WHITESPACE_NO_EOL};

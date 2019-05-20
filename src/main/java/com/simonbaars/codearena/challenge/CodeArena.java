@@ -1,9 +1,5 @@
 package com.simonbaars.codearena.challenge;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,25 +17,7 @@ import com.simonbaars.codearena.monster.codespider.EntityCodeSpider;
 import com.simonbaars.codearena.monster.codezombie.EntityCodeZombie;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IEntityLivingData;
-import net.minecraft.entity.monster.EntityBlaze;
-import net.minecraft.entity.monster.EntityCaveSpider;
-import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.entity.monster.EntityEnderman;
-import net.minecraft.entity.monster.EntityEndermite;
-import net.minecraft.entity.monster.EntityGiantZombie;
-import net.minecraft.entity.monster.EntityGuardian;
-import net.minecraft.entity.monster.EntityMagmaCube;
-import net.minecraft.entity.monster.EntityPigZombie;
-import net.minecraft.entity.monster.EntitySilverfish;
-import net.minecraft.entity.monster.EntitySkeleton;
-import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.entity.monster.EntitySpider;
-import net.minecraft.entity.monster.EntityWitch;
-import net.minecraft.entity.monster.EntityZombie;
-import net.minecraft.entity.passive.EntityRabbit;
-import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -62,8 +40,6 @@ public class CodeArena extends Challenges {
 	Map<CodeEntity, CodeEntity> clientServerEntityMapping= new HashMap<>();
 	int wave = 0;
 	final int nWaves = 20;
-	private SchematicStructure checkStructure;
-	private boolean doReplaceStuff = false;
 	int ticks = 0;
 	private String currentFilter = SHOW_ALL;
 	
@@ -93,19 +69,7 @@ public class CodeArena extends Challenges {
 		sizez=structure.width;
 		structure.process(serverWorld, worldIn, x+32, y, z+37);
 	}
-	
-	void spawnMobs(int monsterId, int amount){
-		amount=(amount*((wave/nWaves)+1))*numberOfPlayers;
-		//for(int i = 0; i<amount; i++){
-			//CodeEntity monster = getMonster(monsterId, serverWorld);
-			//monster.setLocationAndAngles(cornerx+((int)(Math.random()*(fieldx-2)))+1, y+2, cornerz+((int)(Math.random()*(fieldz-2)))+1, 0, 0);
-			//monster.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(monster)), (IEntityLivingData)null);
-			//monster.spawnEntityInWorld(monster);
-			//serverWorld.spawnEntity(monster);
-			//activeMonsters.add(monster);
-		//}
-	}
-	
+
 	public void create(ProblemType problem, MetricProblem cloneClass) {
 		CodeEntity monster = getMonster(serverWorld, cloneClass, problem);
 		//System.out.println("Created "+monster.getRepresents());
@@ -145,7 +109,6 @@ public class CodeArena extends Challenges {
 		x = x-cornerx-howClose;
 		y = y-this.y-howClose;
 		z = z-cornerz-howClose;
-		//System.out.println(x+", "+y+", "+z+", "+(fieldx+(2*howClose))+", "+(fieldy+(2*howClose)+3)+", "+(fieldz+(2*howClose)+2));
 		return (x>=0 && x<=fieldx+(2*howClose) && y>=0 && y<=fieldy+(2*howClose) && z>=0 && z<=fieldz+(2*howClose)+2);
 	}
 	
@@ -154,59 +117,12 @@ public class CodeArena extends Challenges {
 		if(heldItem.getItem() == Items.DIAMOND && !currentFilter.equals(heldItem.getDisplayName())) {
 			currentFilter = heldItem.getDisplayName();
 			for(CodeEntity e : activeMonsters) {
-				/*if(currentFilter.equals(SHOW_ALL) || e.getRepresents().getPackage().equals(currentFilter)) {
-					e.setInvisible(false);
-				} else {
-					e.setInvisible(true);
-				}*/
 				e.setInvisible(!currentFilter.equals(SHOW_ALL) && !e.getRepresents().getPackage().equals(currentFilter));
 			}
 		}
 		return true;
 	}
 	
-	private void removeWaterWorld() {
-		// TODO Auto-generated method stub
-		doReplaceStuff=true;
-		placeBlocks(Blocks.AIR, cornerx+fieldx-1, y+2,cornerz+fieldz,fieldx,2,fieldz);
-	}
-
-	private void setWaterWorld() {
-		// TODO Auto-generated method stub
-		doReplaceStuff=false;
-		placeBlocks(Blocks.WATER, cornerx+fieldx-1, y+2,cornerz+fieldz,fieldx,2,fieldz);
-		for(int i  = 0; i<fieldx; i+=3){
-			for(int j = 0; j<2; j++){
-				for(int k  = 0; k<fieldz; k+=3){
-					placeBlocks(Blocks.SAND, cornerx+fieldx-1-i, y+2+j,cornerz+fieldz-k,1,2,1);
-				}
-			}
-		}
-	}
-
-	void register(){
-		//System.out.println("Registered "+at);
-		PrintWriter writer;
-		try {
-			(new File("saves/"+Minecraft.getMinecraft().getIntegratedServer().getFolderName())).mkdirs();
-			writer = new PrintWriter("saves/"+Minecraft.getMinecraft().getIntegratedServer().getFolderName()+"/challenge.txt", "UTF-8");
-			writer.println(x+32);
-			writer.println(y-1);
-			writer.println(z+37);
-			writer.println(sizex);
-			writer.println(sizey);
-			writer.println(sizez);
-		writer.close();
-		
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 	public void killSpider(MetricProblem cloneClass) {
 		for(int i = 0; i<activeMonsters.size(); i++) {
 			if(activeMonsters.get(i).getRepresents().equals(cloneClass)) {
@@ -240,20 +156,20 @@ public class CodeArena extends Challenges {
 				clientServerEntityMapping.put(e, codeEntity);
 				e.setRepresents(codeEntity.getRepresents());
 				
-				if(codeEntity instanceof EntityCodeSpider) {
-					float f = checkF(codeEntity.getRepresents().volume()*0.03F);
+				if(codeEntity instanceof EntityCodeSpider) { //Code clones
+					float f = checkF(codeEntity.getRepresents().volume()*0.02F);
 					e.setSizePublic(1.5F*f, 0.8F*f);
 					codeEntity.setSizePublic(1.5F*f, 0.8F*f);
-				} else if(codeEntity instanceof EntityCodeSkeleton) {
-					float f = checkF(((codeEntity.getRepresents().volume()*2)+4)*0.03F);
+				} else if(codeEntity instanceof EntityCodeSkeleton) { // Unit interface size
+					float f = checkF(codeEntity.getRepresents().volume()*0.1F);
 					e.setSizePublic(0.6F*f, 1.99F*f);
 					codeEntity.setSizePublic(0.6F*f, 1.99F*f);
-				} else if(codeEntity instanceof EntityCodeCreeper) {
-					float f = checkF(((codeEntity.getRepresents().volume()/1.5F)-18)*0.03F);
+				} else if(codeEntity instanceof EntityCodeCreeper) { // Unit volume
+					float f = checkF(codeEntity.getRepresents().volume()*0.04F);
 					e.setSizePublic(0.6F*f, 1.7F*f);
 					codeEntity.setSizePublic(0.6F*f, 1.7F*f);
-				} else if(codeEntity instanceof EntityCodeZombie) {
-					float f = checkF((codeEntity.getRepresents().volume()-13)*0.03F);
+				} else if(codeEntity instanceof EntityCodeZombie) { // Unit complexity
+					float f = checkF(codeEntity.getRepresents().volume()*0.04F);
 					e.setSizePublic(0.6F*f, 1.95F*f);
 					codeEntity.setSizePublic(0.6F*f, 1.95F*f);
 				}

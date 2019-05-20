@@ -3,8 +3,6 @@ package com.simonbaars.codearena.common;
 import java.io.File;
 import java.util.Arrays;
 
-import com.simonbaars.codearena.thread.ProblemDetectionThread;
-
 public class SavePaths {
 	
 	private static String dataFolder = ".clone";

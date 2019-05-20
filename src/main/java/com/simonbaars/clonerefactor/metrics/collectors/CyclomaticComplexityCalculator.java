@@ -1,4 +1,7 @@
 package com.simonbaars.clonerefactor.metrics.collectors;
+import static com.github.javaparser.ast.expr.BinaryExpr.Operator.AND;
+import static com.github.javaparser.ast.expr.BinaryExpr.Operator.OR;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,9 +13,6 @@ import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.SwitchEntry;
 import com.github.javaparser.ast.stmt.WhileStmt;
-
-import static com.github.javaparser.ast.expr.BinaryExpr.Operator.AND;
-import static com.github.javaparser.ast.expr.BinaryExpr.Operator.OR;
 
 public class CyclomaticComplexityCalculator implements Calculator<MethodDeclaration> {
     @Override

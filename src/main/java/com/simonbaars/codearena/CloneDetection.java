@@ -1,11 +1,6 @@
 package com.simonbaars.codearena;
 
 import java.awt.event.WindowAdapter;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -14,9 +9,7 @@ import java.util.Map;
 
 import com.simonbaars.clonerefactor.metrics.ProblemType;
 import com.simonbaars.codearena.challenge.CodeArena;
-import com.simonbaars.codearena.common.Commons;
 import com.simonbaars.codearena.common.ResourceCommons;
-import com.simonbaars.codearena.common.SavePaths;
 import com.simonbaars.codearena.editor.CodeEditor;
 import com.simonbaars.codearena.minecraft.CDEventHandler;
 import com.simonbaars.codearena.minecraft.gui.CloneMenuKey;
@@ -25,10 +18,8 @@ import com.simonbaars.codearena.minecraft.gui.GUISetupCloneFinding;
 import com.simonbaars.codearena.minecraft.proxy.CommonProxy;
 import com.simonbaars.codearena.model.MetricProblem;
 import com.simonbaars.codearena.model.ProblemScore;
-import com.simonbaars.codearena.thread.ProblemDetectionThread;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
