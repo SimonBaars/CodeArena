@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 import javax.swing.JOptionPane;
 
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -276,12 +278,24 @@ public class GUISetupCloneFinding {
 					if(!project.endsWith(".git")) {
 						project+=".git";
 					}
-					Git git = Git.cloneRepository()
-							  .setURI(project)
-							  .setDirectory(SavePaths.getProjectFolder())
-							  .call();
+					String folder = project.substring(project.lastIndexOf('/')+1);
+					if(folder.isEmpty())
+						folder = "git_project";
+					File directory = new File(SavePaths.getProjectFolder()+folder+File.separator);
+					for(int i = 1; !directory.exists(); i++)
+						directory = new File(SavePaths.getProjectFolder()+folder+i+File.separator);
+					try {
+						Git.cloneRepository()
+								  .setURI(project)
+								  .setDirectory(directory)
+								  .call();
+						project = directory.getName();
+					} catch (GitAPIException e) {
+						e.printStackTrace();
+					}
 				}
-				CloneDetection.get().eventHandler.nextTickActions.add(() -> ProblemDetectionThread.startWorker( Minecraft.getMinecraft().player, InputProject.getText()));
+				final String projectFolder = project;
+				CloneDetection.get().eventHandler.nextTickActions.add(() -> ProblemDetectionThread.startWorker( Minecraft.getMinecraft().player, projectFolder));
 			}
 			if (button.id == 1) {
 				String[] choices = new File(SavePaths.getProjectFolder()).list();
