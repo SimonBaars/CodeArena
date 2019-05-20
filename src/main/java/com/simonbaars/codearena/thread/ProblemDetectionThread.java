@@ -44,7 +44,9 @@ public class ProblemDetectionThread extends Thread {
 	private SequenceObserver observer;
 	
 	public ProblemDetectionThread(ProblemDetectionGoal g, ICommandSender s, MetricProblem p, String project) {
-		this.project = project;
+		if(new File(SavePaths.getProjectFolder()+project+File.separator+"src"+File.separator+"main"+File.separator+"java").exists())
+			this.project = project+File.separator+"src"+File.separator+"main"+File.separator+"java";
+		else this.project = project;
 		this.mySender = s;
 		this.goal = g;
 		this.scanProblem = p;
