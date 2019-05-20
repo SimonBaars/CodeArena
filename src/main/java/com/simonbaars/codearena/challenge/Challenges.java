@@ -108,20 +108,6 @@ public abstract class Challenges {
 			return true;
 		}
 		for(EntityPlayerMP player : players){
-			player.isAirBorne=false;
-			//if(player.inventory.getCurrentItem()==null || player.inventory.getCurrentItem().getItem()!=Items.BOW){
-				player.inventory.clear();
-				for(Item item : items){
-					player.inventory.addItemStackToInventory(new ItemStack(item, item.getItemStackLimit()));
-				};
-				player.inventoryContainer.detectAndSendChanges();
-			//}
-			/*for(int i = 0; i<Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().loadedEntityList.size(); i++){
-			if(Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().loadedEntityList.get(i) instanceof EntityWitch){
-				((Entity)Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().loadedEntityList.get(i)).setDead();
-				//Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().removeEntity((Entity) Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().loadedEntityList.get(i));
-			}
-		}*/
 			player.getFoodStats().setFoodLevel(20);
 			if(alivePlayers.contains(player) && Minecraft.getMinecraft().getIntegratedServer().getEntityWorld().getWorldInfo().getGameType()!=defGameType){
 				Minecraft.getMinecraft().player.sendChatMessage("You cannot do this challenge in any other gamemode than survival...");
@@ -144,13 +130,6 @@ public abstract class Challenges {
 				return true;
 			}
 		}
-		/*if(Minecraft.getMinecraft().player.inventory.getCurrentItem()==null || Minecraft.getMinecraft().player.inventory.getCurrentItem().getItem()!=Items.BOW){
-			Minecraft.getMinecraft().player.inventory.clear();
-			for(Item item : items){
-				Minecraft.getMinecraft().player.inventory.addItemStackToInventory(new ItemStack(item, item.getItemStackLimit()));
-			}
-			Minecraft.getMinecraft().player.inventoryContainer.detectAndSendChanges();
-		}*/
 		Minecraft.getMinecraft().player.inventory.clear();
 		ItemStack itemStackIn = new ItemStack(Items.DIAMOND, 1);
 		itemStackIn.setStackDisplayName(SHOW_ALL);
@@ -161,10 +140,6 @@ public abstract class Challenges {
 			removeThisChallenge();
 			return true;
 		}
-		/*if(Minecraft.getMinecraft().getIntegratedServer().getCurrentPlayerCount()>1){
-			Minecraft.getMinecraft().player.addChatMessage(new TextComponentString("You cannot do this challenge when other players are online"));
-			removeThisChallenge();
-		}*/
 		return false;
 	}
 
