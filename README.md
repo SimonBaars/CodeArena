@@ -10,10 +10,10 @@ There are two ways to setup CodeArena:
 2. **Run CodeArena from your IDE:** This does not require a Minecraft account, but does require to install an IDE. I will outline the installation using the Eclipse IDE here.
 
 ### Install CodeArena as Minecraft Forge Mod
-Download the CodeArena jar from the [Releases section of GitHub](https://github.com/SimonBaars/CodeArena/releases) (or by clicking [here](https://github.com/SimonBaars/CodeArena/releases/download/v1.0/CodeArena-1.0.jar)). Follow [this guide](https://www.minecraftmods.com/how-to-install-minecraft-forge/) to install Minecraft Forge. Make sure you install Forge for Minecraft version **1.12**. Then, follow [this guide](https://www.minecraftmods.com/how-to-install-mods-for-minecraft-forge/) to install CodeArena as a Minecraft mod.
+Download the CodeArena jar from the [Releases section of GitHub](https://github.com/SimonBaars/CodeArena/releases) (or by clicking [here](https://github.com/SimonBaars/CodeArena/releases/download/v1.2/CodeArena-1.2.jar)). Follow [this guide](https://www.minecraftmods.com/how-to-install-minecraft-forge/) to install Minecraft Forge. Make sure you install Forge for Minecraft version **1.12**. Then, follow [this guide](https://www.minecraftmods.com/how-to-install-mods-for-minecraft-forge/) to install CodeArena as a Minecraft mod.
 
 ### Run CodeArena from your IDE
 Download and install Eclipse from [here](https://www.eclipse.org/downloads/). Clone the CodeArena repo, and import it as a Gradle project into Eclipse. In the file explorer of Eclipse, right click the `CloneDetection_Client.launch` file in the root of the CodeArena project. In the menu, choose `Run as` and choose the first option. This will start CodeArena.
 
 ## Turning a Java project into a CodeArena
-Now I will explain how to turn a Java project into an arena. Open a single player world using Minecraft. In game, press `c`. This will open the CodeArena dialog. In this window, the arena can be configured. 
+To start using CodeArena, open a single player world using Minecraft. In game, press `c`. This will open the CodeArena dialog. In this window, the arena can be configured. 
