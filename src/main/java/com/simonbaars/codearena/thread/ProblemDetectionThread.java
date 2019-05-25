@@ -80,6 +80,7 @@ public class ProblemDetectionThread extends Thread {
 			};
 			SequenceObservable.get().subscribe(observer);
 			new CloneParser().parse(files);
+			SequenceObservable.get().unsubscribe(observer);
 			if(goal == SCANAFTER) {
 				rewardPointsForFix(before, problemSizes);
 			}
