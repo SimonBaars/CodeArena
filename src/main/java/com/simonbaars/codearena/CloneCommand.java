@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import com.google.common.collect.Lists;
-import com.simonbaars.codearena.common.Commons;
 import com.simonbaars.codearena.common.FormatsText;
 import com.simonbaars.codearena.common.SavePaths;
 import com.simonbaars.codearena.thread.ProblemDetectionThread;
