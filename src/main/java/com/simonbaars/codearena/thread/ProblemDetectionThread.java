@@ -29,14 +29,14 @@ import com.simonbaars.clonerefactor.metrics.ProblemType;
 import com.simonbaars.clonerefactor.model.Sequence;
 import com.simonbaars.codearena.CloneDetection;
 import com.simonbaars.codearena.challenge.CodeArena;
-import com.simonbaars.codearena.common.Commons;
+import com.simonbaars.codearena.common.FormatsText;
 import com.simonbaars.codearena.common.SavePaths;
 import com.simonbaars.codearena.model.MetricProblem;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.text.TextFormatting;
 
-public class ProblemDetectionThread extends Thread {
+public class ProblemDetectionThread extends Thread implements FormatsText {
 	
 	private static ProblemDetectionThread worker;
 	private final ICommandSender mySender;
@@ -68,7 +68,7 @@ public class ProblemDetectionThread extends Thread {
 			SequenceObservable.get().subscribe(observer);
 			new CloneParser().parse(scanProjectForJavaFiles(SavePaths.getProjectFolder()+project));
 			SequenceObservable.get().unsubscribe(observer);
-			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "All metrics have been successfully parsed!")));
+			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(FormatsText.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "All metrics have been successfully parsed!")));
 		} else {
 			List<Integer> before = new ArrayList<>(problemSizes);
 			problemSizes.clear();
@@ -140,20 +140,20 @@ public class ProblemDetectionThread extends Thread {
 		CloneDetection cloneDetection = CloneDetection.get();
 		if(after.size()<before.size()) {
 			cloneDetection.getArena().increaseScore(5);
-			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(TextFormatting.DARK_GREEN, "Well done on improving the metric! You are awarded 5 emeralds!")));
+			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(FormatsText.format(TextFormatting.DARK_GREEN, "Well done on improving the metric! You are awarded 5 emeralds!")));
 			cloneDetection.eventHandler.nextTickActions.add(() -> cloneDetection.getArena().killSpider(scanProblem));
 			cloneDetection.getScoreForType(scanProblem.getType()).increaseScore(after.size()-before.size());
 		} else if(after.stream().mapToInt(e -> e).sum()<before.stream().mapToInt(e -> e).sum()){
 			CloneDetection.get().getArena().increaseScore(1);
-			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(TextFormatting.YELLOW, "Your fix did not fix the entire issue, but did improve upon it. You are awarded 1 emerald!")));
+			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(FormatsText.format(TextFormatting.YELLOW, "Your fix did not fix the entire issue, but did improve upon it. You are awarded 1 emerald!")));
 		} else {
-			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(Commons.format(TextFormatting.RED, "The problem was not fixed! No emeralds for you!")));
+			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(FormatsText.format(TextFormatting.RED, "The problem was not fixed! No emeralds for you!")));
 		}
 	}
 
 	public static void startWorker(ICommandSender s, String projectName) {
 		if(worker != null) {
-			s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.RED, "We are busy... Please wait!"));
+			s.sendMessage(FormatsText.format(TextFormatting.RED, "We are busy... Please wait!"));
 			return;
 		}
 		//System.out.println("Spawn at pos "+s.getPosition());
@@ -162,17 +162,17 @@ public class ProblemDetectionThread extends Thread {
 		CloneDetection.get().setArena(new CodeArena(s.getPosition().getX(), s.getPosition().getY(), s.getPosition().getZ()));
 		//CloneDetection.get().initScoreboards();
 		if(worker!=null && worker.isAlive()) {
-			s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.RED, "Sorry, but I'm still busy detecting code problems! Please wait a little longer."));
+			s.sendMessage(FormatsText.format(TextFormatting.RED, "Sorry, but I'm still busy detecting code problems! Please wait a little longer."));
 			return;
 		}
-		s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "Searching for code problems, please wait..."));
+		s.sendMessage(FormatsText.format(TextFormatting.DARK_GREEN, "Searching for code problems, please wait..."));
 		
 		worker = new ProblemDetectionThread(DETECTION, s, null, projectName);
 	}
 	
 	public static void startWorker(ICommandSender s, MetricProblem p, boolean before) {
 		if(worker != null) {
-			s.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.RED, "We are busy... Please wait!"));
+			s.sendMessage(FormatsText.format(TextFormatting.RED, "We are busy... Please wait!"));
 			return;
 		}
 		worker = new ProblemDetectionThread(before ? SCANBEFORE : SCANAFTER, s, p, null);

@@ -6,6 +6,7 @@ import java.util.stream.IntStream;
 
 import com.google.common.collect.Lists;
 import com.simonbaars.codearena.common.Commons;
+import com.simonbaars.codearena.common.FormatsText;
 import com.simonbaars.codearena.common.SavePaths;
 import com.simonbaars.codearena.thread.ProblemDetectionThread;
 
@@ -16,7 +17,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import scala.actors.threadpool.Arrays;
 
-public class CloneCommand implements ICommand {
+public class CloneCommand implements ICommand, FormatsText {
 
 	@Override
 	public int compareTo(ICommand arg0) {
@@ -43,9 +44,9 @@ public class CloneCommand implements ICommand {
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if(args.length==0) {
-			sender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.BLUE, "Please enter the number of the project you'd like to search for code clones:"));
+			sender.sendMessage(FormatsText.format(net.minecraft.util.text.TextFormatting.BLUE, "Please enter the number of the project you'd like to search for code clones:"));
 			String[] projects = new File(SavePaths.getProjectFolder()).list();
-			IntStream.range(0, projects.length).forEach(i -> sender.sendMessage(Commons.format(net.minecraft.util.text.TextFormatting.WHITE, "["+(i+1)+"] "+projects[i])));
+			IntStream.range(0, projects.length).forEach(i -> sender.sendMessage(FormatsText.format(net.minecraft.util.text.TextFormatting.WHITE, "["+(i+1)+"] "+projects[i])));
 			CloneDetection.dialoge = 1;
 			return;
 		}

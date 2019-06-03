@@ -8,7 +8,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 
-import com.simonbaars.codearena.common.TestingCommons;
+import com.simonbaars.clonerefactor.util.FileUtils;
 
 public class SaveFile extends AbstractAction {
 	/**
@@ -29,7 +29,7 @@ public class SaveFile extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		try {
-			TestingCommons.writeStringToFile(file, textArea.getText());
+			FileUtils.writeStringToFile(file, textArea.getText());
 			statusBar.setText("File successfully saved!");
 		} catch (IOException e1) {
 			e1.printStackTrace();

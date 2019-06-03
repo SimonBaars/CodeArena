@@ -53,8 +53,8 @@ import org.fife.ui.rtextarea.SearchContext;
 import org.fife.ui.rtextarea.SearchEngine;
 import org.fife.ui.rtextarea.SearchResult;
 
+import com.simonbaars.clonerefactor.util.FileUtils;
 import com.simonbaars.codearena.CloneDetection;
-import com.simonbaars.codearena.common.TestingCommons;
 import com.simonbaars.codearena.model.MetricProblem;
 import com.simonbaars.codearena.thread.ProblemDetectionThread;
 
@@ -88,7 +88,7 @@ public class CodeEditor extends JFrame implements SearchListener {
 		this.cloneClass = cloneClass;
 		String content;
 		try {
-			content = TestingCommons.getFileAsString(file);
+			content = FileUtils.getFileAsString(file);
 
 			initSearchDialogs();
 
@@ -176,7 +176,7 @@ public class CodeEditor extends JFrame implements SearchListener {
 						locked = true;
 						try {
 							for(CodeEditor c : CloneDetection.get().openEditors)
-								TestingCommons.writeStringToFile(c.file, c.textArea.getText());
+								FileUtils.writeStringToFile(c.file, c.textArea.getText());
 						} catch (IOException e1) {
 							e1.printStackTrace();
 						}
@@ -260,7 +260,7 @@ public class CodeEditor extends JFrame implements SearchListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					TestingCommons.writeStringToFile(file, textArea.getText());
+					FileUtils.writeStringToFile(file, textArea.getText());
 					statusBar.setLabel("File successfully saved!");
 				} catch (IOException e1) {
 					e1.printStackTrace();
