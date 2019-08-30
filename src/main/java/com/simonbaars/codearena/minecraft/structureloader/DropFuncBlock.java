@@ -23,7 +23,7 @@ public class DropFuncBlock
 	{
 		try{
 		Chunk chunk = world.getChunkFromBlockCoords(pos);
-		//Chunk chunkClient = Minecraft.getMinecraft().theWorld.getChunkFromBlockCoords(pos);
+		//Chunk chunkClient = Minecraft.getInstance().world.getChunkFromBlockCoords(pos);
 		ExtendedBlockStorage storageArray = chunk.getBlockStorageArray()[pos.getY() >> 4];
 		//System.out.println(pos.getX()+", "+pos.getY()+", "+pos.getZ());
 		if (storageArray == null) storageArray = chunk.getBlockStorageArray()[pos.getY() >> 4] = new ExtendedBlockStorage(pos.getY() >> 4 << 4, !world.provider.isNether());
@@ -46,7 +46,7 @@ public class DropFuncBlock
 				//world.checkLight(pos);
 				//world.setLightFor(EnumSkyBlock.SKY, pos, 15);
 				//world.setLightFor(EnumSkyBlock.BLOCK, pos, 15);
-				//System.out.println((Minecraft.getMinecraft().theWorld==world)+"=="+(Minecraft.getMinecraft().getIntegratedServer().worldServerForDimension(0)==world));
+				//System.out.println((Minecraft.getInstance().world==world)+"=="+(Minecraft.getInstance().getIntegratedServer().worldServerForDimension(0)==world));
 			//}
 			//world.notifyLightSet(pos);
 				//world.checkLight(pos);
@@ -71,7 +71,7 @@ world.checkLight(pos);
 				chunk.setModified(true);
 			//chunkClient.setChunkModified();
 			world.markBlockRangeForRenderUpdate(pos,pos);//TODO: Stil a hack
-			//Minecraft.getMinecraft().theWorld.markBlockRangeForRenderUpdate(pos,pos);//TODO: Stil a hack
+			//Minecraft.getInstance().world.markBlockRangeForRenderUpdate(pos,pos);//TODO: Stil a hack
 			/*if(world.isRemote){
 			//world.checkLight(pos);
 				world.setLightFor(EnumSkyBlock.SKY, pos, 15);
@@ -79,7 +79,7 @@ world.checkLight(pos);
 			}*/
 			//world.setLightFor(EnumSkyBlock.BLOCK, pos, 15);
 			/*if (update || state.getBlock()!=Blocks.air)*/ world.markAndNotifyBlock(pos, chunk, state, oldState, 3);
-			//Minecraft.getMinecraft().theWorld.markAndNotifyBlock(pos, chunk, state, oldState, 3);
+			//Minecraft.getInstance().world.markAndNotifyBlock(pos, chunk, state, oldState, 3);
 		}
 
 		if (tileEntity != null && state.getBlock().hasTileEntity(state) && !isLive)

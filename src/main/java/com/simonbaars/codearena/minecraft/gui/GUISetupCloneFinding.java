@@ -267,8 +267,8 @@ public class GUISetupCloneFinding {
 				try {
 					Settings.get().setCloneType(com.simonbaars.clonerefactor.settings.CloneType.valueOf("TYPE"+cloneType));
 				} catch (Exception e) {}
-				Minecraft.getMinecraft().player.closeScreen();
-				CloneDetection.get().eventHandler.nextTickActions.add(() -> ProblemDetectionThread.startWorker( Minecraft.getMinecraft().player, InputProject.getText()));
+				Minecraft.getInstance().player.closeScreen();
+				CloneDetection.get().eventHandler.nextTickActions.add(() -> ProblemDetectionThread.startWorker( Minecraft.getInstance().player, InputProject.getText()));
 			}
 			if (button.id == 1) {
 				String[] choices = new File(SavePaths.getProjectFolder()).list();

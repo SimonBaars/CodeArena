@@ -32,7 +32,7 @@ public class CDEventHandler {
 	
 		
 	public void load(){		
-			lightUpdate= new LightUpdateCheck(Minecraft.getMinecraft().world, Minecraft.getMinecraft().getIntegratedServer().getEntityWorld());
+			lightUpdate= new LightUpdateCheck(Minecraft.getInstance().world, Minecraft.getInstance().getIntegratedServer().getWorld(Minecraft.getInstance().player.dimension));
 			isLoaded=true;
 	}
 	
@@ -50,7 +50,7 @@ public class CDEventHandler {
 	}
 	@SubscribeEvent
 	public void update(TickEvent.ClientTickEvent event){
-		if(!isLoaded && Minecraft.getMinecraft().world!=null)
+		if(!isLoaded && Minecraft.getInstance().world!=null)
 			load();
 		if(challenge!= null) challenge.run();
 		/*for(int i = 0; i<liveCreators.size(); i++){
@@ -116,8 +116,8 @@ public class CDEventHandler {
 			
 			
 			
-			while(delayedPrints.size()>0 && Minecraft.getMinecraft().getIntegratedServer().isCallingFromMinecraftThread()){
-					Minecraft.getMinecraft().player.sendChatMessage(delayedPrints.get(0));
+			while(delayedPrints.size()>0 && Minecraft.getInstance().getIntegratedServer().isCallingFromMinecraftThread()){
+					Minecraft.getInstance().player.sendChatMessage(delayedPrints.get(0));
 					
 				delayedPrints.remove(0);
 			}
@@ -131,7 +131,7 @@ public class CDEventHandler {
 	
 		
 	boolean fileExists2(String path){
-		File f = new File(SavePaths.getSaveFolder()+Minecraft.getMinecraft().getIntegratedServer().getFolderName()+"/Structures/"+path);
+		File f = new File(SavePaths.getSaveFolder()+Minecraft.getInstance().getIntegratedServer().getFolderName()+"/Structures/"+path);
 		if(f.exists() && !f.isDirectory()) { 
 		    return true;
 		}

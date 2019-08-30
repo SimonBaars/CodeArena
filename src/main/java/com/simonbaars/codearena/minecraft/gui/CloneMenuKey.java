@@ -37,7 +37,7 @@ public class CloneMenuKey {
 		public void onKeyInput(InputEvent.KeyInputEvent event) {
 			if (!FMLClientHandler.instance().isGUIOpen(GuiChat.class)) {
 				if (org.lwjgl.input.Keyboard.isKeyDown(keys.getKeyCode())) {
-					EntityPlayer entitySP = Minecraft.getMinecraft().player;
+					EntityPlayer entitySP = Minecraft.getInstance().player;
 					int x = (int) entitySP.posX;
 					int y = (int) entitySP.posY;
 					int z = (int) entitySP.posZ;

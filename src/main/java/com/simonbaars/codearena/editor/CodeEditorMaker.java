@@ -17,7 +17,7 @@ public class CodeEditorMaker {
 	private CodeEditorMaker() {}
 
 	public static void create(MetricProblem cloneClass) {
-		ProblemDetectionThread.startWorker(Minecraft.getMinecraft().player, cloneClass, true);
+		ProblemDetectionThread.startWorker(Minecraft.getInstance().player, cloneClass, true);
 		for(int i = 0; i<cloneClass.size(); i++) {
 			final int j = i;
 			SwingUtilities.invokeLater(() -> {

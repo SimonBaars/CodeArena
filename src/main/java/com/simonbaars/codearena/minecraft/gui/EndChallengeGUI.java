@@ -129,7 +129,7 @@ public class EndChallengeGUI {
 			MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
 			World world = server.getWorld(entity.dimension);
 			if (button.id == 0) {
-				Minecraft.getMinecraft().player.closeScreen();
+				Minecraft.getInstance().player.closeScreen();
 				CloneDetection.get().eventHandler.nextTickActions.add(() -> CloneDetection.get().getArena().endChallengeForAllPlayers());
 			}
 		}

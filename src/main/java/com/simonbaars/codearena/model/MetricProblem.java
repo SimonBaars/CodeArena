@@ -31,8 +31,8 @@ public class MetricProblem implements Comparable<MetricProblem>, RequiresNodeCon
 		Items.DIAMOND.setMaxStackSize(Integer.MAX_VALUE);
 		ItemStack itemStackIn = new ItemStack(Items.DIAMOND, 1);
 		itemStackIn.setStackDisplayName(this.packageName);
-		Minecraft.getMinecraft().player.inventory.addItemStackToInventory(itemStackIn);
-		Minecraft.getMinecraft().player.inventoryContainer.detectAndSendChanges();
+		Minecraft.getInstance().player.inventory.addItemStackToInventory(itemStackIn);
+		Minecraft.getInstance().player.inventoryContainer.detectAndSendChanges();
 	}
 
 	public int getProblemSize() {

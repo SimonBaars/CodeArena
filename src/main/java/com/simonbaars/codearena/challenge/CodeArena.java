@@ -51,7 +51,7 @@ public class CodeArena extends Challenges implements UsesCustomScaleFactors {
 		cornerx=x-15;
 		cornerz=z-20;
 		initArena();
-		Minecraft.getMinecraft().player.inventory.currentItem = 0;
+		Minecraft.getInstance().player.inventory.currentItem = 0;
 		for(EntityPlayerMP player : players){
 			player.setPosition(x, y+3,z);
 			player.setHealth(20);
@@ -62,8 +62,8 @@ public class CodeArena extends Challenges implements UsesCustomScaleFactors {
 		}
 		ItemStack itemStackIn = new ItemStack(Items.DIAMOND, 1);
 		itemStackIn.setStackDisplayName(SHOW_ALL);
-		Minecraft.getMinecraft().player.inventory.addItemStackToInventory(itemStackIn);
-		Minecraft.getMinecraft().player.inventoryContainer.detectAndSendChanges();
+		Minecraft.getInstance().player.inventory.addItemStackToInventory(itemStackIn);
+		Minecraft.getInstance().player.inventoryContainer.detectAndSendChanges();
 	}
 	
 	void initArena(){
@@ -118,7 +118,7 @@ public class CodeArena extends Challenges implements UsesCustomScaleFactors {
 	}
 	
 	public boolean run() {
-		ItemStack heldItem = Minecraft.getMinecraft().player.getHeldItemMainhand();
+		ItemStack heldItem = Minecraft.getInstance().player.getHeldItemMainhand();
 		if(heldItem.getItem() == Items.DIAMOND && !currentFilter.equals(heldItem.getDisplayName())) {
 			currentFilter = heldItem.getDisplayName();
 			for(CodeEntity e : activeMonsters) {

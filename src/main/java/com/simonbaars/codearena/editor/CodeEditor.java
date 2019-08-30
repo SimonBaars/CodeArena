@@ -180,7 +180,7 @@ public class CodeEditor extends JFrame implements SearchListener {
 						} catch (IOException e1) {
 							e1.printStackTrace();
 						}
-						ProblemDetectionThread.startWorker(Minecraft.getMinecraft().player, cloneClass, false);
+						ProblemDetectionThread.startWorker(Minecraft.getInstance().player, cloneClass, false);
 
 						CloneDetection.get().closeAllEditorsExcept(this);
 						CloneDetection.get().openEditors.clear();
