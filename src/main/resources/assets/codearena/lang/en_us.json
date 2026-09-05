@@ -1,0 +1,10 @@
+{
+	"item.codearena.checkmark": "Spawn Code Arena",
+	"item.codearena.crossmark": "End Code Arena",
+	"itemGroup.codearena.codearena_tab": "CodeArena",
+	"commands.codearena.spawn.success": "CodeArena spawned at your position.",
+	"commands.codearena.end.success": "CodeArena session ended.",
+	"commands.codearena.already": "An arena is already active. Use /codearena end first.",
+	"commands.codearena.none": "No active CodeArena session.",
+	"commands.codeclones.stub": "Full CloneRefactor AST detection is not ported. Demo problems spawn with /codearena spawn; list them with /codearena problems."
+}

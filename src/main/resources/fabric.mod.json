@@ -1,0 +1,21 @@
+{
+	"schemaVersion": 1,
+	"id": "codearena",
+	"version": "${version}",
+	"name": "CodeArena",
+	"description": "Education / clone-detection arena — Fabric 26.2 working subset of the Forge 1.12.2 CodeArena mod.",
+	"authors": ["SimonBaars"],
+	"contact": {},
+	"license": "All Rights Reserved",
+	"environment": "*",
+	"entrypoints": {
+		"main": ["com.simonbaars.codearena.CodeArenaMod"],
+		"client": ["com.simonbaars.codearena.client.CodeArenaClient"]
+	},
+	"depends": {
+		"fabricloader": ">=${loader_version}",
+		"minecraft": "~${minecraft_version}",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
