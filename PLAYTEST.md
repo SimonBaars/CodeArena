@@ -2,7 +2,7 @@
 
 Target: Minecraft **26.2**, Fabric Loader **0.19.5**, Fabric API **0.159.0+26.2**, Java **25**.  
 Built JAR: `build/libs/codearena-1.0.0+26.2.jar`  
-Coverage: **~43%** of original Forge feature surface (schematic arena + watchtowers, 8 demo problem types, registered smell entities + spider/cave-spider textures, package-filter diamonds, structure place command). AST engine still **demo-only** (CloneRefactor jar required); Swing editor **N/A/deferred** for Fabric; no Techne ModelCode* (vanilla only).
+Coverage: **~48–50%** of original Forge feature surface (schematic arena + watchtowers, JavaParser method-level AST on demo-sources + DemoProblems fallback, registered smell entities + spider/cave-spider textures, package-filter diamonds, structure place command). Full Type-2/3 CloneRefactor still absent; Swing editor **N/A/deferred**; no Techne ModelCode* (vanilla only).
 
 Use a Creative world with cheats enabled (`arenaplay` exists under `run/saves/`).
 
@@ -23,7 +23,7 @@ Use a Creative world with cheats enabled (`arenaplay` exists under `run/saves/`)
 
 - [ ] `/codearena spawn` places **legacy `arena.structure`** plus up to **4 `watchtower`s** at corners when assets load
 - [ ] Player teleported slightly above center gold block; diamond sword + package-filter diamonds given
-- [ ] Nine demo smell mobs of **8 types** spawn (spider / zombie / skeleton / creeper / cave spider / witch / blaze / enderman)
+- [ ] Smell mobs spawn from **JavaParser AST** on demo-sources (or DemoProblems fallback). AST wave typically covers duplication/complexity/volume/params (not all 8 types)
 - [ ] Code spider uses custom `textures/entity/code_spider.png` + eyes (legacy `mobs/spider.png`)
 - [ ] Code cave spider uses darkened `textures/entity/code_cave_spider.png`
 - [ ] Sidebar scoreboard **CodeArena** shows Score / metric lines / Remaining
@@ -32,7 +32,7 @@ Use a Creative world with cheats enabled (`arenaplay` exists under `run/saves/`)
 
 ## 3. Problem flow & package filter
 
-- [ ] `/codearena problems` lists demo problems with [ ] / [x] status
+- [ ] `/codearena problems` lists AST (or fallback) problems with [ ] / [x] status
 - [ ] Killing a smell mob increments Score, prints tip (HTML tip blurbs when present), decreases Remaining
 - [ ] Holding a named diamond filters visibility by package (`Show All Packages` shows all)
 - [ ] Clearing all prompts emerald reward hint
@@ -52,7 +52,7 @@ Use a Creative world with cheats enabled (`arenaplay` exists under `run/saves/`)
 
 ## Known gaps (do not fail build)
 
-- No project-folder CloneRefactor AST scan (**jar still required**; no standalone checkout/jar under `/workspace`; do not clone)
+- No project-folder / Type-2/3 CloneRefactor scan (**jar still required**; thin JavaParser method-level only; do not clone)
 - Swing CodeEditor **N/A/deferred** (Forge desktop UI ≠ Fabric client; tips via chat / HTML blurbs only)
 - No Techne ModelCode* geometry — only `ModelCodeSkeleton` (vanilla thin biped); spider(+eyes) skins + derived cave spider; others vanilla models/skins
 - Schematic block **metadata** (facing) not remapped
@@ -68,13 +68,15 @@ Use a Creative world with cheats enabled (`arenaplay` exists under `run/saves/`)
 | `/codearena spawn\|end\|problems\|place` | Covered |
 | Legacy `arena.structure` + corner `watchtower`s | Covered |
 | Opt-in coliseum/colloseum/arenacheck | Covered (command) |
-| 8 demo problem types → typed smell entities | Covered |
+| JavaParser method-level AST → typed smell entities | Covered (demo-sources) |
+| DemoProblems fallback wave | Covered |
 | Custom spider + cave-spider texture renderers (+ eyes) | Covered |
 | Package-filter diamonds | Covered |
 | Sidebar score + kill tips + emerald reward | Covered |
-| `/codeclones` real AST detection | **Gap / stub** (no local jar) |
+| `/codeclones` full CloneRefactor | **Gap / stub** (no local jar) |
 | Swing CodeEditor | **N/A / deferred** (desktop Swing, not Fabric-portable) |
-| clonerefactor AST engine | **Open gap / demo only** (jar required) |
+| Thin JavaParser SmellDetector | Covered (method-level on demo-sources) |
+| CloneRefactor Type-2/3 engine | **Open gap** (jar/checkout absent) |
 | Techne / unique ModelCode* meshes | **N/A** (legacy had none; ModelCodeSkeleton = vanilla) |
 
 ## Auto screenshot (dev)

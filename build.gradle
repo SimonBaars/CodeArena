@@ -37,6 +37,9 @@ dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+	// Thin AST smell detector (method-level); jar-in-jar for runClient/prod
+	implementation include("com.github.javaparser:javaparser-core:3.28.2")
 }
 
 processResources {

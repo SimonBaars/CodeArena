@@ -2,6 +2,7 @@ package com.simonbaars.codearena.challenge;
 
 import com.simonbaars.codearena.monster.SmellMobFactory;
 import com.simonbaars.codearena.problem.CodeProblem;
+import com.simonbaars.codearena.javaparser.SmellDetector;
 import com.simonbaars.codearena.problem.DemoProblems;
 import com.simonbaars.codearena.problem.ProblemTips;
 import com.simonbaars.codearena.problem.ProblemType;
@@ -32,7 +33,7 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 /**
  * Session stand-in for legacy {@code CodeArena}: schematic arena + watchtowers,
- * demo metric problems as typed smell mobs, package-filter diamonds, sidebar score.
+ * JavaParser AST (or DemoProblems fallback) metric problems as typed smell mobs, package-filter diamonds, sidebar score.
  */
 public final class ArenaSession {
 	private static final String OBJECTIVE_ID = "codearena_score";
@@ -75,18 +76,22 @@ public final class ArenaSession {
 		player.teleportTo(center.getX() + 0.5, center.getY() + 3.0, center.getZ() + 0.5);
 		player.getInventory().add(new ItemStack(Items.DIAMOND_SWORD));
 
-		List<CodeProblem> problems = DemoProblems.sampleWave();
+		List<CodeProblem> astProblems = SmellDetector.tryDetectDemoWave();
+		boolean fromAst = !astProblems.isEmpty();
+		List<CodeProblem> problems = fromAst ? astProblems : DemoProblems.sampleWave();
 		ArenaSession session = new ArenaSession(level, center, player.getUUID(), problems, built, prevGriefing);
 		session.givePackageFilterDiamonds(player);
 		session.setupScoreboard();
 		session.spawnProblems();
 
 		String source = String.join("+", built.placedStructures());
+		String waveNote = fromAst
+				? "AST smells via JavaParser on embedded demo-sources (method-level duplication/complexity/size/params — not full CloneRefactor Type-2/3). "
+				: "Fallback DemoProblems wave (SmellDetector unavailable). Full Type-2/3 clones still need CloneRefactor. ";
 		player.sendSystemMessage(Component.literal(
 				"CodeArena ready (" + source + ", " + built.totalBlocks() + " blocks). Defeat "
-						+ problems.size() + " metric smells (" + ProblemType.values().length
-						+ " types). Hold a named diamond to filter by package. "
-						+ "Demo problems only — CloneRefactor jar still required for real AST. "
+						+ problems.size() + " metric smells. Hold a named diamond to filter by package. "
+						+ waveNote
 						+ "/codearena problems | /codearena place <structure>"));
 		return session;
 	}
@@ -205,7 +210,7 @@ public final class ArenaSession {
 			ownerPlayer.sendSystemMessage(Component.literal("Tip: " + ProblemTips.tipFor(problem)));
 			if (mobProblems.isEmpty()) {
 				ownerPlayer.sendSystemMessage(Component.literal(
-						"All demo smells cleared! Score " + scorePoints + ". Use /codearena end for emerald reward."));
+						"All smells cleared! Score " + scorePoints + ". Use /codearena end for emerald reward."));
 			}
 		}
 	}
@@ -216,7 +221,7 @@ public final class ArenaSession {
 			return;
 		}
 		player.sendSystemMessage(Component.literal(
-				"=== CodeArena demo problems (" + buildResult.mode() + " / "
+				"=== CodeArena problems (" + buildResult.mode() + " / "
 						+ String.join("+", buildResult.placedStructures()) + ") ==="));
 		for (CodeProblem problem : problems) {
 			boolean alive = mobProblems.containsValue(problem);

@@ -14,8 +14,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Fabric 26.2 entry — deepened subset of Forge 1.12.2 CodeArena / CloneDetection.
- * Schematic arena + watchtowers, expanded demo smells, custom entity registry ids,
- * package-filter diamonds. Swing editor N/A/deferred (Forge desktop UI); real AST needs CloneRefactor jar (demo-only without one).
+ * Schematic arena + watchtowers, JavaParser method-level AST smells (DemoProblems fallback),
+ * custom entity registry ids, package-filter diamonds. Swing editor N/A/deferred (Forge desktop UI);
+ * full Type-2/3 CloneRefactor still not ported.
  */
 public class CodeArenaMod implements ModInitializer {
 	public static final String MOD_ID = "codearena";

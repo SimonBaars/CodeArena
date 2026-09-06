@@ -3,8 +3,9 @@ package com.simonbaars.codearena.problem;
 import java.util.List;
 
 /**
- * Demo "detection results" used when a CloneRefactor jar/API is not on the classpath (real AST still requires that jar).
- * Eight problem types across three packages (enables diamond package-filter).
+ * Hardcoded fallback wave used when {@code SmellDetector} cannot parse embedded demo-sources.
+ * Includes extra Type-2/3 / nesting / god-class entries that the thin JavaParser detector does not emit.
+ * Eight problem types across packages (enables diamond package-filter).
  */
 public final class DemoProblems {
 	private DemoProblems() {}
