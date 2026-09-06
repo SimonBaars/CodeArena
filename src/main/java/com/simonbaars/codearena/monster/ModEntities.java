@@ -21,7 +21,9 @@ import net.minecraft.world.entity.monster.zombie.Zombie;
 
 /**
  * Distinct registry ids for smell mobs (vanilla classes + custom textures where assets exist).
- * Legacy custom ModelCode* ports are not required — spider skin from {@code mobs/spider.png}.
+ * Legacy audit: only {@code ModelCodeSkeleton} existed (vanilla thin-biped clone, not Techne);
+ * only {@code mobs/spider.png} (+ eyes) were custom textures — ported as {@code code_spider*} /
+ * {@code code_cave_spider} (darkened derivative for type-2).
  */
 public final class ModEntities {
 	public static EntityType<Spider> CODE_SPIDER;

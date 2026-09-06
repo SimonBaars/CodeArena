@@ -2,7 +2,7 @@
 
 Target: Minecraft **26.2**, Fabric Loader **0.19.5**, Fabric API **0.159.0+26.2**, Java **25**.  
 Built JAR: `build/libs/codearena-1.0.0+26.2.jar`  
-Coverage: **~42%** of original Forge feature surface (schematic arena + watchtowers, 8 demo problem types, registered smell entities + spider texture, package-filter diamonds, structure place command). AST engine / Swing editor still cut.
+Coverage: **~43%** of original Forge feature surface (schematic arena + watchtowers, 8 demo problem types, registered smell entities + spider/cave-spider textures, package-filter diamonds, structure place command). AST engine / Swing editor still cut; no Techne ModelCode* (vanilla only).
 
 Use a Creative world with cheats enabled (`arenaplay` exists under `run/saves/`).
 
@@ -24,7 +24,8 @@ Use a Creative world with cheats enabled (`arenaplay` exists under `run/saves/`)
 - [ ] `/codearena spawn` places **legacy `arena.structure`** plus up to **4 `watchtower`s** at corners when assets load
 - [ ] Player teleported slightly above center gold block; diamond sword + package-filter diamonds given
 - [ ] Nine demo smell mobs of **8 types** spawn (spider / zombie / skeleton / creeper / cave spider / witch / blaze / enderman)
-- [ ] Code spider uses custom `textures/entity/code_spider.png` (legacy `mobs/spider.png`)
+- [ ] Code spider uses custom `textures/entity/code_spider.png` + eyes (legacy `mobs/spider.png`)
+- [ ] Code cave spider uses darkened `textures/entity/code_cave_spider.png`
 - [ ] Sidebar scoreboard **CodeArena** shows Score / metric lines / Remaining
 - [ ] Mob griefing disabled for the session
 - [ ] Second `/codearena spawn` while active fails with “already active”
@@ -53,7 +54,7 @@ Use a Creative world with cheats enabled (`arenaplay` exists under `run/saves/`)
 
 - No project-folder CloneRefactor AST scan (**no jar/API under `/workspace`**; do not clone repos)
 - No Swing / in-game code editor (tips via chat / HTML blurbs only)
-- No full custom ModelCode* geometry (only spider skin asset existed; others use vanilla models via registered entity types)
+- No Techne ModelCode* geometry — only `ModelCodeSkeleton` (vanilla thin biped); spider(+eyes) skins + derived cave spider; others vanilla models/skins
 - Schematic block **metadata** (facing) not remapped
 - Coliseum not auto-placed on spawn (opt-in via `/codearena place`)
 - No multi-wave detection thread from original
@@ -68,13 +69,13 @@ Use a Creative world with cheats enabled (`arenaplay` exists under `run/saves/`)
 | Legacy `arena.structure` + corner `watchtower`s | Covered |
 | Opt-in coliseum/colloseum/arenacheck | Covered (command) |
 | 8 demo problem types → typed smell entities | Covered |
-| Custom spider texture renderer | Covered |
+| Custom spider + cave-spider texture renderers (+ eyes) | Covered |
 | Package-filter diamonds | Covered |
 | Sidebar score + kill tips + emerald reward | Covered |
 | `/codeclones` real AST detection | **Gap / stub** (no local jar) |
 | Swing CodeEditor | **Gap / dropped** |
 | clonerefactor AST engine | **Gap / demo only** |
-| Full custom ModelCode* meshes | **Gap** (assets absent except spider PNG) |
+| Techne / unique ModelCode* meshes | **N/A** (legacy had none; ModelCodeSkeleton = vanilla) |
 
 ## Auto screenshot (dev)
 
