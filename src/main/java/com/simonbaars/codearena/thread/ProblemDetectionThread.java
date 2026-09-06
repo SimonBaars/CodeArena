@@ -32,6 +32,7 @@ import com.simonbaars.codearena.challenge.CodeArena;
 import com.simonbaars.codearena.common.FormatsText;
 import com.simonbaars.codearena.common.SavePaths;
 import com.simonbaars.codearena.model.MetricProblem;
+import com.simonbaars.codearena.javaparser.SmellDetector;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.text.TextFormatting;
@@ -66,7 +67,21 @@ public class ProblemDetectionThread extends Thread implements FormatsText {
 				cloneDetection.getScoreForType(problem).incrementScore();
 			};
 			SequenceObservable.get().subscribe(observer);
-			new CloneParser().parse(scanProjectForJavaFiles(SavePaths.getProjectFolder()+project));
+			
+			// Use SmellDetector for demo sources if project is "demo" or "embedded"
+			if(project != null && (project.equals("demo") || project.equals("embedded"))) {
+				try {
+					SmellDetector detector = new SmellDetector();
+					detector.scanDemoSources();
+				} catch (Exception e) {
+					System.err.println("SmellDetector failed: " + e.getMessage());
+					e.printStackTrace();
+				}
+			} else {
+				// Use CloneParser for full project analysis (requires CloneRefactor)
+				new CloneParser().parse(scanProjectForJavaFiles(SavePaths.getProjectFolder()+project));
+			}
+			
 			SequenceObservable.get().unsubscribe(observer);
 			cloneDetection.eventHandler.nextTickActions.add(() -> mySender.sendMessage(FormatsText.format(net.minecraft.util.text.TextFormatting.DARK_GREEN, "All metrics have been successfully parsed!")));
 		} else {
