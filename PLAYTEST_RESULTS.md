@@ -14,4 +14,4 @@ Auto: `./gradlew runClient -Parenashot` on `DISPLAY=:5`
 
 ## Notes
 
-Coverage after disk scan: **~50–52%**. **Still Open:** full CloneRefactor Type-2/3 (no jar under `/workspace`; do not clone); Swing CodeEditor **N/A/deferred**. Fabric does not sandbox FS; `/codearena scan` still refuses paths outside the game directory.
+Coverage after disk scan: **~50–52%**. Status **Mostly OK** — remaining gaps are N/A/deferred only: CloneRefactor Type-2/3 (no jar under `/workspace`; do not clone); Swing CodeEditor. Fabric does not sandbox FS; `/codearena scan` still refuses paths outside the game directory. No further ModelCode* or default-coliseum work (legacy default = `arena`; meshes audited).

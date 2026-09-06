@@ -39,7 +39,7 @@ Honest total: treat as **~50–52%** feature coverage of the education product; 
 
 **Shipped:** thin **JavaParser** `SmellDetector` (method-level duplication / complexity / volume / params) on embedded `demo-sources/` and optional **gameDir-scoped disk folder** via `/codearena scan` (bundled `codearena-sample/`), preferred by `ArenaSession` with **`DemoProblems` fallback**. Fabric does not sandbox FS reads; path resolve still refuses escapes outside the server game directory.
 
-**Still not shipped:** full **CloneRefactor** Type-2/Type-3 clone engine. No standalone CloneRefactor jar/checkout under `/workspace`; `_forge_legacy` embeds `clonerefactor.*` Forge sources only — **do not clone**. Keep status **Open** for that gap (and Swing N/A).
+**Still not shipped:** full **CloneRefactor** Type-2/Type-3 clone engine. No standalone CloneRefactor jar/checkout under `/workspace`; `_forge_legacy` embeds `clonerefactor.*` Forge sources only — **do not clone**. Port status is **Mostly OK** with those two as the remaining **N/A/deferred** gaps (not Done).
 
 ## API mapping (high level)
 
