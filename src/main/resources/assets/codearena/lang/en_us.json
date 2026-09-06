@@ -11,8 +11,9 @@
 	"entity.codearena.code_blaze": "Code Blaze (Nesting)",
 	"entity.codearena.code_enderman": "Code Enderman (God Class)",
 	"commands.codearena.spawn.success": "CodeArena spawned at your position.",
+	"commands.codearena.scan.success": "CodeArena scan wave spawned (disk JavaParser smells or fallback).",
 	"commands.codearena.end.success": "CodeArena session ended.",
 	"commands.codearena.already": "An arena is already active. Use /codearena end first.",
 	"commands.codearena.none": "No active CodeArena session.",
-	"commands.codeclones.stub": "CloneRefactor jar still required for real AST (none under /workspace) — detection stays demo-only. Use /codearena spawn and /codearena problems."
+	"commands.codeclones.stub": "CloneRefactor Type-2/3 jar still required (none under /workspace). Use /codearena spawn (demo AST) or /codearena scan [path] for method-level JavaParser disk scan."
 }

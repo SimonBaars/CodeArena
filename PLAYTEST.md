@@ -2,7 +2,7 @@
 
 Target: Minecraft **26.2**, Fabric Loader **0.19.5**, Fabric API **0.159.0+26.2**, Java **25**.  
 Built JAR: `build/libs/codearena-1.0.0+26.2.jar`  
-Coverage: **~48–50%** of original Forge feature surface (schematic arena + watchtowers, JavaParser method-level AST on demo-sources + DemoProblems fallback, registered smell entities + spider/cave-spider textures, package-filter diamonds, structure place command). Full Type-2/3 CloneRefactor still absent; Swing editor **N/A/deferred**; no Techne ModelCode* (vanilla only).
+Coverage: **~50–52%** of original Forge feature surface (schematic arena + watchtowers, JavaParser method-level AST on demo-sources + **disk `/codearena scan`** + DemoProblems fallback, registered smell entities + spider/cave-spider textures, package-filter diamonds, structure place command). Full Type-2/3 CloneRefactor still absent; Swing editor **N/A/deferred**; no Techne ModelCode* (vanilla only).
 
 Use a Creative world with cheats enabled (`arenaplay` exists under `run/saves/`).
 
@@ -30,6 +30,13 @@ Use a Creative world with cheats enabled (`arenaplay` exists under `run/saves/`)
 - [ ] Mob griefing disabled for the session
 - [ ] Second `/codearena spawn` while active fails with “already active”
 
+## 2b. Disk scan wave
+
+- [ ] `/codearena end` then `/codearena scan` materializes/uses `codearena-sample/` under the game dir
+- [ ] Chat notes disk scan path; `/codearena problems` lists method-level smells from OrderService/OrderHelpers
+- [ ] `/codearena scan ../` (or path outside game dir) is refused
+- [ ] DemoProblems still used if scan+demo AST empty (fallback path)
+
 ## 3. Problem flow & package filter
 
 - [ ] `/codearena problems` lists AST (or fallback) problems with [ ] / [x] status
@@ -52,7 +59,7 @@ Use a Creative world with cheats enabled (`arenaplay` exists under `run/saves/`)
 
 ## Known gaps (do not fail build)
 
-- No project-folder / Type-2/3 CloneRefactor scan (**jar still required**; thin JavaParser method-level only; do not clone)
+- No Type-2/3 CloneRefactor scan (**jar still required**; thin JavaParser method-level on demo-sources + gameDir disk scan; do not clone)
 - Swing CodeEditor **N/A/deferred** (Forge desktop UI ≠ Fabric client; tips via chat / HTML blurbs only)
 - No Techne ModelCode* geometry — only `ModelCodeSkeleton` (vanilla thin biped); spider(+eyes) skins + derived cave spider; others vanilla models/skins
 - Schematic block **metadata** (facing) not remapped
@@ -65,17 +72,17 @@ Use a Creative world with cheats enabled (`arenaplay` exists under `run/saves/`)
 |------|--------|
 | Mod init + Fabric metadata | Covered |
 | Creative tab + 2 items | Covered |
-| `/codearena spawn\|end\|problems\|place` | Covered |
+| `/codearena spawn\|scan\|end\|problems\|place` | Covered |
 | Legacy `arena.structure` + corner `watchtower`s | Covered |
 | Opt-in coliseum/colloseum/arenacheck | Covered (command) |
-| JavaParser method-level AST → typed smell entities | Covered (demo-sources) |
+| JavaParser method-level AST → typed smell entities | Covered (demo-sources + disk scan) |
 | DemoProblems fallback wave | Covered |
 | Custom spider + cave-spider texture renderers (+ eyes) | Covered |
 | Package-filter diamonds | Covered |
 | Sidebar score + kill tips + emerald reward | Covered |
 | `/codeclones` full CloneRefactor | **Gap / stub** (no local jar) |
 | Swing CodeEditor | **N/A / deferred** (desktop Swing, not Fabric-portable) |
-| Thin JavaParser SmellDetector | Covered (method-level on demo-sources) |
+| Thin JavaParser SmellDetector | Covered (demo-sources + `/codearena scan` disk) |
 | CloneRefactor Type-2/3 engine | **Open gap** (jar/checkout absent) |
 | Techne / unique ModelCode* meshes | **N/A** (legacy had none; ModelCodeSkeleton = vanilla) |
 

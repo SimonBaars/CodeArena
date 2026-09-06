@@ -6,6 +6,7 @@ import com.simonbaars.codearena.javaparser.SmellDetector;
 import com.simonbaars.codearena.problem.DemoProblems;
 import com.simonbaars.codearena.problem.ProblemTips;
 import com.simonbaars.codearena.problem.ProblemType;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -33,7 +34,7 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 /**
  * Session stand-in for legacy {@code CodeArena}: schematic arena + watchtowers,
- * JavaParser AST (or DemoProblems fallback) metric problems as typed smell mobs, package-filter diamonds, sidebar score.
+ * JavaParser AST from demo-sources or disk scan (or DemoProblems fallback) as typed smell mobs, package-filter diamonds, sidebar score.
  */
 public final class ArenaSession {
 	private static final String OBJECTIVE_ID = "codearena_score";
@@ -67,7 +68,41 @@ public final class ArenaSession {
 		}
 	}
 
+	/** Default spawn: embedded demo-sources AST, else DemoProblems fallback. */
 	public static ArenaSession spawn(ServerLevel level, ServerPlayer player) {
+		List<CodeProblem> astProblems = SmellDetector.tryDetectDemoWave();
+		boolean fromAst = !astProblems.isEmpty();
+		List<CodeProblem> problems = fromAst ? astProblems : DemoProblems.sampleWave();
+		String waveNote = fromAst
+				? "AST smells via JavaParser on embedded demo-sources (method-level duplication/complexity/size/params — not full CloneRefactor Type-2/3). "
+				: "Fallback DemoProblems wave (SmellDetector unavailable). Full Type-2/3 clones still need CloneRefactor. ";
+		return begin(level, player, problems, waveNote);
+	}
+
+	/**
+	 * Spawn using a server-side on-disk {@code .java} tree (e.g. {@code /codearena scan}).
+	 * Falls back to embedded demo AST, then DemoProblems, if the folder yields no smells.
+	 */
+	public static ArenaSession spawnFromDirectory(ServerLevel level, ServerPlayer player, Path scanRoot) {
+		List<CodeProblem> scanned = SmellDetector.tryDetectDirectory(scanRoot);
+		if (!scanned.isEmpty()) {
+			String waveNote = "Disk scan of " + scanRoot
+					+ " via JavaParser (method-level duplication/complexity/size/params — not full CloneRefactor Type-2/3). ";
+			return begin(level, player, scanned, waveNote);
+		}
+		List<CodeProblem> astProblems = SmellDetector.tryDetectDemoWave();
+		if (!astProblems.isEmpty()) {
+			String waveNote = "Disk scan empty/failed for " + scanRoot
+					+ "; using embedded demo-sources AST instead. ";
+			return begin(level, player, astProblems, waveNote);
+		}
+		String waveNote = "Disk scan and demo AST empty for " + scanRoot
+				+ "; Fallback DemoProblems wave. Full Type-2/3 clones still need CloneRefactor. ";
+		return begin(level, player, DemoProblems.sampleWave(), waveNote);
+	}
+
+	private static ArenaSession begin(ServerLevel level, ServerPlayer player,
+			List<CodeProblem> problems, String waveNote) {
 		BlockPos center = player.blockPosition();
 		boolean prevGriefing = level.getGameRules().get(GameRules.MOB_GRIEFING);
 		level.getGameRules().set(GameRules.MOB_GRIEFING, false, level.getServer());
@@ -76,23 +111,17 @@ public final class ArenaSession {
 		player.teleportTo(center.getX() + 0.5, center.getY() + 3.0, center.getZ() + 0.5);
 		player.getInventory().add(new ItemStack(Items.DIAMOND_SWORD));
 
-		List<CodeProblem> astProblems = SmellDetector.tryDetectDemoWave();
-		boolean fromAst = !astProblems.isEmpty();
-		List<CodeProblem> problems = fromAst ? astProblems : DemoProblems.sampleWave();
 		ArenaSession session = new ArenaSession(level, center, player.getUUID(), problems, built, prevGriefing);
 		session.givePackageFilterDiamonds(player);
 		session.setupScoreboard();
 		session.spawnProblems();
 
 		String source = String.join("+", built.placedStructures());
-		String waveNote = fromAst
-				? "AST smells via JavaParser on embedded demo-sources (method-level duplication/complexity/size/params — not full CloneRefactor Type-2/3). "
-				: "Fallback DemoProblems wave (SmellDetector unavailable). Full Type-2/3 clones still need CloneRefactor. ";
 		player.sendSystemMessage(Component.literal(
 				"CodeArena ready (" + source + ", " + built.totalBlocks() + " blocks). Defeat "
 						+ problems.size() + " metric smells. Hold a named diamond to filter by package. "
 						+ waveNote
-						+ "/codearena problems | /codearena place <structure>"));
+						+ "/codearena problems | /codearena scan [path] | /codearena place <structure>"));
 		return session;
 	}
 

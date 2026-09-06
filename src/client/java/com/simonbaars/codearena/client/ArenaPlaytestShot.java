@@ -6,8 +6,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 
 /**
- * Dev-only: {@code -Dcodearena.arenashot=1} + quickPlay arenaplay → spawn arena,
- * overview + open-air spider texture shots (mainRenderTarget), quit.
+ * Dev-only: {@code -Dcodearena.arenashot=1} + quickPlay arenaplay → {@code /codearena scan}
+ * (disk sample-project AST wave) + overview + open-air spider texture shots, quit.
  */
 public final class ArenaPlaytestShot {
 	private static int ticks = -1;
@@ -45,9 +45,9 @@ public final class ArenaPlaytestShot {
 				conn.sendCommand("codearena end");
 			}
 			if (!spawned && ticks == 100) {
-				client.player.connection.sendCommand("codearena spawn");
+				client.player.connection.sendCommand("codearena scan");
 				spawned = true;
-				CodeArenaMod.LOGGER.info("ArenaPlaytestShot: /codearena spawn issued");
+				CodeArenaMod.LOGGER.info("ArenaPlaytestShot: /codearena scan issued");
 			}
 			if (spawned && !positioned && ticks == 160) {
 				var conn = client.player.connection;

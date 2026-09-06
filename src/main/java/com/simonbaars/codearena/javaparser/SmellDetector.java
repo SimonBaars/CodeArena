@@ -10,21 +10,25 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.simonbaars.codearena.problem.CodeProblem;
 import com.simonbaars.codearena.problem.ProblemType;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Thin JavaParser-based smell detector for Fabric CodeArena.
  * Detects method-level duplication / complexity / volume / parameter-count smells
- * on embedded demo sources (or any in-memory Java source map).
+ * on embedded demo sources, an on-disk project folder, or any in-memory Java source map.
  * <p>
  * This is <strong>not</strong> full CloneRefactor Type-2/3 clone detection —
  * only identical normalized method bodies and simple complexity heuristics.
@@ -41,6 +45,8 @@ public final class SmellDetector {
 	private static final int VOLUME_THRESHOLD = 50;
 	private static final int PARAM_THRESHOLD = 5;
 	private static final int MIN_DUP_BODY_CHARS = 50;
+	/** Soft cap so a huge tree cannot stall the server tick path. */
+	private static final int MAX_JAVA_FILES = 200;
 
 	private final JavaParser parser;
 
@@ -72,6 +78,43 @@ public final class SmellDetector {
 		if (sources.isEmpty()) {
 			return List.of();
 		}
+		return detectFromSources(sources);
+	}
+
+	/**
+	 * Recursively scan {@code .java} files under {@code root} (server-side disk).
+	 * Returns empty on missing dir / no parses so callers can fall back.
+	 */
+	public List<CodeProblem> detectFromDirectory(Path root) {
+		if (root == null || !Files.isDirectory(root)) {
+			LOGGER.warn("SmellDetector directory missing or not a directory: {}", root);
+			return List.of();
+		}
+		Map<String, String> sources = new HashMap<>();
+		try (Stream<Path> walk = Files.walk(root)) {
+			List<Path> javaFiles = walk
+					.filter(Files::isRegularFile)
+					.filter(p -> p.getFileName().toString().endsWith(".java"))
+					.limit(MAX_JAVA_FILES)
+					.toList();
+			for (Path file : javaFiles) {
+				try {
+					String content = Files.readString(file, StandardCharsets.UTF_8);
+					String logical = root.relativize(file).toString().replace('\\', '/');
+					sources.put(logical, content);
+				} catch (IOException e) {
+					LOGGER.warn("Failed to read {}: {}", file, e.toString());
+				}
+			}
+		} catch (IOException e) {
+			LOGGER.warn("Failed to walk {}: {}", root, e.toString());
+			return List.of();
+		}
+		if (sources.isEmpty()) {
+			LOGGER.warn("No .java files under {}", root);
+			return List.of();
+		}
+		LOGGER.info("SmellDetector scanning {} .java file(s) under {}", sources.size(), root);
 		return detectFromSources(sources);
 	}
 
@@ -263,6 +306,23 @@ public final class SmellDetector {
 			return found;
 		} catch (Throwable t) {
 			LOGGER.warn("SmellDetector failed; caller should fall back to DemoProblems: {}", t.toString());
+			return List.of();
+		}
+	}
+
+	/** Disk-folder scan; empty on failure so callers can fall back. */
+	public static List<CodeProblem> tryDetectDirectory(Path root) {
+		try {
+			List<CodeProblem> found = new SmellDetector().detectFromDirectory(root);
+			if (!found.isEmpty()) {
+				LOGGER.info("SmellDetector found {} method-level smells under {}: {}",
+						found.size(),
+						root,
+						found.stream().map(CodeProblem::chatSummary).collect(Collectors.joining("; ")));
+			}
+			return found;
+		} catch (Throwable t) {
+			LOGGER.warn("SmellDetector directory scan failed for {}: {}", root, t.toString());
 			return List.of();
 		}
 	}

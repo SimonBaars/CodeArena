@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Fabric 26.2 entry — deepened subset of Forge 1.12.2 CodeArena / CloneDetection.
- * Schematic arena + watchtowers, JavaParser method-level AST smells (DemoProblems fallback),
+ * Schematic arena + watchtowers, JavaParser method-level AST (demo-sources + /codearena scan disk folder; DemoProblems fallback),
  * custom entity registry ids, package-filter diamonds. Swing editor N/A/deferred (Forge desktop UI);
  * full Type-2/3 CloneRefactor still not ported.
  */
@@ -45,7 +45,7 @@ public class CodeArenaMod implements ModInitializer {
 				activeSession.tickFilter(player);
 			}
 		});
-		LOGGER.info("CodeArena registered — /codearena spawn|end|problems|place");
+		LOGGER.info("CodeArena registered — /codearena spawn|scan|end|problems|place");
 	}
 
 	public static Identifier id(String path) {

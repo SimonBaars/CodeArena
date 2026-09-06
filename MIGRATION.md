@@ -14,7 +14,7 @@
 
 Legacy Forge tree kept for reference (not on compile path): `_forge_legacy/`.
 
-## Scope honesty — coverage ≈ **48–50%** of original Java surface
+## Scope honesty — coverage ≈ **50–52%** of original Java surface
 
 Original tree: **~129** `.java` files (arena + clone detection + Swing editor + metric monsters + Forge GUIs).  
 This port ships a **deeper playable subset** — schematic arena + watchtowers, eight demo problem→mob types, registered smell entities (custom spider / cave-spider textures), package-filter diamonds, structure place command — still not a line-for-line reimplementation.
@@ -23,21 +23,21 @@ This port ships a **deeper playable subset** — schematic arena + watchtowers, 
 |-------------|----------------|-------------|-------|
 | Mod init / proxies / FG event bus | ~8 | **Done (replaced)** | `CodeArenaMod` + Fabric entrypoints; no sided proxies |
 | Creative items (checkmark / crossmark) | ~2 | **Done** | Right-click spawn / end arena |
-| Commands `/codeclones`, end | ~2 | **Partial** | `/codearena spawn\|end\|problems\|place`; `/codeclones` stub |
+| Commands `/codeclones`, end | ~2 | **Partial** | `/codearena spawn\|scan\|end\|problems\|place`; `/codeclones` stub |
 | Arena / Challenges + scoreboard | ~3 | **Mostly done** | Sidebar + emerald reward + package diamonds; no wave loop |
 | Schematic structure loader | ~8 | **Done (remap)** | `arena` + corner `watchtower`; `/codearena place` for coliseum/etc. |
 | Custom monsters (zombie/skeleton/creeper/spider) | ~20 | **Mostly done** | 8 entity types + attrs; `code_spider`/`code_cave_spider` (+eyes) skins; ModelCode* = vanilla only (see audit) |
-| Clone detection engine (`clonerefactor.*`) | ~60+ | **Partial (thin AST)** | JavaParser `SmellDetector` on embedded `demo-sources` (method-level); `DemoProblems` fallback; **no** Type-2/3 CloneRefactor |
+| Clone detection engine (`clonerefactor.*`) | ~60+ | **Partial (thin AST)** | JavaParser `SmellDetector` on embedded `demo-sources` + **disk `/codearena scan`** (gameDir-scoped; method-level); `DemoProblems` fallback; **no** Type-2/3 CloneRefactor |
 | Swing / RSyntaxTextArea code editor | ~5 | **N/A / deferred** | Forge **desktop** Swing UI — not portable to Fabric client the same way; tips via chat + `/tips/*.html` blurbs |
 | Forge GUIs (setup / end challenge) | ~4 | **Dropped** | Chat + items + commands |
 | Keybind `c` open menu | ~1 | **Dropped** | Use items / commands |
 | Tips / ResourceCommons extract | ~4 | **Partial** | Tip HTML on classpath; stripped to chat blurbs |
 
-Honest total: treat as **~48–50% feature coverage** of the education product; **~25–30%** of clone-detection depth (thin JavaParser method-level smells + DemoProblems fallback; still no Type-2/3 CloneRefactor).
+Honest total: treat as **~50–52%** feature coverage of the education product; **~30–35%** of clone-detection depth (thin JavaParser method-level smells on demo-sources + optional disk folder scan + DemoProblems fallback; still no Type-2/3 CloneRefactor).
 
 ## AST / CloneRefactor wiring policy
 
-**Shipped:** thin **JavaParser** `SmellDetector` (method-level duplication / complexity / volume / params) on embedded `demo-sources/`, preferred by `ArenaSession` with **`DemoProblems` fallback**.
+**Shipped:** thin **JavaParser** `SmellDetector` (method-level duplication / complexity / volume / params) on embedded `demo-sources/` and optional **gameDir-scoped disk folder** via `/codearena scan` (bundled `codearena-sample/`), preferred by `ArenaSession` with **`DemoProblems` fallback**. Fabric does not sandbox FS reads; path resolve still refuses escapes outside the server game directory.
 
 **Still not shipped:** full **CloneRefactor** Type-2/Type-3 clone engine. No standalone CloneRefactor jar/checkout under `/workspace`; `_forge_legacy` embeds `clonerefactor.*` Forge sources only — **do not clone**. Keep status **Open** for that gap (and Swing N/A).
 
@@ -58,7 +58,7 @@ Honest total: treat as **~48–50% feature coverage** of the education product; 
 
 ## Major cuts (do not expect)
 
-1. **No full CloneRefactor / project-folder Type-2/3 scan** — thin JavaParser demo-source AST only; CloneRefactor jar still absent under `/workspace`.
+1. **No full CloneRefactor Type-2/3 scan** — thin JavaParser method-level AST on demo-sources + optional disk folder (`/codearena scan`); CloneRefactor jar still absent under `/workspace`.
 2. **Swing CodeEditor N/A / deferred** — Forge desktop UI, not portable to the Fabric client the same way; tips via chat / HTML when “fighting” a smell.
 3. **No Techne / unique ModelCode* meshes** — legacy audit (`_forge_legacy`):
    - Only `ModelCodeSkeleton.java` existed; it is a **vanilla `ModelSkeleton` clone** (thin biped arms/legs), not a Techne export.
