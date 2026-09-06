@@ -22,6 +22,15 @@ loom {
 			sourceSet sourceSets.client
 		}
 	}
+
+	runs {
+		client {
+			if (project.hasProperty('arenashot')) {
+				vmArg '-Dcodearena.arenashot=1'
+				programArgs '--quickPlaySingleplayer', 'arenaplay'
+			}
+		}
+	}
 }
 
 dependencies {

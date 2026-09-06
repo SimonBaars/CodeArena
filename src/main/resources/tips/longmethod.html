@@ -1,0 +1,46 @@
+<article>
+    
+    <h1 class="title">Long Method</h1>
+
+            
+    <h3>Signs and Symptoms</h3>
+<p>A method contains too many lines of code. Generally, any method longer than ten lines should make you start asking questions.</p>
+
+<h3>Reasons for the Problem</h3>
+<p>Like the Hotel California, something is always being added to a method but nothing is ever taken out. Since it’s easier to write code than to read it, this “smell” remains unnoticed until the method turns into an ugly, oversized beast.</p>
+<p>Mentally, it’s often harder to create a new method than to add to an existing one: “But it’s just two lines, there’s no use in creating a whole method just for that...” Which means that another line is added and then yet another, giving birth to a tangle of spaghetti code.</p>
+<h3>Treatment</h3>
+<p>As a rule of thumb, if you feel the need to comment on something inside a method, you should take this code and put it in a new method. Even a single line can and should be split off into a separate method, if it requires explanations. And if the method has a descriptive name, nobody will need to look at the code to see what it does.</p>
+
+<ul>
+<li>
+<p>To reduce the length of a method body, use <a href="https://refactoring.guru/extract-method">Extract Method</a>.</p>
+</li>
+<li>
+<p>If local variables and parameters interfere with extracting a method, use <a href="https://refactoring.guru/replace-temp-with-query">Replace Temp with Query</a>, <a href="https://refactoring.guru/introduce-parameter-object">Introduce Parameter Object</a> or <a href="https://refactoring.guru/preserve-whole-object">Preserve Whole Object</a>.</p>
+</li>
+<li>
+<p>If none of the previous recipes help, try moving the entire method to a separate object via <a href="https://refactoring.guru/replace-method-with-method-object">Replace Method with Method Object</a>.</p>
+</li>
+<li>
+<p>Conditional operators and loops are a good clue that code can be moved to a separate method. For conditionals, use <a href="https://refactoring.guru/decompose-conditional">Decompose Conditional</a>. If loops are in the way, try <a href="https://refactoring.guru/extract-method">Extract Method</a>.</p>
+</li>
+</ul>
+<h3>Payoff</h3>
+<ul>
+<li>
+<p>Among all types of object-oriented code, classes with short methods live longest. The longer a method or function is, the harder it becomes to understand and maintain it.</p>
+</li>
+<li>
+<p>In addition, long methods offer the perfect hiding place for unwanted duplicate code.</p>
+</li>
+</ul>
+
+<h3>Performance</h3>
+<p>Does an increase in the number of methods hurt performance, as many people claim? In almost all cases the impact is so negligible that it’s not even worth worrying about.</p>
+<p>Plus, now that you have clear and understandable code, you’re more likely to find truly effective methods for restructuring code and getting real performance gains if the need ever arises.</p>
+
+    <p>Read more at: <a href="https://refactoring.guru/smells/long-method">https://refactoring.guru/smells/long-method</a></p>
+    
+
+</article>

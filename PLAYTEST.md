@@ -2,66 +2,61 @@
 
 Target: Minecraft **26.2**, Fabric Loader **0.19.5**, Fabric API **0.159.0+26.2**, Java **25**.  
 Built JAR: `build/libs/codearena-1.0.0+26.2.jar`  
-Coverage: **~30%** of original Forge feature surface (schematic arena + demo problem flow + named smell mobs; AST engine / Swing editor / custom entity classes cut).
+Coverage: **~42%** of original Forge feature surface (schematic arena + watchtowers, 8 demo problem types, registered smell entities + spider texture, package-filter diamonds, structure place command). AST engine / Swing editor still cut.
 
-Use a Creative world with cheats enabled.
+Use a Creative world with cheats enabled (`arenaplay` exists under `run/saves/`).
 
 ## 0. Load
 
 - [ ] Fabric Loader 0.19.5 + Fabric API `0.159.0+26.2`
 - [ ] Place `codearena-1.0.0+26.2.jar` in `mods/`
-- [ ] Log shows `codearena` initializing and schematic load (`Loaded schematic /structures/arena.structure` or procedural fallback)
+- [ ] Log shows `codearena` initializing, 8 smell entity types, schematic load
 - [ ] No crash on registry bind
 
 ## 1. Creative tab & items
 
 - [ ] Creative tab **CodeArena** appears
-- [ ] **Spawn Code Arena** (`codearena:checkmark`) and **End Code Arena** (`codearena:crossmark`) listed with textures
+- [ ] **Spawn Code Arena** / **End Code Arena** listed with textures
 - [ ] `/give @s codearena:checkmark` and `/give @s codearena:crossmark` work
 
 ## 2. Spawn arena (command)
 
-- [ ] `/codearena spawn` places **legacy `arena.structure`** (stone/sand/stairs/fences/torches) when load succeeds — not only a flat sandstone box
-- [ ] Player teleported slightly above center gold block
-- [ ] Diamond sword added to inventory
-- [ ] Four distinctly typed smell mobs spawn:
-  - Spider — **Duplication: …**
-  - Zombie — **Unit Complexity: …**
-  - Skeleton — **Unit Interface Size: …**
-  - Creeper — **Unit Volume: …**
+- [ ] `/codearena spawn` places **legacy `arena.structure`** plus up to **4 `watchtower`s** at corners when assets load
+- [ ] Player teleported slightly above center gold block; diamond sword + package-filter diamonds given
+- [ ] Nine demo smell mobs of **8 types** spawn (spider / zombie / skeleton / creeper / cave spider / witch / blaze / enderman)
+- [ ] Code spider uses custom `textures/entity/code_spider.png` (legacy `mobs/spider.png`)
 - [ ] Sidebar scoreboard **CodeArena** shows Score / metric lines / Remaining
-- [ ] Mob griefing disabled for the session (creeper should not carve the arena)
+- [ ] Mob griefing disabled for the session
 - [ ] Second `/codearena spawn` while active fails with “already active”
 
-## 3. Problem flow
+## 3. Problem flow & package filter
 
 - [ ] `/codearena problems` lists demo problems with [ ] / [x] status
-- [ ] Killing a smell mob increments Score, prints tip in chat, decreases Remaining
-- [ ] Clearing all four prompts emerald reward hint
+- [ ] Killing a smell mob increments Score, prints tip (HTML tip blurbs when present), decreases Remaining
+- [ ] Holding a named diamond filters visibility by package (`Show All Packages` shows all)
+- [ ] Clearing all prompts emerald reward hint
 
-## 4. Spawn arena (item)
+## 4. Structures on demand
 
-- [ ] Right-click **Spawn Code Arena** item → same as `/codearena spawn`
+- [ ] `/codearena place watchtower` places a single watchtower at feet
+- [ ] `/codearena place arenacheck|coliseum|colloseum` load when present (coliseum is huge — expect hitch)
 
-## 5. End session
+## 5. Spawn / end via items
 
-- [ ] `/codearena end` or right-click **End Code Arena** removes remaining session mobs
-- [ ] Chat confirms end + emerald count from score
-- [ ] Scoreboard sidebar cleared; mob griefing restored
-- [ ] Ending with no session shows failure message
+- [ ] Right-click **Spawn Code Arena** / **End Code Arena** items
 
 ## 6. Legacy command stub
 
-- [ ] `/codeclones` prints stub pointing at `/codearena spawn` / `problems`
+- [ ] `/codeclones` prints stub (no local CloneRefactor jar under `/workspace`)
 
 ## Known gaps (do not fail build)
 
-- No project-folder CloneRefactor AST scan
-- No Swing / in-game code editor (tips via chat only)
-- No custom Code* entity classes / scaled model renders (vanilla + name + attributes)
+- No project-folder CloneRefactor AST scan (**no jar/API under `/workspace`**; do not clone repos)
+- No Swing / in-game code editor (tips via chat / HTML blurbs only)
+- No full custom ModelCode* geometry (only spider skin asset existed; others use vanilla models via registered entity types)
 - Schematic block **metadata** (facing) not remapped
-- `coliseum` / `colloseum` / `watchtower` resources present but not auto-placed
-- No package-filter diamonds / multi-wave detection thread from original
+- Coliseum not auto-placed on spawn (opt-in via `/codearena place`)
+- No multi-wave detection thread from original
 
 ## Coverage summary
 
@@ -69,11 +64,21 @@ Use a Creative world with cheats enabled.
 |------|--------|
 | Mod init + Fabric metadata | Covered |
 | Creative tab + 2 items | Covered |
-| `/codearena spawn\|end\|problems` | Covered |
-| Legacy `arena.structure` load | Covered (id remap; procedural fallback) |
-| Demo problem → typed smell mobs | Covered |
+| `/codearena spawn\|end\|problems\|place` | Covered |
+| Legacy `arena.structure` + corner `watchtower`s | Covered |
+| Opt-in coliseum/colloseum/arenacheck | Covered (command) |
+| 8 demo problem types → typed smell entities | Covered |
+| Custom spider texture renderer | Covered |
+| Package-filter diamonds | Covered |
 | Sidebar score + kill tips + emerald reward | Covered |
-| `/codeclones` real AST detection | **Gap / stub** |
+| `/codeclones` real AST detection | **Gap / stub** (no local jar) |
 | Swing CodeEditor | **Gap / dropped** |
 | clonerefactor AST engine | **Gap / demo only** |
-| Custom entity classes + Forge GUIs | **Gap / dropped** |
+| Full custom ModelCode* meshes | **Gap** (assets absent except spider PNG) |
+
+## Auto screenshot (dev)
+
+```bash
+export JAVA_HOME=/workspace/jdk-25 DISPLAY=:4
+./gradlew runClient -Parenashot --no-daemon
+```

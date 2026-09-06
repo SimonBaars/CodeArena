@@ -1,16 +1,18 @@
 # CodeArena Playtest Results
 
-Date: 2026-09-05
-World: `arenaplay` (Creative, cheats enabled)
+Date: 2026-09-05 evening (PT) / 2026-09-06 ~00:51 UTC  
+World: `arenaplay` (Creative, cheats enabled)  
+Auto: `./gradlew runClient -Parenashot` on `DISPLAY=:4`
 
 ## Results
 
-- Minecraft 26.2 Fabric client loaded successfully and entered the world without a crash.
-- Creative inventory shows the **CodeArena** tab with the checkmark and crossmark items. Screenshot: `playtest-shots/01-creative-tab.webp`.
-- `/codearena spawn` succeeded: a procedural sandstone arena was built, the player was positioned above the arena center, a diamond sword was added, and named `Code Smell` zombie placeholders spawned. Screenshot: `playtest-shots/02-arena-spawned.webp`.
-- `/codeclones` printed the expected stub directing users to `/codearena spawn` or the Spawn Code Arena item.
-- `/codearena end` confirmed: `CodeArena session ended.` Remaining session mobs were removed.
+- Minecraft 26.2 Fabric client loaded; registered **8** smell entity types; client renderers bound (custom spider texture).
+- `/codearena spawn` loaded legacy `arena.structure` (**21936** blocks) + **4 watchtowers** (**1280** each; **27056** total).
+- Chat: 9 demo smells / 8 types; package-filter diamonds; CloneRefactor AST jar not available (expected).
+- Scoreboard sidebar shows Remaining=9 and all 8 metric labels.
+- Screenshot: `playtest-shots/03-arena-watchtowers.webp` (+ `.png`) — mesa overview with arena/watchtower stone and smell nameplates.
+- Earlier smoke shots retained: `01-creative-tab.webp`, `02-arena-spawned.webp`.
 
 ## Notes
 
-The final arena capture was made at night so the vanilla zombie placeholders remained visible; custom mobs and clone detection are expected gaps for this subset.
+Coverage after deepen: **~42%**. Remaining cuts: AST engine (no local jar), Swing CodeEditor, ModelCode* meshes (only spider PNG existed), schematic metadata facing, coliseum not auto-spawned (opt-in `/codearena place`).

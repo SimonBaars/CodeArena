@@ -3,8 +3,8 @@ package com.simonbaars.codearena.problem;
 import java.util.List;
 
 /**
- * Demo "detection results" used when the full CloneRefactor AST pipeline is not on the classpath.
- * Mirrors the four ProblemType categories the Forge arena spawned as distinct mobs.
+ * Demo "detection results" used when CloneRefactor AST is not on the classpath.
+ * Eight problem types across three packages (enables diamond package-filter).
  */
 public final class DemoProblems {
 	private DemoProblems() {}
@@ -16,7 +16,13 @@ public final class DemoProblems {
 						"OrderService.duplicateValidate",
 						"com.example.shop.order",
 						8,
-						"Extract the duplicated validation into a shared helper; keep one source of truth."),
+						"Extract duplicated validation into a shared helper; keep one source of truth."),
+				new CodeProblem(
+						ProblemType.DUPLICATION,
+						"CartController.copyPasteAuth",
+						"com.example.shop.cart",
+						6,
+						"Same auth preamble in multiple controllers — Extract Method + shared filter."),
 				new CodeProblem(
 						ProblemType.UNITCOMPLEXITY,
 						"PaymentGateway.process",
@@ -28,13 +34,37 @@ public final class DemoProblems {
 						"CatalogFacade",
 						"com.example.shop.catalog",
 						9,
-						"Shrink the public interface: ISP — clients should not depend on unused methods."),
+						"Shrink the public interface (ISP): clients should not depend on unused methods."),
 				new CodeProblem(
 						ProblemType.UNITVOLUME,
 						"ReportBuilder.buildAnnual",
 						"com.example.shop.report",
 						15,
-						"Long method / high volume: extract steps (load → transform → format) into named units.")
+						"Long method / high volume: extract steps (load → transform → format) into named units."),
+				new CodeProblem(
+						ProblemType.TYPE2CLONE,
+						"PriceRules.tierA/tierB",
+						"com.example.shop.pricing",
+						10,
+						"Type-2 clone (renamed identifiers). Parameterize the differing names into one method."),
+				new CodeProblem(
+						ProblemType.TYPE3CLONE,
+						"InvoiceExport.csv/xml",
+						"com.example.shop.report",
+						11,
+						"Type-3 clone (gapped statements). Form Template Method for shared export skeleton."),
+				new CodeProblem(
+						ProblemType.NESTINGDEPTH,
+						"Fulfillment.shipIfReady",
+						"com.example.shop.order",
+						7,
+						"Deep nesting: early returns / guard clauses flatten the pyramid of doom."),
+				new CodeProblem(
+						ProblemType.GODCLASS,
+						"ShopManager",
+						"com.example.shop",
+						18,
+						"God class: split by responsibility (orders, catalog, payments) into cohesive types.")
 		);
 	}
 }

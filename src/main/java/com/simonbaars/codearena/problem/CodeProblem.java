@@ -2,7 +2,7 @@ package com.simonbaars.codearena.problem;
 
 /**
  * Simplified stand-in for legacy {@code MetricProblem} without JavaParser / Sequence.
- * Carries enough metadata for naming, scaling, scoring, and chat tips.
+ * Carries enough metadata for naming, scaling, scoring, package filter, and chat tips.
  */
 public final class CodeProblem {
 	private final ProblemType type;
@@ -40,7 +40,7 @@ public final class CodeProblem {
 	}
 
 	public String scoreLabel() {
-		return type.getDisplayName();
+		return type.scoreboardLabel();
 	}
 
 	public String chatSummary() {

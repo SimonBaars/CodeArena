@@ -1,0 +1,72 @@
+<article>
+    
+    <h1 class="title">Duplicate Code</h1>
+    
+
+            
+    <h3>Signs and Symptoms</h3>
+<p>Two code fragments look almost identical.</p>
+
+<h3>Reasons for the Problem</h3>
+<p>Duplication usually occurs when multiple programmers are working on different parts of the same program at the same time. Since they’re working on different tasks, they may be unaware their colleague has already written similar code that could be repurposed for their own needs.</p>
+<p>There’s also more subtle duplication, when specific parts of code look different but actually perform the same job. This kind of duplication can be hard to find and fix.</p>
+<p>Sometimes duplication is purposeful. When rushing to meet deadlines and the existing code is “almost right” for the job, novice programmers may not be able to resist the temptation of copying and pasting the relevant code. And in some cases, the programmer is simply too lazy to de-clutter.</p>
+<h3>Treatment</h3>
+<ul>
+<li>
+<p>If the same code is found in two or more methods in the same class: use <a href="https://refactoring.guru/extract-method">Extract Method</a> and place calls for the new method in both places.</p>
+ </li>
+<li>
+<p>If the same code is found in two subclasses of the same level:</p>
+<ul>
+<li>
+<p>Use <a href="https://refactoring.guru/extract-method">Extract Method</a> for both classes, followed by <a href="https://refactoring.guru/pull-up-field">Pull Up Field</a> for the fields used in the method that you’re pulling up.</p>
+</li>
+<li>
+<p>If the duplicate code is inside a constructor, use <a href="https://refactoring.guru/pull-up-constructor-body">Pull Up Constructor Body</a>.</p>
+</li>
+<li>
+<p>If the duplicate code is similar but not completely identical, use <a href="https://refactoring.guru/form-template-method">Form Template Method</a>.</p>
+</li>
+<li>
+<p>If two methods do the same thing but use different algorithms, select the best algorithm and apply <a href="https://refactoring.guru/substitute-algorithm">Substitute Algorithm</a>.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>If duplicate code is found in two different classes:</p>
+<ul>
+<li>
+<p>If the classes aren’t part of a hierarchy, use <a href="https://refactoring.guru/extract-superclass">Extract Superclass</a> in order to create a single superclass for these classes that maintains all the previous functionality.</p>
+</li>
+<li>
+<p>If it’s difficult or impossible to create a superclass, use <a href="https://refactoring.guru/extract-class">Extract Class</a> in one class and use the new component in the other.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>If a large number of conditional expressions are present and perform the same code (differing only in their conditions), merge these operators into a single condition using <a href="https://refactoring.guru/consolidate-conditional-expression">Consolidate Conditional Expression</a> and use <a href="https://refactoring.guru/extract-method">Extract Method</a> to place the condition in a separate method with an easy-to-understand name.</p>
+</li>
+<li>
+<p>If the same code is performed in all branches of a conditional expression: place the identical code outside of the condition tree by using <a href="https://refactoring.guru/consolidate-duplicate-conditional-fragments">Consolidate Duplicate Conditional Fragments</a>.</p>
+</li>
+</ul>
+<h3>Payoff</h3>
+<ul>
+<li>
+<p>Merging duplicate code simplifies the structure of your code and makes it shorter.</p>
+</li>
+<li>
+<p>Simplification + shortness = code that’s easier to simplify and cheaper to support.</p>
+</li>
+</ul>
+
+<h3>When to Ignore</h3>
+<ul>
+<li>In very rare cases, merging two identical fragments of code can make the code less intuitive and obvious.</li>
+</ul>
+
+    <p>Read more at: <a href="https://refactoring.guru/smells/duplicate-code">https://refactoring.guru/smells/duplicate-code</a></p>
+    
+
+</article>

@@ -14,26 +14,30 @@
 
 Legacy Forge tree kept for reference (not on compile path): `_forge_legacy/`.
 
-## Scope honesty — coverage ≈ **28–32%** of original Java surface
+## Scope honesty — coverage ≈ **40–45%** of original Java surface
 
 Original tree: **~129** `.java` files (arena + clone detection + Swing editor + metric monsters + Forge GUIs).  
-This port ships a **deeper playable subset** — schematic arena, demo problem→mob scoring, distinct smell mobs — still not a line-for-line reimplementation.
+This port ships a **deeper playable subset** — schematic arena + watchtowers, eight demo problem→mob types, registered smell entities (custom spider texture), package-filter diamonds, structure place command — still not a line-for-line reimplementation.
 
 | Legacy area | Files (approx) | Port status | Notes |
 |-------------|----------------|-------------|-------|
 | Mod init / proxies / FG event bus | ~8 | **Done (replaced)** | `CodeArenaMod` + Fabric entrypoints; no sided proxies |
 | Creative items (checkmark / crossmark) | ~2 | **Done** | Right-click spawn / end arena |
-| Commands `/codeclones`, end | ~2 | **Partial** | `/codearena spawn\|end\|problems`; `/codeclones` stub points at demo flow |
-| Arena / Challenges + scoreboard | ~3 | **Mostly done** | Sidebar score + emerald reward; no wave loop / package diamond filter |
-| Schematic structure loader | ~8 | **Done (remap)** | Loads `structures/arena.structure` with 1.12 id remap; procedural fallback |
-| Custom monsters (zombie/skeleton/creeper/spider) | ~20 | **Partial** | Vanilla spider/zombie/skeleton/creeper with problem names + scaled attrs (no custom entity classes / renders) |
-| Clone detection engine (`clonerefactor.*`) | ~60+ | **Stubbed as demo** | `DemoProblems` sample wave; no JavaParser AST on classpath |
-| Swing / RSyntaxTextArea code editor | ~5 | **Dropped** | Incompatible with modern MC client; tips printed in chat on kill |
-| Forge GUIs (setup / end challenge) | ~4 | **Dropped** | Chat + items + `/codearena problems` replace dialogs |
+| Commands `/codeclones`, end | ~2 | **Partial** | `/codearena spawn\|end\|problems\|place`; `/codeclones` stub |
+| Arena / Challenges + scoreboard | ~3 | **Mostly done** | Sidebar + emerald reward + package diamonds; no wave loop |
+| Schematic structure loader | ~8 | **Done (remap)** | `arena` + corner `watchtower`; `/codearena place` for coliseum/etc. |
+| Custom monsters (zombie/skeleton/creeper/spider) | ~20 | **Mostly done** | Registered entity types + attrs; spider custom PNG; no ModelCode* meshes |
+| Clone detection engine (`clonerefactor.*`) | ~60+ | **Stubbed as demo** | `DemoProblems` 9-item wave / 8 types; **no CloneRefactor jar under `/workspace`** |
+| Swing / RSyntaxTextArea code editor | ~5 | **Dropped** | Tips via chat + `/tips/*.html` blurbs |
+| Forge GUIs (setup / end challenge) | ~4 | **Dropped** | Chat + items + commands |
 | Keybind `c` open menu | ~1 | **Dropped** | Use items / commands |
-| Tips / ResourceCommons extract | ~4 | **Partial** | Tips embedded on demo problems (chat), HTML tips not extracted |
+| Tips / ResourceCommons extract | ~4 | **Partial** | Tip HTML on classpath; stripped to chat blurbs |
 
-Honest total: treat as **~30% feature coverage** of the education product; **~10%** of clone-detection depth (demo problems only, no AST).
+Honest total: treat as **~42% feature coverage** of the education product; **~12%** of clone-detection depth (expanded demo problems, still no AST).
+
+## CloneRefactor wiring policy
+
+Searched `/workspace` for a CloneRefactor jar/API — **none found** (only `_forge_legacy` sources). Per instructions: **do not clone repos**. AST detection remains demo-only until a local jar is provided.
 
 ## API mapping (high level)
 
@@ -43,20 +47,21 @@ Honest total: treat as **~30% feature coverage** of the education product; **~10
 | `ICommand` | Brigadier via `CommandRegistrationCallback` |
 | `Item` + `onItemRightClick` | `Item.use` → `InteractionResult` |
 | `SchematicStructure` + numeric IDs | `structureloader.SchematicStructure` + `LegacyBlockIds` |
-| Custom `EntityCode*` | Vanilla mobs via `SmellMobFactory` (named + scaled) |
-| Swing `CodeEditor` | **Not opened** (chat tips on resolve) |
+| Custom `EntityCode*` | `ModEntities` registry ids + vanilla classes; `CodeSpiderRenderer` texture |
+| Swing `CodeEditor` | **Not opened** (chat / HTML tips on resolve) |
 | Scoreboard challenge UI | `Scoreboard` sidebar `codearena_score` |
+| Package-filter diamonds | Named `Items.DIAMOND` + session tick invisibility |
 | `mcmod.info` | `fabric.mod.json` |
 | `en_us.lang` | `assets/codearena/lang/en_us.json` (lowercase) |
 
 ## Major cuts (do not expect)
 
-1. **No live clone detection** against a Java project folder (demo problems only).
+1. **No live clone detection** against a Java project folder (demo problems only; no local CloneRefactor jar).
 2. **No desktop / Swing code editor** when “fighting” a smell.
-3. **No custom entity classes / renderers** — vanilla mobs with custom names & attributes.
+3. **No full ModelCode* custom meshes** — only spider PNG existed; others use vanilla models on registered types.
 4. **No Forge GUI screens** / keybind overlay.
 5. **Metadata on schematics ignored** (stairs/doors facing not remapped; default states).
-6. **Large schematics** (`coliseum`, `colloseum`) not auto-loaded (arena only; others remain as resources).
+6. **Large schematics** (`coliseum`, `colloseum`) are opt-in via `/codearena place`, not auto-loaded on spawn.
 
 ## Local only
 

@@ -2,14 +2,17 @@ package com.simonbaars.codearena.challenge;
 
 import com.simonbaars.codearena.CodeArenaMod;
 import com.simonbaars.codearena.structureloader.SchematicStructure;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
- * Prefers legacy {@code structures/arena.structure} (1.12 schematic with remapped block ids).
- * Falls back to a procedural sandstone coliseum if the schematic cannot be loaded.
+ * Prefers legacy {@code structures/arena.structure}, places corner {@code watchtower}s when present,
+ * and can place optional large schematics ({@code coliseum}/{@code colloseum}) on demand.
  */
 public final class ArenaBuilder {
 	public static final int FLOOR_HALF_X = 15;
@@ -21,22 +24,80 @@ public final class ArenaBuilder {
 		PROCEDURAL
 	}
 
+	public record BuildResult(BuildMode mode, List<String> placedStructures, int totalBlocks) {}
+
 	private ArenaBuilder() {}
 
-	public static BuildMode build(ServerLevel level, BlockPos center) {
-		SchematicStructure schematic = new SchematicStructure("arena");
-		if (schematic.readFromClasspath()) {
-			int placed = schematic.placeCentered(level, center);
-			if (placed > 0) {
-				// Center marker so the player spawn spot stays obvious
-				level.setBlock(center.above(), Blocks.GOLD_BLOCK.defaultBlockState(), 3);
-				CodeArenaMod.LOGGER.info("Arena built from legacy arena.structure ({} blocks)", placed);
-				return BuildMode.SCHEMATIC;
+	public static BuildResult build(ServerLevel level, BlockPos center) {
+		List<String> placed = new ArrayList<>();
+		int total = 0;
+
+		SchematicStructure arena = new SchematicStructure("arena");
+		BuildMode mode;
+		if (arena.readFromClasspath()) {
+			int n = arena.placeCentered(level, center);
+			if (n > 0) {
+				placed.add("arena");
+				total += n;
+				mode = BuildMode.SCHEMATIC;
+				CodeArenaMod.LOGGER.info("Arena built from legacy arena.structure ({} blocks)", n);
+			} else {
+				CodeArenaMod.LOGGER.warn("Arena schematic empty — procedural fallback");
+				buildProcedural(level, center);
+				placed.add("procedural");
+				mode = BuildMode.PROCEDURAL;
+			}
+		} else {
+			CodeArenaMod.LOGGER.warn("Schematic load failed — using procedural sandstone arena");
+			buildProcedural(level, center);
+			placed.add("procedural");
+			mode = BuildMode.PROCEDURAL;
+		}
+
+		// Corner watchtowers (small 13x30x13) — skip if schematic missing
+		SchematicStructure tower = new SchematicStructure("watchtower");
+		if (tower.readFromClasspath()) {
+			int halfX = Math.max(18, arena.isLoaded() ? arena.getLength() / 2 + 2 : FLOOR_HALF_X + 3);
+			int halfZ = Math.max(22, arena.isLoaded() ? arena.getWidth() / 2 + 2 : FLOOR_HALF_Z + 3);
+			int[][] corners = {
+					{-halfX, -halfZ},
+					{halfX - tower.getLength(), -halfZ},
+					{-halfX, halfZ - tower.getWidth()},
+					{halfX - tower.getLength(), halfZ - tower.getWidth()}
+			};
+			int towers = 0;
+			for (int[] c : corners) {
+				int n = tower.placeAt(level, center.getX() + c[0], center.getY(), center.getZ() + c[1]);
+				if (n > 0) {
+					towers++;
+					total += n;
+				}
+			}
+			if (towers > 0) {
+				placed.add("watchtowerx" + towers);
+				CodeArenaMod.LOGGER.info("Placed {} watchtowers around arena", towers);
 			}
 		}
-		CodeArenaMod.LOGGER.warn("Schematic load failed — using procedural sandstone arena");
-		buildProcedural(level, center);
-		return BuildMode.PROCEDURAL;
+
+		level.setBlock(center.above(), Blocks.GOLD_BLOCK.defaultBlockState(), 3);
+		return new BuildResult(mode, List.copyOf(placed), total);
+	}
+
+	/**
+	 * Places a named schematic centered on {@code center}. Large coliseum schematics are allowed
+	 * but may hitch the server briefly.
+	 */
+	public static int placeNamed(ServerLevel level, BlockPos center, String structureName) {
+		String key = structureName.toLowerCase(Locale.ROOT).trim();
+		SchematicStructure schematic = new SchematicStructure(key);
+		if (!schematic.readFromClasspath()) {
+			return -1;
+		}
+		int placed = schematic.placeCentered(level, center);
+		if (placed > 0) {
+			level.setBlock(center.above(), Blocks.GOLD_BLOCK.defaultBlockState(), 3);
+		}
+		return placed;
 	}
 
 	public static void buildProcedural(ServerLevel level, BlockPos center) {

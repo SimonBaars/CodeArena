@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
  * using 1.12 numeric ids remapped via {@link LegacyBlockIds}.
  */
 public final class SchematicStructure {
+	private final String name;
 	private final String resourcePath;
 	private Block[][][] blocks;
 	private int length;
@@ -26,7 +27,12 @@ public final class SchematicStructure {
 	private boolean loaded;
 
 	public SchematicStructure(String structureName) {
+		this.name = structureName;
 		this.resourcePath = "/structures/" + structureName + ".structure";
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public boolean readFromClasspath() {
@@ -83,6 +89,20 @@ public final class SchematicStructure {
 		int posX = center.getX() - length / 2 + 1;
 		int posY = center.getY();
 		int posZ = center.getZ() - width / 2 + 1;
+		return placeAt(level, posX, posY, posZ);
+	}
+
+	/**
+	 * Places with the structure's min-corner at {@code origin}.
+	 */
+	public int placeAt(ServerLevel level, BlockPos origin) {
+		return placeAt(level, origin.getX(), origin.getY(), origin.getZ());
+	}
+
+	public int placeAt(ServerLevel level, int posX, int posY, int posZ) {
+		if (!loaded || blocks == null) {
+			return -1;
+		}
 		int placed = 0;
 		for (int y = 0; y < height; y++) {
 			for (int z = 0; z < width; z++) {
@@ -98,7 +118,7 @@ public final class SchematicStructure {
 				}
 			}
 		}
-		CodeArenaMod.LOGGER.info("Placed {} blocks from {}", placed, resourcePath);
+		CodeArenaMod.LOGGER.info("Placed {} blocks from {} at {},{},{}", placed, resourcePath, posX, posY, posZ);
 		return placed;
 	}
 

@@ -2,9 +2,17 @@
 	"item.codearena.checkmark": "Spawn Code Arena",
 	"item.codearena.crossmark": "End Code Arena",
 	"itemGroup.codearena.codearena_tab": "CodeArena",
+	"entity.codearena.code_spider": "Code Spider (Duplication)",
+	"entity.codearena.code_zombie": "Code Zombie (Complexity)",
+	"entity.codearena.code_skeleton": "Code Skeleton (Interface)",
+	"entity.codearena.code_creeper": "Code Creeper (Volume)",
+	"entity.codearena.code_cave_spider": "Code Cave Spider (Type-2)",
+	"entity.codearena.code_witch": "Code Witch (Type-3)",
+	"entity.codearena.code_blaze": "Code Blaze (Nesting)",
+	"entity.codearena.code_enderman": "Code Enderman (God Class)",
 	"commands.codearena.spawn.success": "CodeArena spawned at your position.",
 	"commands.codearena.end.success": "CodeArena session ended.",
 	"commands.codearena.already": "An arena is already active. Use /codearena end first.",
 	"commands.codearena.none": "No active CodeArena session.",
-	"commands.codeclones.stub": "Full CloneRefactor AST detection is not ported. Demo problems spawn with /codearena spawn; list them with /codearena problems."
+	"commands.codeclones.stub": "No local CloneRefactor jar/API under /workspace — AST detection stays demo-only. Use /codearena spawn and /codearena problems."
 }
