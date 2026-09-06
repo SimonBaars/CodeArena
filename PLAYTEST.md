@@ -2,7 +2,7 @@
 
 Target: Minecraft **26.2**, Fabric Loader **0.19.5**, Fabric API **0.159.0+26.2**, Java **25**.  
 Built JAR: `build/libs/codearena-1.0.0+26.2.jar`  
-Coverage: **~43%** of original Forge feature surface (schematic arena + watchtowers, 8 demo problem types, registered smell entities + spider/cave-spider textures, package-filter diamonds, structure place command). AST engine / Swing editor still cut; no Techne ModelCode* (vanilla only).
+Coverage: **~43%** of original Forge feature surface (schematic arena + watchtowers, 8 demo problem types, registered smell entities + spider/cave-spider textures, package-filter diamonds, structure place command). AST engine still **demo-only** (CloneRefactor jar required); Swing editor **N/A/deferred** for Fabric; no Techne ModelCode* (vanilla only).
 
 Use a Creative world with cheats enabled (`arenaplay` exists under `run/saves/`).
 
@@ -52,8 +52,8 @@ Use a Creative world with cheats enabled (`arenaplay` exists under `run/saves/`)
 
 ## Known gaps (do not fail build)
 
-- No project-folder CloneRefactor AST scan (**no jar/API under `/workspace`**; do not clone repos)
-- No Swing / in-game code editor (tips via chat / HTML blurbs only)
+- No project-folder CloneRefactor AST scan (**jar still required**; no standalone checkout/jar under `/workspace`; do not clone)
+- Swing CodeEditor **N/A/deferred** (Forge desktop UI ≠ Fabric client; tips via chat / HTML blurbs only)
 - No Techne ModelCode* geometry — only `ModelCodeSkeleton` (vanilla thin biped); spider(+eyes) skins + derived cave spider; others vanilla models/skins
 - Schematic block **metadata** (facing) not remapped
 - Coliseum not auto-placed on spawn (opt-in via `/codearena place`)
@@ -73,8 +73,8 @@ Use a Creative world with cheats enabled (`arenaplay` exists under `run/saves/`)
 | Package-filter diamonds | Covered |
 | Sidebar score + kill tips + emerald reward | Covered |
 | `/codeclones` real AST detection | **Gap / stub** (no local jar) |
-| Swing CodeEditor | **Gap / dropped** |
-| clonerefactor AST engine | **Gap / demo only** |
+| Swing CodeEditor | **N/A / deferred** (desktop Swing, not Fabric-portable) |
+| clonerefactor AST engine | **Open gap / demo only** (jar required) |
 | Techne / unique ModelCode* meshes | **N/A** (legacy had none; ModelCodeSkeleton = vanilla) |
 
 ## Auto screenshot (dev)

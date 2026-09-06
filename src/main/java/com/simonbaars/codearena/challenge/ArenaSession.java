@@ -86,7 +86,7 @@ public final class ArenaSession {
 				"CodeArena ready (" + source + ", " + built.totalBlocks() + " blocks). Defeat "
 						+ problems.size() + " metric smells (" + ProblemType.values().length
 						+ " types). Hold a named diamond to filter by package. "
-						+ "Demo problems only — CloneRefactor AST jar not available. "
+						+ "Demo problems only — CloneRefactor jar still required for real AST. "
 						+ "/codearena problems | /codearena place <structure>"));
 		return session;
 	}

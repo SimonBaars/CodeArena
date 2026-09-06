@@ -14,5 +14,5 @@
 	"commands.codearena.end.success": "CodeArena session ended.",
 	"commands.codearena.already": "An arena is already active. Use /codearena end first.",
 	"commands.codearena.none": "No active CodeArena session.",
-	"commands.codeclones.stub": "No local CloneRefactor jar/API under /workspace — AST detection stays demo-only. Use /codearena spawn and /codearena problems."
+	"commands.codeclones.stub": "CloneRefactor jar still required for real AST (none under /workspace) — detection stays demo-only. Use /codearena spawn and /codearena problems."
 }

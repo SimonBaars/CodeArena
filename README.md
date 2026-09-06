@@ -9,4 +9,4 @@ Education / clone-detection arena mod, ported from Forge **1.12.2** to Fabric **
 
 In-game: `/codearena spawn`, `/codearena end`, `/codearena problems`, `/codearena place <structure>`, or creative items **Spawn / End Code Arena**.
 
-Spawn loads legacy `structures/arena.structure` plus corner `watchtower`s, demo metric smells as eight registered entity types (custom spider / cave-spider textures; no Techne ModelCode*), package-filter diamonds, and sidebar scoring. Full CloneRefactor AST detection (no local jar) and the Swing code editor remain cut.
+Spawn loads legacy `structures/arena.structure` plus corner `watchtower`s, demo metric smells as eight registered entity types (custom spider / cave-spider textures; no Techne ModelCode*), package-filter diamonds, and sidebar scoring. Real AST still needs a **CloneRefactor jar** (demo-only without one). Swing CodeEditor is **N/A/deferred** (Forge desktop UI, not portable to Fabric client).

@@ -24,4 +24,4 @@ Auto: `./gradlew runClient -Parenashot` on `DISPLAY=:4`
 
 ## Notes
 
-Coverage after texture audit: **~43%**. Remaining cuts: AST engine (no local jar), Swing CodeEditor, schematic metadata facing, coliseum not auto-spawned (opt-in `/codearena place`). No further custom meshes to port.
+Coverage after texture audit: **~43%**. Remaining **Open** gap: real AST (CloneRefactor jar still required; demo-only). Swing CodeEditor **N/A/deferred** (Forge desktop UI). Also: schematic metadata facing; coliseum not auto-spawned (opt-in `/codearena place`). No further custom meshes to port.

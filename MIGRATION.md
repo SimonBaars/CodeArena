@@ -28,7 +28,7 @@ This port ships a **deeper playable subset** — schematic arena + watchtowers, 
 | Schematic structure loader | ~8 | **Done (remap)** | `arena` + corner `watchtower`; `/codearena place` for coliseum/etc. |
 | Custom monsters (zombie/skeleton/creeper/spider) | ~20 | **Mostly done** | 8 entity types + attrs; `code_spider`/`code_cave_spider` (+eyes) skins; ModelCode* = vanilla only (see audit) |
 | Clone detection engine (`clonerefactor.*`) | ~60+ | **Stubbed as demo** | `DemoProblems` 9-item wave / 8 types; **no CloneRefactor jar under `/workspace`** |
-| Swing / RSyntaxTextArea code editor | ~5 | **Dropped** | Tips via chat + `/tips/*.html` blurbs |
+| Swing / RSyntaxTextArea code editor | ~5 | **N/A / deferred** | Forge **desktop** Swing UI — not portable to Fabric client the same way; tips via chat + `/tips/*.html` blurbs |
 | Forge GUIs (setup / end challenge) | ~4 | **Dropped** | Chat + items + commands |
 | Keybind `c` open menu | ~1 | **Dropped** | Use items / commands |
 | Tips / ResourceCommons extract | ~4 | **Partial** | Tip HTML on classpath; stripped to chat blurbs |
@@ -37,7 +37,9 @@ Honest total: treat as **~43% feature coverage** of the education product; **~12
 
 ## CloneRefactor wiring policy
 
-Searched `/workspace` for a CloneRefactor jar/API — **none found** (only `_forge_legacy` sources). Per instructions: **do not clone repos**. AST detection remains demo-only until a local jar is provided.
+Real AST detection still requires a **CloneRefactor jar** (or equivalent API) on the classpath.
+
+Searched `/workspace` for a buildable CloneRefactor checkout or prebuilt jar/API — **none found**. Only `_forge_legacy` embeds `com.simonbaars.clonerefactor.*` sources inside the old Forge mod tree (not a standalone CloneRefactor project; ForgeGradle 2.3, not wired into Fabric Loom). Per instructions: **do not clone repos**, and only wire a thin detector if a jar can be built from an existing checkout — **skipped**. AST detection remains **demo-only** (`DemoProblems`); keep port status **Open** while that gap is real.
 
 ## API mapping (high level)
 
@@ -48,7 +50,7 @@ Searched `/workspace` for a CloneRefactor jar/API — **none found** (only `_for
 | `Item` + `onItemRightClick` | `Item.use` → `InteractionResult` |
 | `SchematicStructure` + numeric IDs | `structureloader.SchematicStructure` + `LegacyBlockIds` |
 | Custom `EntityCode*` | `ModEntities` registry ids + vanilla classes; `CodeSpiderRenderer` / `CodeCaveSpiderRenderer` + eyes layer |
-| Swing `CodeEditor` | **Not opened** (chat / HTML tips on resolve) |
+| Swing `CodeEditor` | **N/A / deferred** (desktop Swing ≠ Fabric client; chat / HTML tips on resolve) |
 | Scoreboard challenge UI | `Scoreboard` sidebar `codearena_score` |
 | Package-filter diamonds | Named `Items.DIAMOND` + session tick invisibility |
 | `mcmod.info` | `fabric.mod.json` |
@@ -56,8 +58,8 @@ Searched `/workspace` for a CloneRefactor jar/API — **none found** (only `_for
 
 ## Major cuts (do not expect)
 
-1. **No live clone detection** against a Java project folder (demo problems only; no local CloneRefactor jar).
-2. **No desktop / Swing code editor** when “fighting” a smell.
+1. **No live clone detection** against a Java project folder (demo problems only; **CloneRefactor jar still required** for real AST — none under `/workspace`).
+2. **Swing CodeEditor N/A / deferred** — Forge desktop UI, not portable to the Fabric client the same way; tips via chat / HTML when “fighting” a smell.
 3. **No Techne / unique ModelCode* meshes** — legacy audit (`_forge_legacy`):
    - Only `ModelCodeSkeleton.java` existed; it is a **vanilla `ModelSkeleton` clone** (thin biped arms/legs), not a Techne export.
    - Zombie / creeper / spider used stock `ModelZombie` / `ModelCreeper` / `ModelSpider`.

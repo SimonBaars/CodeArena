@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Client entry. Smell renderers: custom spider + cave-spider skins; vanilla for zombie/skeleton/creeper/etc.
  * {@code ModelCodeSkeleton} in legacy is vanilla thin-biped (not Techne) — {@link SkeletonRenderer} already covers it.
- * Legacy Swing {@code CodeEditor} / RSyntaxTextArea remains dropped.
+ * Legacy Swing {@code CodeEditor} / RSyntaxTextArea is N/A/deferred (Forge desktop UI, not portable to Fabric client).
  */
 public class CodeArenaClient implements ClientModInitializer {
 	private static final Logger LOGGER = LoggerFactory.getLogger("codearena");
