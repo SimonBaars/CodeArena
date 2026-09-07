@@ -10,17 +10,18 @@ import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
- * Loads legacy gzipped schematic {@code .structure} files (Width/Length/Height + Blocks byte array)
- * using 1.12 numeric ids remapped via {@link LegacyBlockIds}.
+ * Loads legacy gzipped schematic {@code .structure} files (Width/Length/Height + Blocks/Data
+ * byte arrays) using 1.12 numeric ids+meta remapped via {@link LegacyBlockStates}.
  */
 public final class SchematicStructure {
 	private final String name;
 	private final String resourcePath;
-	private Block[][][] blocks;
+	/** Pre-flattening block ids; -1 = unset. */
+	private int[][][] legacyIds;
+	private int[][][] blockData;
 	private int length;
 	private int height;
 	private int width;
@@ -48,15 +49,26 @@ public final class SchematicStructure {
 			this.length = nbt.getShortOr("Width", (short) 1);
 			this.width = nbt.getShortOr("Length", (short) 1);
 			this.height = nbt.getShortOr("Height", (short) 1);
-			this.blocks = new Block[height][width][length];
+			this.legacyIds = new int[height][width][length];
+			this.blockData = new int[height][width][length];
+			for (int y0 = 0; y0 < height; y0++) {
+				for (int z0 = 0; z0 < width; z0++) {
+					for (int x0 = 0; x0 < length; x0++) {
+						this.legacyIds[y0][z0][x0] = -1;
+					}
+				}
+			}
 
 			byte[] blockIds = nbt.getByteArray("Blocks").orElse(new byte[0]);
+			byte[] blockDataBytes = nbt.getByteArray("Data").orElse(new byte[0]);
 			int x = 1;
 			int y = 1;
 			int z = 1;
 			for (int i = 0; i < blockIds.length; i++) {
 				int blockId = blockIds[i] & 0xFF;
-				blocks[y - 1][z - 1][x - 1] = LegacyBlockIds.fromId(blockId);
+				int meta = i < blockDataBytes.length ? (blockDataBytes[i] & 0xFF) : 0;
+				legacyIds[y - 1][z - 1][x - 1] = blockId;
+				blockData[y - 1][z - 1][x - 1] = meta;
 				x++;
 				if (x > length) {
 					x = 1;
@@ -68,8 +80,8 @@ public final class SchematicStructure {
 				}
 			}
 			loaded = true;
-			CodeArenaMod.LOGGER.info("Loaded schematic {} ({}x{}x{}, {} block bytes)",
-					resourcePath, length, height, width, blockIds.length);
+			CodeArenaMod.LOGGER.info("Loaded schematic {} ({}x{}x{}, {} block bytes, {} data bytes)",
+					resourcePath, length, height, width, blockIds.length, blockDataBytes.length);
 			return true;
 		} catch (Exception e) {
 			CodeArenaMod.LOGGER.error("Failed to read schematic {}", resourcePath, e);
@@ -83,7 +95,7 @@ public final class SchematicStructure {
 	 * @return nonzero blocks placed, or -1 if not loaded
 	 */
 	public int placeCentered(ServerLevel level, BlockPos center) {
-		if (!loaded || blocks == null) {
+		if (!loaded || legacyIds == null) {
 			return -1;
 		}
 		int posX = center.getX() - length / 2 + 1;
@@ -100,19 +112,22 @@ public final class SchematicStructure {
 	}
 
 	public int placeAt(ServerLevel level, int posX, int posY, int posZ) {
-		if (!loaded || blocks == null) {
+		if (!loaded || legacyIds == null) {
 			return -1;
 		}
 		int placed = 0;
 		for (int y = 0; y < height; y++) {
 			for (int z = 0; z < width; z++) {
 				for (int x = 0; x < length; x++) {
-					Block block = blocks[y][z][x];
-					if (block == null || block == Blocks.AIR) {
+					int legacyId = legacyIds[y][z][x];
+					if (legacyId < 0) {
+						continue;
+					}
+					BlockState state = LegacyBlockStates.fromLegacy(legacyId, blockData[y][z][x]);
+					if (state == null || state.isAir()) {
 						continue;
 					}
 					BlockPos pos = new BlockPos(posX + x, posY + y, posZ + z);
-					BlockState state = block.defaultBlockState();
 					level.setBlock(pos, state, Block.UPDATE_CLIENTS);
 					placed++;
 				}
