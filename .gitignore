@@ -10,3 +10,7 @@ out/
 bin/
 *.log
 .DS_Store
+
+# JDK installations
+jdk-*/
+

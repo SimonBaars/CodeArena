@@ -264,6 +264,7 @@ public final class SmellDetector {
 				.orElse("default");
 	}
 
+	@SuppressWarnings("unchecked")
 	private static String classNameOf(MethodDeclaration method) {
 		return method.findAncestor(ClassOrInterfaceDeclaration.class)
 				.map(ClassOrInterfaceDeclaration::getNameAsString)
