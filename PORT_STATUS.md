@@ -1,6 +1,6 @@
 # PORT_STATUS — CodeArena (Fabric 26.2)
 
-Updated: 2026-09-06 ~8:50 PM PT — schematic Blocks+Data via `LegacyBlockStates.fromLegacy` (same class of fix as IMS).
+Updated: 2026-09-22 ~10:14 AM UTC — Fabric 26.2 parity audit complete; JavaParser warning fixed; CloneRefactor/Swing remain N/A/deferred.
 
 | Field | Value |
 |-------|-------|

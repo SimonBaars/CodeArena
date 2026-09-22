@@ -1,8 +1,9 @@
 # REMAINING_GAPS — Fabric 26.2 Parity Audit
 
-**Date**: 2026-09-22  
+**Date**: 2026-09-22 ~10:14 AM UTC  
 **Target**: Fabric 26.2 parity to 100% for ported scope  
-**Status**: ✅ **COMPLETE** — All ported features functional; remaining gaps are correctly labeled N/A/deferred
+**Status**: ✅ **COMPLETE** — All ported features functional; remaining gaps are correctly labeled N/A/deferred  
+**CoS Verified**: Build compiles green; metadata refreshed; CloneRefactor/Swing remain N/A/deferred
 
 ---
 
@@ -251,7 +252,15 @@ export JAVA_HOME=/workspace/jdk-25
    - Added: `-Xlint:unchecked` compiler arg to surface hidden warnings
    - Reason: Proactive detection of unchecked operations
 
-3. **`REMAINING_GAPS.md`** (new)
+3. **`PORT_STATUS.md`**
+   - Refreshed: Updated timestamp to 2026-09-22 (stale 2026-09-06 line)
+   - Added: Audit completion note (JavaParser warning fixed; CloneRefactor/Swing remain N/A/deferred)
+
+4. **`MIGRATION.md`**
+   - Refreshed: Updated "Local only" section to "Repository" (stale no-push note)
+   - Reason: Port now has GitHub remote + PR workflow
+
+5. **`REMAINING_GAPS.md`** (new)
    - Comprehensive audit results for CoS verification
    - Documents 100% parity for ported scope
    - Confirms CloneRefactor Type-2/3 and Swing CodeEditor remain correctly labeled N/A/deferred

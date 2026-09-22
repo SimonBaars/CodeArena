@@ -69,9 +69,9 @@ Honest total: treat as **~50–52%** feature coverage of the education product; 
 5. **Metadata on schematics ignored** (stairs/doors facing not remapped; default states).
 6. **Large schematics** (`coliseum`, `colloseum`) are opt-in via `/codearena place`, not auto-loaded on spawn.
 
-## Local only
+## Repository
 
-No `git push`, no PAT, no remote publish for this port.
+GitHub: `SimonBaars/CodeArena` — Fabric 26.2 port branch with audit + parity verification.
 
 ## Verification
 
