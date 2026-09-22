@@ -59,8 +59,8 @@ Use a Creative world with cheats enabled (`arenaplay` exists under `run/saves/`)
 
 ## Known gaps (do not fail build)
 
-- No Type-2/3 CloneRefactor scan (**jar still required**; thin JavaParser method-level on demo-sources + gameDir disk scan; do not clone)
-- Swing CodeEditor **N/A/deferred** (Forge desktop UI ≠ Fabric client; tips via chat / HTML blurbs only)
+- CloneRefactor Type-2/3 scan **N/A / deferred** (no jar under `/workspace`; thin JavaParser method-level on demo-sources + gameDir disk scan ships instead; do not clone)
+- Swing CodeEditor **N/A / deferred** (Forge desktop UI ≠ Fabric client; tips via chat / HTML blurbs only)
 - No Techne ModelCode* geometry — only `ModelCodeSkeleton` (vanilla thin biped); spider(+eyes) skins + derived cave spider; others vanilla models/skins
 - Schematic block **metadata** (facing) not remapped
 - Coliseum not auto-placed on spawn (opt-in via `/codearena place`)
@@ -80,10 +80,10 @@ Use a Creative world with cheats enabled (`arenaplay` exists under `run/saves/`)
 | Custom spider + cave-spider texture renderers (+ eyes) | Covered |
 | Package-filter diamonds | Covered |
 | Sidebar score + kill tips + emerald reward | Covered |
-| `/codeclones` full CloneRefactor | **Gap / stub** (no local jar) |
+| `/codeclones` stub | **N/A / deferred** (CloneRefactor Type-2/3 requires jar) |
 | Swing CodeEditor | **N/A / deferred** (desktop Swing, not Fabric-portable) |
 | Thin JavaParser SmellDetector | Covered (demo-sources + `/codearena scan` disk) |
-| CloneRefactor Type-2/3 engine | **Open gap** (jar/checkout absent) |
+| CloneRefactor Type-2/3 engine | **N/A / deferred** (no jar under `/workspace`) |
 | Techne / unique ModelCode* meshes | **N/A** (legacy had none; ModelCodeSkeleton = vanilla) |
 
 ## Auto screenshot (dev)
